@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Cloudberry</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.teal-orange.min.css" />
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+  </head>
+  <body>
+    <!-- Always shows a header, even in smaller screens. -->
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+      <header class="mdl-layout__header">
+        <div class="mdl-layout__header-row">
+          <!-- Title -->
+          <span class="mdl-layout-title">CloudBerry</span>
+          <!-- Add spacer, to align navigation to the right -->
+          <div class="mdl-layout-spacer"></div>
+          <!-- Navigation. We hide it in small screens. -->
+          <nav class="mdl-navigation mdl-layout--large-screen-only">
+            <a class="mdl-navigation__link" href="">Browse</a>
+            <a class="mdl-navigation__link" href="">About</a>
+            <a class="mdl-navigation__link" href="">Contact</a>
+            <a class="mdl-navigation__link" href="">Account</a>
+          </nav>
+        </div>
+      </header>
+      <div class="mdl-layout__drawer">
+        <span class="mdl-layout-title">CloudBerry</span>
+        <nav class="mdl-navigation">
+          <a class="mdl-navigation__link" href="">Browse</a>
+          <a class="mdl-navigation__link" href="">About</a>
+          <a class="mdl-navigation__link" href="">Contact</a>
+          <a class="mdl-navigation__link" href="">Account</a>
+        </nav>
+      </div>
+      <main class="mdl-layout__content">
+        <div class="page-content" id="content">
+          <!-- Your content goes here -->
+          <h1 id="userGreeting">Welcome, business</h1>
+          <button id="logout" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+            Log out
+          </button>
+          <!-- TODO: Have a login and sign up servlet -->
+          <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+            <div class="mdl-tabs__tab-bar">
+                <a href="#businessTools" class="mdl-tabs__tab is-active">Tools</a>
+                <a href="#businessInfo" class="mdl-tabs__tab">Business Info</a>
+            </div>
+            <div class="mdl-tabs__panel is-active" id="businessTools"><br/>
+              <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">
+                View my products
+              </button>
+              <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">
+                Create a product set
+              </button>
+              <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">
+                Add a product
+              </button>
+              <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
+                Delete Product/set
+              </button>
+            </div>
+            <div class="mdl-tabs__panel" id="businessInfo"><br/>
+              <form action="" method="POST" >
+                <p>Business name</p> 
+                <div class="mdl-textfield mdl-js-textfield">
+                  <input class="mdl-textfield__input" type="text" id="nickname" name="nickname">
+                  <label class="mdl-textfield__label" for="nickname">JohnDoe42</label>
+                </div><br/><br/>
+                <p>Business Address</p>
+                <div class="mdl-textfield mdl-js-textfield">
+                  <input class="mdl-textfield__input" type="text" id="street" name="street">
+                  <label class="mdl-textfield__label" for="street">Street</label>
+                </div>
+                <div class="mdl-textfield mdl-js-textfield">
+                  <input class="mdl-textfield__input" type="text" id="city" name="city">
+                  <label class="mdl-textfield__label" for="city">City</label>
+                </div><br/>
+                <div class="mdl-textfield mdl-js-textfield">
+                  <input class="mdl-textfield__input" type="text" id="state" name="state">
+                  <label class="mdl-textfield__label" for="state">State</label>
+                </div>
+                <div class="mdl-textfield mdl-js-textfield">
+                  <input class="mdl-textfield__input" type="text" id="zipCode" name="zipCode">
+                  <label class="mdl-textfield__label" for="zipCode">Zip Code</label>
+                </div>
+                <br/><br/>
+                <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                  Save Changes
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

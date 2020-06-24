@@ -40,6 +40,35 @@
         <div class="page-content" id="content">
           <!-- Your content goes here -->
           <h1>Create a User Account</h1>
+          <!-- TODO: Have a login and sign up servlet -->
+          <form action="" method="POST" >
+            <p>Username*</p> 
+            <div class="mdl-textfield mdl-js-textfield">
+              <input class="mdl-textfield__input" type="text" id="nickname" name="nickname" required>
+              <label class="mdl-textfield__label" for="nickname">JohnDoe42</label>
+            </div><br/><br/>
+            <p>Address*</p>
+            <div class="mdl-textfield mdl-js-textfield">
+              <input class="mdl-textfield__input" type="text" id="street" name="street" required>
+              <label class="mdl-textfield__label" for="street">Street</label>
+            </div>
+            <div class="mdl-textfield mdl-js-textfield">
+              <input class="mdl-textfield__input" type="text" id="city" name="city" required>
+              <label class="mdl-textfield__label" for="city">City</label>
+            </div><br/>
+            <div class="mdl-textfield mdl-js-textfield">
+              <input class="mdl-textfield__input" type="text" id="state" name="state" required>
+              <label class="mdl-textfield__label" for="state">State</label>
+            </div>
+            <div class="mdl-textfield mdl-js-textfield">
+              <input class="mdl-textfield__input" type="text" id="zipCode" name="zipCode" required>
+              <label class="mdl-textfield__label" for="zipCode">Zip Code</label>
+            </div>
+            <br/><br/>
+            <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+              Create Account
+            </button>
+          </form>
         </div>
       </main>
     </div>
