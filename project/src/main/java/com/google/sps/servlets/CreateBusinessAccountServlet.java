@@ -12,6 +12,11 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
+import com.google.sps.data.ServletLibrary;
+import java.util.ArrayList;
+
+// The purpose of this servlet is to collect data from the business account creation 
+// form and add the information to the database.
 @WebServlet("/createBusinessAccount")
 public class CreateBusinessAccountServlet extends HttpServlet {
 
@@ -29,22 +34,23 @@ public class CreateBusinessAccountServlet extends HttpServlet {
     // Get required user information.
     String userId = userService.getCurrentUser().getUserId();
     String userEmail = userService.getCurrentUser().getEmail();
-    String nickname = request.getParameter("nickname"); 
+    String businessName = request.getParameter("businessName"); 
     String street = request.getParameter("street");
     String city = request.getParameter("city");
     String state = request.getParameter("state");
     String zipCode = request.getParameter("zipCode");
-    List<String> searchHistory = new ArrayList<>(); // no search history initally
+    List<String> searchHistory = new ArrayList<>(); // no search history initially
 
-    // Set business information to defaults (as this is not a business).
-    boolean isUserBusinessOwner = false;
-    String businessId = null;
+    // Set business information.
+    boolean isUserBusinessOwner = true;
+    String businessId = ServletLibrary.generateUUID();
+    List<String> productIds = new ArrayList<>();
     
-    // Create entity object that will be stored
+    // Create account entity object that will be stored.
     Entity account = new Entity("Account", userId);
     account.setProperty("userId", userId);
     account.setProperty("userEmail", userEmail);
-    account.setProperty("nickname", nickname);
+    account.setProperty("nickname", businessName);
     account.setProperty("street", street);
     account.setProperty("city", city);
     account.setProperty("state", state);
@@ -53,11 +59,23 @@ public class CreateBusinessAccountServlet extends HttpServlet {
     account.setProperty("isUserBusinessOwner", isUserBusinessOwner);
     account.setProperty("businessId", businessId);
 
+    // Set up business information to be stored.
+    Entity business = new Entity("Business", businessId);
+    business.setProperty("userId", userId);
+    business.setProperty("businessId", businessId);
+    business.setProperty("businessDisplayName", businessDisplayName);
+    business.setProperty("street", street);
+    business.setProperty("city", city);
+    business.setProperty("state", state);
+    business.setProperty("zipCode", zipcode);
+    business.setProperty("productIds", productIds);
+
     // Store in datastore
     datastore.put(account);
+    datastore.put(business);
 
     // Redirect to account page
-    response.sendRedirect("/account");
+    response.sendRedirect("/login");
   }
 
 }

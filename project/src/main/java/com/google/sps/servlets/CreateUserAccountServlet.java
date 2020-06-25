@@ -12,6 +12,10 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
+import java.util.ArrayList;
+
+// The purpose of this servlet is to collect data from the user account creation 
+// form and add the information to the database.
 @WebServlet("/createUserAccount")
 public class CreateUserAccountServlet extends HttpServlet {
 
@@ -57,7 +61,7 @@ public class CreateUserAccountServlet extends HttpServlet {
     datastore.put(account);
 
     // Redirect to account page
-    response.sendRedirect("/account");
+    response.sendRedirect("/login");
   }
 
 }
