@@ -28,6 +28,6 @@ function retrieveAccountInfo() {
     document.getElementById("city").value = account.city;
     document.getElementById("state").value = account.state;
     document.getElementById("zipCode").value = account.zipCode;
-    document.getElementById("userGreeting").value = account.nickname;
+    document.getElementById("userGreeting").innerText = "Hello, " + account.nickname;
   });
 }
