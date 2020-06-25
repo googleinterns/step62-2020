@@ -57,7 +57,6 @@ public class CreateBusinessAccountServlet extends HttpServlet {
     account.setProperty("zipCode", zipCode);
     account.setProperty("searchHistory", searchHistory);
     account.setProperty("isUserBusinessOwner", isUserBusinessOwner);
-    account.setProperty("businessId", businessId);
 
     // Set up business information to be stored.
     Entity business = new Entity("Business", userId);
