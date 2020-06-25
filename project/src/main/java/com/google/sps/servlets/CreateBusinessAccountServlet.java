@@ -14,6 +14,7 @@ import com.google.appengine.api.users.UserServiceFactory;
 
 import com.google.sps.data.ServletLibrary;
 import java.util.ArrayList;
+import java.util.List;
 
 // The purpose of this servlet is to collect data from the business account creation 
 // form and add the information to the database.
@@ -54,7 +55,7 @@ public class CreateBusinessAccountServlet extends HttpServlet {
     account.setProperty("street", street);
     account.setProperty("city", city);
     account.setProperty("state", state);
-    account.setProperty("zipCode", zipcode);
+    account.setProperty("zipCode", zipCode);
     account.setProperty("searchHistory", searchHistory);
     account.setProperty("isUserBusinessOwner", isUserBusinessOwner);
     account.setProperty("businessId", businessId);
@@ -63,11 +64,11 @@ public class CreateBusinessAccountServlet extends HttpServlet {
     Entity business = new Entity("Business", businessId);
     business.setProperty("userId", userId);
     business.setProperty("businessId", businessId);
-    business.setProperty("businessDisplayName", businessDisplayName);
+    business.setProperty("businessDisplayName", businessName);
     business.setProperty("street", street);
     business.setProperty("city", city);
     business.setProperty("state", state);
-    business.setProperty("zipCode", zipcode);
+    business.setProperty("zipCode", zipCode);
     business.setProperty("productIds", productIds);
 
     // Store in datastore

@@ -13,6 +13,7 @@ import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
 import java.util.ArrayList;
+import java.util.List;
 
 // The purpose of this servlet is to collect data from the user account creation 
 // form and add the information to the database.
@@ -52,7 +53,7 @@ public class CreateUserAccountServlet extends HttpServlet {
     account.setProperty("street", street);
     account.setProperty("city", city);
     account.setProperty("state", state);
-    account.setProperty("zipCode", zipcode);
+    account.setProperty("zipCode", zipCode);
     account.setProperty("searchHistory", searchHistory);
     account.setProperty("isUserBusinessOwner", isUserBusinessOwner);
     account.setProperty("businessId", businessId);
