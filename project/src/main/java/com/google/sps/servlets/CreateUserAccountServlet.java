@@ -43,7 +43,6 @@ public class CreateUserAccountServlet extends HttpServlet {
 
     // Set business information to defaults (as this is not a business).
     boolean isUserBusinessOwner = false;
-    String businessId = null;
     
     // Create entity object that will be stored
     Entity account = new Entity("Account", userId);
@@ -56,7 +55,6 @@ public class CreateUserAccountServlet extends HttpServlet {
     account.setProperty("zipCode", zipCode);
     account.setProperty("searchHistory", searchHistory);
     account.setProperty("isUserBusinessOwner", isUserBusinessOwner);
-    account.setProperty("businessId", businessId);
 
     // Store in datastore
     datastore.put(account);
