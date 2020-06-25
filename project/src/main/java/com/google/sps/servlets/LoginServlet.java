@@ -1,4 +1,5 @@
 package com.google.sps.servlets;
+import com.google.sps.data.ServletLibrary;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -36,10 +37,7 @@ public class LoginServlet extends HttpServlet {
     // First check if the user is logged in, otherwise redirect to google login page.
     if (userService.isUserLoggedIn()) {
       // Next check if the account is registered in the database, otherwise go to account creation.
-      Filter filter = new FilterPredicate("userId", FilterOperator.EQUAL, userService.getCurrentUser().getUserId());
-      Query query = new Query("userId").setFilter(filter);
-      PreparedQuery pq = datastore.prepare(query);
-      Entity result = pq.asSingleEntity();
+      Entity result = ServletLibrary.checkAccountIsRegistered(datastore, userService.getCurrentUser().getUserId());
       if (result != null) {
         // Check if account is a business owner or not and redirect appropriately.
         boolean isUserBusinessOwner = (boolean) result.getProperty("isUserBusinessOwner");

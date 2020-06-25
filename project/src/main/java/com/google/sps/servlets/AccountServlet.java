@@ -22,7 +22,7 @@ import com.google.appengine.api.users.UserServiceFactory;
 
 // This servlet retrieves the account information of the user and sends it as
 // a response.
-@WebServlet("/login")
+@WebServlet("/account")
 public class AccountServlet extends HttpServlet {
 
   protected DatastoreService datastore;
@@ -42,13 +42,10 @@ public class AccountServlet extends HttpServlet {
     // First check if the user is logged in, otherwise redirect to google login page.
     if (userService.isUserLoggedIn()) {
       // Next check if the account is registered in the database, otherwise go to account creation.
-      Filter filter = new FilterPredicate("userId", FilterOperator.EQUAL, userService.getCurrentUser().getUserId());
-      Query query = new Query("userId").setFilter(filter);
-      PreparedQuery pq = datastore.prepare(query);
-      Entity result = pq.asSingleEntity();
+      Entity result = ServletLibrary.checkAccountIsRegistered(datastore, userService.getCurrentUser().getUserId());
       if (result != null) {
         // Retrieve all account information.
-        Account account = ServletLibrary.retrieveAccountInfo(result);
+        Account account = ServletLibrary.retrieveAccountInfo(result, userService);
         String json = gson.toJson(account);
         response.setContentType("application/json;");
         response.getWriter().println(json);
