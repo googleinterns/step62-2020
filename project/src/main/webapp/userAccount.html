@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
   </head>
-  <body>
+  <body onload="retrieveAccountInfo()">
     <!-- Always shows a header, even in smaller screens. -->
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
       <header class="mdl-layout__header">
@@ -39,7 +39,7 @@
       <main class="mdl-layout__content">
         <div class="page-content" id="content">
           <!-- Your content goes here -->
-          <h1 id="userGreeting">Welcome, stranger</h1>
+          <h1 id="userGreeting"></h1>
           <a id="logout">
             <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
               Log out
@@ -56,24 +56,19 @@
                 <p>Username</p> 
                 <div class="mdl-textfield mdl-js-textfield">
                   <input class="mdl-textfield__input" type="text" id="nickname" name="nickname">
-                  <label class="mdl-textfield__label" for="nickname">JohnDoe42</label>
                 </div><br/><br/>
                 <p>Address</p>
                 <div class="mdl-textfield mdl-js-textfield">
                   <input class="mdl-textfield__input" type="text" id="street" name="street">
-                  <label class="mdl-textfield__label" for="street">Street</label>
                 </div>
                 <div class="mdl-textfield mdl-js-textfield">
                   <input class="mdl-textfield__input" type="text" id="city" name="city">
-                  <label class="mdl-textfield__label" for="city">City</label>
                 </div><br/>
                 <div class="mdl-textfield mdl-js-textfield">
                   <input class="mdl-textfield__input" type="text" id="state" name="state">
-                  <label class="mdl-textfield__label" for="state">State</label>
                 </div>
                 <div class="mdl-textfield mdl-js-textfield">
                   <input class="mdl-textfield__input" type="text" id="zipCode" name="zipCode">
-                  <label class="mdl-textfield__label" for="zipCode">Zip Code</label>
                 </div>
                 <br/><br/>
                 <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">

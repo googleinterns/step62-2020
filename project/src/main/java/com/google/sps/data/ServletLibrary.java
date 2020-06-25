@@ -22,7 +22,7 @@ public class ServletLibrary {
 
   public static Entity checkAccountIsRegistered(DatastoreService datastore, String userId) {
     Filter filter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);
-    Query query = new Query("userId").setFilter(filter);
+    Query query = new Query("Account").setFilter(filter);
     PreparedQuery pq = datastore.prepare(query);
     Entity result = pq.asSingleEntity();
     return result;
@@ -34,7 +34,6 @@ public class ServletLibrary {
     String nickname = entity.getProperty("nickname").toString();
     String userEmail = entity.getProperty("userEmail").toString();
     boolean isUserBusinessOwner = (boolean) entity.getProperty("isUserBusinessOwner");
-    String businessId = entity.getProperty("businessId").toString();
 
     @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
       List<String> searchHistory = (ArrayList<String>) entity.getProperty("searchHistory"); 
@@ -42,14 +41,13 @@ public class ServletLibrary {
     String street = entity.getProperty("street").toString();
     String city = entity.getProperty("city").toString();
     String state = entity.getProperty("state").toString();
-    String zipCode = entity.getProperty("zipcode").toString();
+    String zipCode = entity.getProperty("zipCode").toString();
 
     return new Account(userId,
                        logoutUrl,
                        nickname,
                        userEmail,
                        isUserBusinessOwner,
-                       businessId,
                        searchHistory,
                        street,
                        city,

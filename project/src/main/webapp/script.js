@@ -18,11 +18,16 @@ function retrieveAccountInfo() {
     else return response.json();
   }).then(account => {
     // Filling out the form with the account information.
-    document.getElementById("logout").href = account.logout;
-    document.getElementById("nickname").value = account.nickname;
+    document.getElementById("logout").href = account.logoutUrl;
+    if (account.isUserBusinessOwner) {
+      document.getElementById("businessName").value = account.nickname;
+    } else {
+      document.getElementById("nickname").value = account.nickname;
+    }
     document.getElementById("street").value = account.street;
     document.getElementById("city").value = account.city;
     document.getElementById("state").value = account.state;
     document.getElementById("zipCode").value = account.zipCode;
+    document.getElementById("userGreeting").value = account.nickname;
   });
 }

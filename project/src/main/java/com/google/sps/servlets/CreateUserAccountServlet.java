@@ -39,7 +39,7 @@ public class CreateUserAccountServlet extends HttpServlet {
     String city = request.getParameter("city");
     String state = request.getParameter("state");
     String zipCode = request.getParameter("zipCode");
-    List<String> searchHistory = new ArrayList<>(); // no search history initally
+    List<String> searchHistory = new ArrayList<>(); // no search history initially
 
     // Set business information to defaults (as this is not a business).
     boolean isUserBusinessOwner = false;
