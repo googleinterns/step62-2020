@@ -4,9 +4,21 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import com.google.sps.Account;
-import com.google.sps.ServletLibray;
+import com.google.sps.data.Account;
+import com.google.sps.data.ServletLibrary;
 import com.google.gson.Gson;
+
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.Filter;
+
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 
 // This servlet retrieves the account information of the user and sends it as
 // a response.
@@ -36,7 +48,7 @@ public class AccountServlet extends HttpServlet {
       Entity result = pq.asSingleEntity();
       if (result != null) {
         // Retrieve all account information.
-        Account account = ServletLibray.retrieveAccountInfo(result);
+        Account account = ServletLibrary.retrieveAccountInfo(result);
         String json = gson.toJson(account);
         response.setContentType("application/json;");
         response.getWriter().println(json);

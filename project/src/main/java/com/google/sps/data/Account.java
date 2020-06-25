@@ -1,6 +1,8 @@
 package com.google.sps.data;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Account() {
+public class Account {
 	private String userId;
 	private String logoutUrl; 
 	private String nickname;
