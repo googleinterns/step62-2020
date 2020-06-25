@@ -8,7 +8,6 @@ public class Account {
 	private String nickname;
 	private String userEmail;
 	private boolean isUserBusinessOwner;
-	private String businessId; 
 	private List<String> searchHistory; 
 	private String street;
   private String city;
@@ -20,7 +19,6 @@ public class Account {
 	        String nickname,
 	        String userEmail,
 	        boolean isUserBusinessOwner,
-	        String businessId,
 	        List<String> searchHistory,
 	        String street,
           String city,
@@ -31,7 +29,6 @@ public class Account {
     this.nickname = nickname;
     this.userEmail = userEmail;
     this.isUserBusinessOwner = isUserBusinessOwner;
-    this.businessId = businessId;
     this.searchHistory = searchHistory;
     this.street = street;
     this.city = city;
