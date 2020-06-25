@@ -44,7 +44,6 @@ public class CreateBusinessAccountServlet extends HttpServlet {
 
     // Set business information.
     boolean isUserBusinessOwner = true;
-    String businessId = ServletLibrary.generateUUID();
     List<String> productIds = new ArrayList<>();
     
     // Create account entity object that will be stored.
@@ -61,9 +60,8 @@ public class CreateBusinessAccountServlet extends HttpServlet {
     account.setProperty("businessId", businessId);
 
     // Set up business information to be stored.
-    Entity business = new Entity("Business", businessId);
-    business.setProperty("userId", userId);
-    business.setProperty("businessId", businessId);
+    Entity business = new Entity("Business", userId);
+    business.setProperty("businessId", userId); // Using user id as business id.
     business.setProperty("businessDisplayName", businessName);
     business.setProperty("street", street);
     business.setProperty("city", city);
