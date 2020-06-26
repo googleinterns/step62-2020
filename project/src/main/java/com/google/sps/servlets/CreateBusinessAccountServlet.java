@@ -17,7 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 // The purpose of this servlet is to collect data from the business account creation 
-// form and add the information to the database.
+// form and add the information to the database. It is also used to update existing
+// information in the database.
 @WebServlet("/createBusinessAccount")
 public class CreateBusinessAccountServlet extends HttpServlet {
 
@@ -32,6 +33,7 @@ public class CreateBusinessAccountServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
     // Get required user information.
     String userId = userService.getCurrentUser().getUserId();
     String userEmail = userService.getCurrentUser().getEmail();
@@ -46,6 +48,10 @@ public class CreateBusinessAccountServlet extends HttpServlet {
     boolean isUserBusinessOwner = true;
     List<String> productIds = new ArrayList<>();
     
+    // check if account already exists, so we don't overwrite search history or
+    // product ids. Null value indicates that account doesn't exist.
+    Entity result = ServletLibrary.checkAccountIsRegistered(datastore, userId);
+
     // Create account entity object that will be stored.
     Entity account = new Entity("Account", userId);
     account.setProperty("userId", userId);
@@ -55,7 +61,7 @@ public class CreateBusinessAccountServlet extends HttpServlet {
     account.setProperty("city", city);
     account.setProperty("state", state);
     account.setProperty("zipCode", zipCode);
-    account.setProperty("searchHistory", searchHistory);
+    if (result == null) account.setProperty("searchHistory", searchHistory);
     account.setProperty("isUserBusinessOwner", isUserBusinessOwner);
 
     // Set up business information to be stored.
@@ -66,7 +72,7 @@ public class CreateBusinessAccountServlet extends HttpServlet {
     business.setProperty("city", city);
     business.setProperty("state", state);
     business.setProperty("zipCode", zipCode);
-    business.setProperty("productIds", productIds);
+    if (result == null) business.setProperty("productIds", productIds);
 
     // Store in datastore
     datastore.put(account);

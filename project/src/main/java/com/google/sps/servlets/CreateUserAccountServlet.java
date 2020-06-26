@@ -16,7 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 // The purpose of this servlet is to collect data from the user account creation 
-// form and add the information to the database.
+// form and add the information to the database.  It is also used to update existing
+// information in the database.
 @WebServlet("/createUserAccount")
 public class CreateUserAccountServlet extends HttpServlet {
 
@@ -39,10 +40,16 @@ public class CreateUserAccountServlet extends HttpServlet {
     String city = request.getParameter("city");
     String state = request.getParameter("state");
     String zipCode = request.getParameter("zipCode");
+    // TODO: prevent from always clearing the history. Need to check if the accoutn
+    // already exists before deciding whether or not to clear history.
     List<String> searchHistory = new ArrayList<>(); // no search history initially
 
     // Set business information to defaults (as this is not a business).
     boolean isUserBusinessOwner = false;
+
+    // check if account already exists, so we don't overwrite search history or
+    // product ids. Null value indicates that account doesn't exist.
+    Entity result = ServletLibrary.checkAccountIsRegistered(datastore, userId);
     
     // Create entity object that will be stored
     Entity account = new Entity("Account", userId);
@@ -53,7 +60,7 @@ public class CreateUserAccountServlet extends HttpServlet {
     account.setProperty("city", city);
     account.setProperty("state", state);
     account.setProperty("zipCode", zipCode);
-    account.setProperty("searchHistory", searchHistory);
+    if (result == null) account.setProperty("searchHistory", searchHistory);
     account.setProperty("isUserBusinessOwner", isUserBusinessOwner);
 
     // Store in datastore
