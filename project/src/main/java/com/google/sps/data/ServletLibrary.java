@@ -11,6 +11,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.SortDirection;
 
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -23,6 +24,14 @@ public class ServletLibrary {
   public static Entity checkAccountIsRegistered(DatastoreService datastore, String userId) {
     Filter filter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);
     Query query = new Query("Account").setFilter(filter);
+    PreparedQuery pq = datastore.prepare(query);
+    Entity result = pq.asSingleEntity();
+    return result;
+  }
+
+  public static Entity checkProductSetExists(DatastoreService datastore, String productSetDisplayName) {
+    Filter filter = new FilterPredicate("productSetDisplayName", FilterOperator.EQUAL, productSetDisplayName);
+    Query query = new Query("ProductSet").setFilter(filter);
     PreparedQuery pq = datastore.prepare(query);
     Entity result = pq.asSingleEntity();
     return result;
@@ -53,5 +62,21 @@ public class ServletLibrary {
                        city,
                        state,
                        zipCode);
+  }
+
+  public static List<ProductSetEntity> listAllProductSets(DatastoreService datastore) {
+    Query query = new Query("ProductSet").addSort("productSetDisplayName", SortDirection.ASCENDING);
+    PreparedQuery pq = datastore.prepare(query);
+    List<ProductSetEntity> results = new ArrayList<>();
+    for (Entity entity : pq.asIterable()) {
+      String productSetId = entity.getProperty("productSetId").toString();
+      String productSetDisplayName = entity.getProperty("productSetDisplayName").toString();
+
+      @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
+        List<String> searchHistory = (ArrayList<String>) entity.getProperty("productIds"); 
+
+      results.add(new ProductSetEntity(productSetId, productSetDisplayName, productIds));
+    }
+    return results;
   }
 }
