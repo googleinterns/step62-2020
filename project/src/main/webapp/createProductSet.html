@@ -39,33 +39,20 @@
       <main class="mdl-layout__content">
         <div class="page-content" id="content">
           <!-- Your content goes here -->
-          <h1>Create a Business Account</h1>
-          <form action="/createBusinessAccount" method="POST" >
-            <p>Business Name*</p> 
-            <div class="mdl-textfield mdl-js-textfield">
-              <input class="mdl-textfield__input" type="text" id="businessName" name="businessName" required>
-              <label class="mdl-textfield__label" for="businessName">JohnDoe42</label>
-            </div><br/><br/>
-            <p>Business Address*</p>
-            <div class="mdl-textfield mdl-js-textfield">
-              <input class="mdl-textfield__input" type="text" id="street" name="street" required>
-              <label class="mdl-textfield__label" for="street">Street</label>
-            </div>
-            <div class="mdl-textfield mdl-js-textfield">
-              <input class="mdl-textfield__input" type="text" id="city" name="city" required>
-              <label class="mdl-textfield__label" for="city">City</label>
-            </div><br/>
-            <div class="mdl-textfield mdl-js-textfield">
-              <input class="mdl-textfield__input" type="text" id="state" name="state" required>
-              <label class="mdl-textfield__label" for="state">State</label>
-            </div>
-            <div class="mdl-textfield mdl-js-textfield">
-              <input class="mdl-textfield__input" type="text" id="zipCode" name="zipCode" required>
-              <label class="mdl-textfield__label" for="zipCode">Zip Code</label>
-            </div>
+          <h1>Create a Product Set</h1>
+          <form action="/createProductSet" method="POST">
+            <p>Select from the drop down below or typing a new set.</p>
+            <input list="productSetList" name="productSetDisplayName" id="productSetDisplayName">
+            <datalist id="productSetList">
+              <option value="Edge">
+              <option value="Firefox">
+              <option value="Chrome">
+              <option value="Opera">
+              <option value="Safari">
+            </datalist>
             <br/><br/>
             <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
-              Create Account
+              Create Product Set!
             </button>
           </form>
         </div>
