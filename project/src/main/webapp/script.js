@@ -31,3 +31,15 @@ function retrieveAccountInfo() {
     document.getElementById("userGreeting").innerText = "Hello, " + account.nickname;
   });
 }
+
+function retrieveProductSetDisplayNames() {
+  fetch("/createProductSet").then(response => response.json()).then(names => {
+    const dropdownList = document.getElementById("productSetList");
+    names.forEach(name => {
+      let newOption = document.createElement("option");
+      newOption.value = name;
+      console.log(name);
+      dropdownList.appendChild(newOption);
+    });
+  });
+}

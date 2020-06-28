@@ -5,7 +5,7 @@ import java.util.List;
 public class ProductSetEntity {
 	private String productSetId;
 	private String productSetDisplayName;
-  private List<string> productIds;
+  private List<String> productIds;
 
   public ProductSetEntity(String productSetId, String productSetDisplayName, List<String> productIds) {
     this.productSetId = productSetId;

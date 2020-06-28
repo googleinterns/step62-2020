@@ -22,12 +22,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/createProductSet")
-public class CreateBusinessAccountServlet extends HttpServlet {
+public class CreateProductSetServlet extends HttpServlet {
 
   protected DatastoreService datastore;
   protected Gson gson;
 
-  public CreateBusinessAccountServlet() {
+  public CreateProductSetServlet() {
     super();
     datastore = DatastoreServiceFactory.getDatastoreService();
     gson = new Gson();
@@ -35,16 +35,18 @@ public class CreateBusinessAccountServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String productSetDisplayName = request.getParameter("productSet");
+    String productSetDisplayName = request.getParameter("productSetDisplayName");
     // Only add the product set if doesn't already exist in the database.
     Entity result = ServletLibrary.checkProductSetExists(datastore, productSetDisplayName);
     if (result == null) {
       String productSetId = ServletLibrary.generateUUID();
       Entity productSet = new Entity("ProductSet", productSetId);
-      productSetId.setProperty("productSetId", productSetId);
-      productSetId.setProperty("productSetDisplayName", productSetDisplayName);
+      productSet.setProperty("productSetId", productSetId);
+      productSet.setProperty("productSetDisplayName", productSetDisplayName);
       datastore.put(productSet);
     }
+
+    response.sendRedirect("/businessAccount.html");
   }
 
   @Override

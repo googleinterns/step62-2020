@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
   </head>
-  <body>
+  <body onload="retrieveProductSetDisplayNames()">
     <!-- Always shows a header, even in smaller screens. -->
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
       <header class="mdl-layout__header">
@@ -43,13 +43,8 @@
           <form action="/createProductSet" method="POST">
             <p>Select from the drop down below or typing a new set.</p>
             <input list="productSetList" name="productSetDisplayName" id="productSetDisplayName">
-            <datalist id="productSetList">
-              <option value="Edge">
-              <option value="Firefox">
-              <option value="Chrome">
-              <option value="Opera">
-              <option value="Safari">
-            </datalist>
+            <datalist id="productSetList"></datalist>
+            <!-- <option value="Edge"> -->
             <br/><br/>
             <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
               Create Product Set!
