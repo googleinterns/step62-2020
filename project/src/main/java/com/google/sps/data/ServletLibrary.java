@@ -73,7 +73,7 @@ public class ServletLibrary {
       String productSetDisplayName = entity.getProperty("productSetDisplayName").toString();
 
       @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
-        List<String> searchHistory = (ArrayList<String>) entity.getProperty("productIds"); 
+        List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
 
       results.add(new ProductSetEntity(productSetId, productSetDisplayName, productIds));
     }
