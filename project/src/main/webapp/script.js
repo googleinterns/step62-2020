@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Retrieves account information from the database to display in the account
+// dashboard of the user.
 function retrieveAccountInfo() {
   fetch("/account").then(response => {
     if (response.redirected) return;
@@ -32,6 +34,8 @@ function retrieveAccountInfo() {
   });
 }
 
+// Get the product set names from the database to have as options in the create
+// product set form.
 function retrieveProductSetDisplayNames() {
   fetch("/createProductSet").then(response => response.json()).then(names => {
     const dropdownList = document.getElementById("productSetList");
@@ -43,3 +47,12 @@ function retrieveProductSetDisplayNames() {
     });
   });
 }
+
+// Get the blobstore url to submit the image form to.
+function getBlobstoreUrl() {
+  fetch("/getBlobstoreUrl").then(response=> response.text()).then(url => url);
+  console.log(url);
+}
+
+// Fetch the cloud vision image annotation to auto fill the create product form
+// with labels.
