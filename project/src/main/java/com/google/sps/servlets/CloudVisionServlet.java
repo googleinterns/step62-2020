@@ -101,6 +101,7 @@ public class CloudVisionServlet extends HttpServlet {
     response.sendRedirect("/blogs/vision.jsp");
     // response.setContentType("application/json;");
     // response.getWriter().println(jsonResponse);
+    System.out.println("hello");
   }
 
   // Sends a request to the cloud vision api and retrieves the response.
