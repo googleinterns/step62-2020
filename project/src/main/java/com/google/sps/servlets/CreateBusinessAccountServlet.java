@@ -47,6 +47,10 @@ public class CreateBusinessAccountServlet extends HttpServlet {
     // Set business information.
     boolean isUserBusinessOwner = true;
     List<String> productIds = new ArrayList<>();
+    // This is used to store the cloud vision annotation of the most recent image
+    // that the account uploaded. 
+    String tempVisionAnnotation = null; 
+
     
     // check if account already exists, so we don't overwrite search history or
     // product ids. Null value indicates that account doesn't exist.
@@ -73,6 +77,7 @@ public class CreateBusinessAccountServlet extends HttpServlet {
     business.setProperty("state", state);
     business.setProperty("zipCode", zipCode);
     if (result == null) business.setProperty("productIds", productIds);
+    business.setProperty("tempVisionAnnotation", tempVisionAnnotation);
 
     // Store in datastore
     datastore.put(account);
