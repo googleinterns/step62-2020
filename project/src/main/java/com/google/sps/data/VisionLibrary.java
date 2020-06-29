@@ -65,7 +65,7 @@ public class VisionLibrary {
     return imageResponse;
   }
 
-  public static String formatImageResponse(AnnotateImageResponse imageResponse, BlobKey blobKey) {
+  public static String formatImageResponse(ImagesService imagesService, AnnotateImageResponse imageResponse, BlobKey blobKey) {
     // These are labels for the overall image based on what the vision api thinks.
     List<EntityAnnotation> labelAnnotations = imageResponse.getLabelAnnotationsList();
 
@@ -129,8 +129,8 @@ public class VisionLibrary {
       logosInImage.add(new ImageLabel(logo.getDescription(), logo.getScore()));
     }
 
-    String imageURL = getUploadedFileUrl(blobKey);
-    gson = new Gson();
+    String imageURL = getUploadedFileUrl(imagesService, blobKey);
+    Gson gson = new Gson();
     return gson.toJson(new CloudVisionAnnotation(imageURL,
                                                  cleanUpLabels(genericLabels),
                                                  cleanUpLabels(webLabels),

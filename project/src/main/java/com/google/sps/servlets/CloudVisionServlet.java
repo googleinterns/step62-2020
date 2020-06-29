@@ -54,7 +54,7 @@ import java.math.BigDecimal;
 public class CloudVisionServlet extends HttpServlet {
 
   protected Gson gson;
-  protected BlobstoreService blobstoreService;
+  protected BlobstoreService blobstore;
   protected ImagesService imagesService;
   protected List<Feature> allFeatures;
   protected DatastoreService datastore;
@@ -63,7 +63,7 @@ public class CloudVisionServlet extends HttpServlet {
   public CloudVisionServlet() {
     super();
     gson = new Gson();
-    blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+    blobstore = BlobstoreServiceFactory.getBlobstoreService();
     imagesService = ImagesServiceFactory.getImagesService();
     datastore = DatastoreServiceFactory.getDatastoreService();
     userService = UserServiceFactory.getUserService();
@@ -97,7 +97,7 @@ public class CloudVisionServlet extends HttpServlet {
     // that the client uploaded an image.
     byte[] blobBytes = VisionLibrary.getBlobBytes(blobstore, blobKey);
     AnnotateImageResponse imageResponse = VisionLibrary.handleCloudVisionRequest(blobBytes, allFeatures);
-    String tempVisionAnnotation = VisionLibrary.formatImageResponse(imageResponse, blobKey);
+    String tempVisionAnnotation = VisionLibrary.formatImageResponse(imagesService, imageResponse, blobKey);
 
     // Store the response in the business account.
     Entity business = new Entity("Business", userService.getCurrentUser().getUserId());

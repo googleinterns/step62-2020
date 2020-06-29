@@ -92,10 +92,10 @@ public class ServletLibrary {
     Filter filter = new FilterPredicate("businessId", FilterOperator.EQUAL, businessId);
     Query query = new Query("Business").setFilter(filter);
     PreparedQuery pq = datastore.prepare(query);
-    Entity result = pq.asSingleEntity();
+    Entity entity = pq.asSingleEntity();
     
     // Formatting entity into the business class
-    String businessDisplayNAme = entity.getProperty("businessDisplayName").toString();
+    String businessDisplayName = entity.getProperty("businessDisplayName").toString();
     String street = entity.getProperty("street").toString();
     String city = entity.getProperty("city").toString();
     String state = entity.getProperty("state").toString();
