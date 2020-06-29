@@ -46,6 +46,9 @@ public class CreateProductSetServlet extends HttpServlet {
       datastore.put(productSet);
     }
 
+    // Product search api function goes here.
+
+
     response.sendRedirect("/businessAccount.html");
   }
 
@@ -64,5 +67,4 @@ public class CreateProductSetServlet extends HttpServlet {
     response.setContentType("application/json;");
     response.getWriter().println(json);
   }
-
 }

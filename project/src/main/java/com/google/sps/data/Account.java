@@ -14,16 +14,16 @@ public class Account {
   private String state;
   private String zipCode;
 
-  Account(String userId,
-	        String logoutUrl,
-	        String nickname,
-	        String userEmail,
-	        boolean isUserBusinessOwner,
-	        List<String> searchHistory,
-	        String street,
-          String city,
-          String state,
-          String zipCode) {
+  public Account(String userId,
+                  String logoutUrl,
+                  String nickname,
+                  String userEmail,
+                  boolean isUserBusinessOwner,
+                  List<String> searchHistory,
+                  String street,
+                  String city,
+                  String state,
+                  String zipCode) {
     this.userId = userId;
     this.logoutUrl = logoutUrl;
     this.nickname = nickname;
