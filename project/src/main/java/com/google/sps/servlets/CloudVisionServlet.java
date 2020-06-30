@@ -81,7 +81,7 @@ public class CloudVisionServlet extends HttpServlet {
     // TODO: Retrieve the temporary vision annotation from the business account.
     Business business = ServletLibrary.retrieveBusinessInfo(datastore, userService.getCurrentUser().getUserId());
     String json = business.getTempVisionAnnotation();
-    // need to send labels as well.
+    // need to send labels as well. Hello just testing
     // Send the json of the cloud vision annotation over.
     response.setContentType("application/json;");
     response.getWriter().println(json);
