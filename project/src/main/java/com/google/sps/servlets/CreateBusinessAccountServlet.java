@@ -35,23 +35,8 @@ public class CreateBusinessAccountServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-    // Get required user information.
+    // Get required userId.
     String userId = userService.getCurrentUser().getUserId();
-    String userEmail = userService.getCurrentUser().getEmail();
-    String businessName = request.getParameter("businessName"); 
-    String street = request.getParameter("street");
-    String city = request.getParameter("city");
-    String state = request.getParameter("state");
-    String zipCode = request.getParameter("zipCode");
-    List<String> searchHistory = new ArrayList<>(); // no search history initially
-
-    // Set business information.
-    boolean isUserBusinessOwner = true;
-    List<String> productIds = new ArrayList<>();
-    // This is used to store the cloud vision annotation of the most recent image
-    // that the account uploaded. 
-    Text tempVisionAnnotation = null; 
-
     
     // check if account already exists, so we don't overwrite search history or
     // product ids. Null value indicates that account doesn't exist.
@@ -61,32 +46,33 @@ public class CreateBusinessAccountServlet extends HttpServlet {
     // Create account entity object that will be stored.
     Entity newAccount = new Entity("Account", userId);
     newAccount.setProperty("userId", userId);
-    newAccount.setProperty("userEmail", userEmail);
-    newAccount.setProperty("nickname", businessName);
-    newAccount.setProperty("street", street);
-    newAccount.setProperty("city", city);
-    newAccount.setProperty("state", state);
-    newAccount.setProperty("zipCode", zipCode);
+    newAccount.setProperty("userEmail", userService.getCurrentUser().getEmail());
+    newAccount.setProperty("nickname", request.getParameter("businessName"));
+    newAccount.setProperty("street", request.getParameter("street"));
+    newAccount.setProperty("city", request.getParameter("city"));
+    newAccount.setProperty("state", request.getParameter("state"));
+    newAccount.setProperty("zipCode", request.getParameter("zipCode"));
     if (account == null) {
-      newAccount.setProperty("searchHistory", searchHistory);
+      newAccount.setProperty("searchHistory", new ArrayList<String>());
     } else {
       newAccount.setProperty("searchHistory", account.getSearchHistory());
     }
-    newAccount.setProperty("isUserBusinessOwner", isUserBusinessOwner);
+    newAccount.setProperty("isUserBusinessOwner", true);
 
     // Set up business information to be stored.
     Entity newBusiness = new Entity("Business", userId);
     newBusiness.setProperty("businessId", userId); // Using user id as business id.
-    newBusiness.setProperty("businessDisplayName", businessName);
-    newBusiness.setProperty("street", street);
-    newBusiness.setProperty("city", city);
-    newBusiness.setProperty("state", state);
-    newBusiness.setProperty("zipCode", zipCode);
+    newBusiness.setProperty("businessDisplayName", request.getParameter("businessName"));
+    newBusiness.setProperty("street", request.getParameter("street"));
+    newBusiness.setProperty("city", request.getParameter("city"));
+    newBusiness.setProperty("state", request.getParameter("state"));
+    newBusiness.setProperty("zipCode", request.getParameter("zipCode"));
     if (business == null) {
-      newBusiness.setProperty("productIds", productIds);
+      newBusiness.setProperty("productIds", new ArrayList<String>());
     } else {
       newBusiness.setProperty("productIds", business.getProductIds());
     }
+    Text tempVisionAnnotation = null; // Need to declare type for datastore to know.
     newBusiness.setProperty("tempVisionAnnotation", tempVisionAnnotation);
 
     // Store in datastore

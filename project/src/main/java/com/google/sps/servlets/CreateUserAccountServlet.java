@@ -33,18 +33,8 @@ public class CreateUserAccountServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // Get required user information.
+    // Get required userId.
     String userId = userService.getCurrentUser().getUserId();
-    String userEmail = userService.getCurrentUser().getEmail();
-    String nickname = request.getParameter("nickname"); 
-    String street = request.getParameter("street");
-    String city = request.getParameter("city");
-    String state = request.getParameter("state");
-    String zipCode = request.getParameter("zipCode");
-    List<String> searchHistory = new ArrayList<>(); // no search history initially
-
-    // Set business information to defaults (as this is not a business).
-    boolean isUserBusinessOwner = false;
 
     // check if account already exists, so we don't overwrite search history or
     // product ids. Null value indicates that account doesn't exist.
@@ -53,18 +43,18 @@ public class CreateUserAccountServlet extends HttpServlet {
     // Create entity object that will be stored
     Entity newAccount = new Entity("Account", userId);
     newAccount.setProperty("userId", userId);
-    newAccount.setProperty("userEmail", userEmail);
-    newAccount.setProperty("nickname", nickname);
-    newAccount.setProperty("street", street);
-    newAccount.setProperty("city", city);
-    newAccount.setProperty("state", state);
-    newAccount.setProperty("zipCode", zipCode);
+    newAccount.setProperty("userEmail", userService.getCurrentUser().getEmail());
+    newAccount.setProperty("nickname", request.getParameter("nickname"));
+    newAccount.setProperty("street", request.getParameter("street"));
+    newAccount.setProperty("city", request.getParameter("city"));
+    newAccount.setProperty("state", request.getParameter("state"));
+    newAccount.setProperty("zipCode", request.getParameter("zipCode"));
     if (account == null) {
-      newAccount.setProperty("searchHistory", searchHistory);
+      newAccount.setProperty("searchHistory", new ArrayList<String>());
     } else {
       newAccount.setProperty("searchHistory", account.getSearchHistory());
     }
-    newAccount.setProperty("isUserBusinessOwner", isUserBusinessOwner);
+    newAccount.setProperty("isUserBusinessOwner", false);
 
     // Store in datastore
     datastore.put(newAccount);
