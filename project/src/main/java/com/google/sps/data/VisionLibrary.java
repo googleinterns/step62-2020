@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Date;
 import java.awt.Color;
+import java.util.stream.Collectors;  
 
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
@@ -65,7 +66,7 @@ public class VisionLibrary {
     return imageResponse;
   }
 
-  public static String formatImageResponse(ImagesService imagesService, AnnotateImageResponse imageResponse, BlobKey blobKey) {
+  public static String formatImageResponse(ImagesService imagesService, Gson gson, AnnotateImageResponse imageResponse, BlobKey blobKey) {
     // These are labels for the overall image based on what the vision api thinks.
     List<EntityAnnotation> labelAnnotations = imageResponse.getLabelAnnotationsList();
 
@@ -130,7 +131,6 @@ public class VisionLibrary {
     }
 
     String imageURL = getUploadedFileUrl(imagesService, blobKey);
-    Gson gson = new Gson();
     return gson.toJson(new CloudVisionAnnotation(imageURL,
                                                  cleanUpLabels(genericLabels),
                                                  cleanUpLabels(webLabels),
@@ -154,6 +154,48 @@ public class VisionLibrary {
       seen.add(description);
     }
     return cleanedList;
+  }
+
+  // extracts labels and description from a cloud vision annotation, returning
+  // it as a json.
+  public static String extractLabels(Gson gson, String tempVisionAnnotation) {
+    // Get all components form the annotation.
+    CloudVisionAnnotation annotation = gson.fromJson(tempVisionAnnotation, CloudVisionAnnotation.class);
+    List<ImageLabel> genericLabels = annotation.getGenericLabels();
+    List<ImageLabel>  webLabels = annotation.getWebLabels();
+    // Temporarily convert webBestLabels to an Image label class so it is easy
+    // to merge with the others.
+    List<ImageLabel> webBestLabels = annotation.getWebBestLabels()
+                                               .stream()
+                                               .map(elem -> new ImageLabel(elem, 0.0f))
+                                               .collect(Collectors.toList());
+    List<String> getTextInImage = annotation.getTextInImage();
+    List<ImageLabel> dominantColors = annotation.getDominantColors();
+    List<ImageLabel> objectsInImage = annotation.getObjectsInImage();
+    List<ImageLabel> logosInImage = annotation.getLogosInImage();
+
+    // Add all labels to one big list and remove duplicates.
+    List<ImageLabel> mergedList = new ArrayList<>();
+    mergedList.addAll(genericLabels);
+    mergedList.addAll(webLabels);
+    mergedList.addAll(webBestLabels);
+    mergedList.addAll(dominantColors);
+    mergedList.addAll(objectsInImage);
+    mergedList.addAll(logosInImage);
+    List<ImageLabel> cleanedList = cleanUpLabels(mergedList);
+
+    // Get only the string component of each label, not the score.
+    List<String> labels = cleanedList.stream()
+                                     .map(elem->elem.getDescription())
+                                     .collect(Collectors.toList());
+    
+    // Get the description from the OCR. We only get the first item because
+    // the vision api makes the first element of the list a string concatenation
+    // of all the text it finds.
+    String description = null;
+    if (!textInImage.isEmpty()) description = textInImage.get(0);
+
+    return gson.toJson(new ProductFormInfo(annotation, labels, description));
   }
 
   /**

@@ -78,10 +78,14 @@ public class CloudVisionServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // TODO: Retrieve the temporary vision annotation from the business account.
+    // Retrieve the temporary vision annotation from the business account.
     Business business = ServletLibrary.retrieveBusinessInfo(datastore, userService.getCurrentUser().getUserId());
-    String json = business.getTempVisionAnnotation();
-    // need to send labels as well. Hello just testing
+    String tempVisionAnnotation = business.getTempVisionAnnotation();
+
+    // Extract labels and description from the cloud vision annotation, formatted
+    // as a json. 
+    String json = VisionLibrary.extractLabels(gson, tempVisionAnnotation);
+
     // Send the json of the cloud vision annotation over.
     response.setContentType("application/json;");
     response.getWriter().println(json);
@@ -97,7 +101,7 @@ public class CloudVisionServlet extends HttpServlet {
     // that the client uploaded an image.
     byte[] blobBytes = VisionLibrary.getBlobBytes(blobstore, blobKey);
     AnnotateImageResponse imageResponse = VisionLibrary.handleCloudVisionRequest(blobBytes, allFeatures);
-    String tempVisionAnnotation = VisionLibrary.formatImageResponse(imagesService, imageResponse, blobKey);
+    String tempVisionAnnotation = VisionLibrary.formatImageResponse(imagesService, gson, imageResponse, blobKey);
 
     // Store the response in the business account.
     Entity business = new Entity("Business", userService.getCurrentUser().getUserId());

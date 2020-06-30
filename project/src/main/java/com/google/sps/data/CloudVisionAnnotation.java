@@ -32,4 +32,36 @@ public class CloudVisionAnnotation {
     this.objectsInImage = objectsInImage;
     this.logosInImage = logosInImage;
   }
+
+  public List<ImageLabel> getGenericLabels() {
+    return genericLabels;
+  }
+
+  public List<ImageLabel> getWebLabels() {
+    return webLabels;
+  }
+
+  public List<String> getWebBestLabels() {
+    return webBestLabels;
+  }
+
+  public List<String> getWebUrls() {
+    return webUrls;
+  }
+
+  public List<String> getTextInImage() {
+    return textInImage;
+  }
+
+  public List<ImageLabel> getDominantColors() {
+    return dominantColors;
+  }  
+
+  public List<ImageLabel> getObjectsInImage() {
+    return objectsInImage;
+  }
+
+  public List<ImageLabel> getLogosInImage() {
+    return logosInImage;
+  }
 }
