@@ -8,11 +8,12 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Text;
 
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
-import com.google.sps.data.ServletLibrary;
+import com.google.sps.data.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,39 +50,48 @@ public class CreateBusinessAccountServlet extends HttpServlet {
     List<String> productIds = new ArrayList<>();
     // This is used to store the cloud vision annotation of the most recent image
     // that the account uploaded. 
-    String tempVisionAnnotation = null; 
+    Text tempVisionAnnotation = null; 
 
     
     // check if account already exists, so we don't overwrite search history or
     // product ids. Null value indicates that account doesn't exist.
-    Entity result = ServletLibrary.checkAccountIsRegistered(datastore, userId);
+    Account account = ServletLibrary.retrieveAccountInfo(datastore, userService, userId);
+    Business business = ServletLibrary.retrieveBusinessInfo(datastore, userId);
 
     // Create account entity object that will be stored.
-    Entity account = new Entity("Account", userId);
-    account.setProperty("userId", userId);
-    account.setProperty("userEmail", userEmail);
-    account.setProperty("nickname", businessName);
-    account.setProperty("street", street);
-    account.setProperty("city", city);
-    account.setProperty("state", state);
-    account.setProperty("zipCode", zipCode);
-    if (result == null) account.setProperty("searchHistory", searchHistory);
-    account.setProperty("isUserBusinessOwner", isUserBusinessOwner);
+    Entity newAccount = new Entity("Account", userId);
+    newAccount.setProperty("userId", userId);
+    newAccount.setProperty("userEmail", userEmail);
+    newAccount.setProperty("nickname", businessName);
+    newAccount.setProperty("street", street);
+    newAccount.setProperty("city", city);
+    newAccount.setProperty("state", state);
+    newAccount.setProperty("zipCode", zipCode);
+    if (account == null) {
+      newAccount.setProperty("searchHistory", searchHistory);
+    } else {
+      newAccount.setProperty("searchHistory", account.getSearchHistory());
+    }
+    newAccount.setProperty("isUserBusinessOwner", isUserBusinessOwner);
 
     // Set up business information to be stored.
-    Entity business = new Entity("Business", userId);
-    business.setProperty("businessId", userId); // Using user id as business id.
-    business.setProperty("businessDisplayName", businessName);
-    business.setProperty("street", street);
-    business.setProperty("city", city);
-    business.setProperty("state", state);
-    business.setProperty("zipCode", zipCode);
-    if (result == null) business.setProperty("productIds", productIds);
-    business.setProperty("tempVisionAnnotation", tempVisionAnnotation);
+    Entity newBusiness = new Entity("Business", userId);
+    newBusiness.setProperty("businessId", userId); // Using user id as business id.
+    newBusiness.setProperty("businessDisplayName", businessName);
+    newBusiness.setProperty("street", street);
+    newBusiness.setProperty("city", city);
+    newBusiness.setProperty("state", state);
+    newBusiness.setProperty("zipCode", zipCode);
+    if (business == null) {
+      newBusiness.setProperty("productIds", productIds);
+    } else {
+      newBusiness.setProperty("productIds", business.getProductIds());
+    }
+    newBusiness.setProperty("tempVisionAnnotation", tempVisionAnnotation);
 
     // Store in datastore
-    datastore.put(account);
-    datastore.put(business);
+    datastore.put(newAccount);
+    datastore.put(newBusiness);
 
     // Redirect to account page
     response.sendRedirect("/login");

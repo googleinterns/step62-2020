@@ -12,7 +12,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
-import com.google.sps.data.ServletLibrary;
+import com.google.sps.data.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,8 +41,6 @@ public class CreateUserAccountServlet extends HttpServlet {
     String city = request.getParameter("city");
     String state = request.getParameter("state");
     String zipCode = request.getParameter("zipCode");
-    // TODO: prevent from always clearing the history. Need to check if the accoutn
-    // already exists before deciding whether or not to clear history.
     List<String> searchHistory = new ArrayList<>(); // no search history initially
 
     // Set business information to defaults (as this is not a business).
@@ -50,22 +48,26 @@ public class CreateUserAccountServlet extends HttpServlet {
 
     // check if account already exists, so we don't overwrite search history or
     // product ids. Null value indicates that account doesn't exist.
-    Entity result = ServletLibrary.checkAccountIsRegistered(datastore, userId);
+    Account account = ServletLibrary.retrieveAccountInfo(datastore, userService, userId);
     
     // Create entity object that will be stored
-    Entity account = new Entity("Account", userId);
-    account.setProperty("userId", userId);
-    account.setProperty("userEmail", userEmail);
-    account.setProperty("nickname", nickname);
-    account.setProperty("street", street);
-    account.setProperty("city", city);
-    account.setProperty("state", state);
-    account.setProperty("zipCode", zipCode);
-    if (result == null) account.setProperty("searchHistory", searchHistory);
-    account.setProperty("isUserBusinessOwner", isUserBusinessOwner);
+    Entity newAccount = new Entity("Account", userId);
+    newAccount.setProperty("userId", userId);
+    newAccount.setProperty("userEmail", userEmail);
+    newAccount.setProperty("nickname", nickname);
+    newAccount.setProperty("street", street);
+    newAccount.setProperty("city", city);
+    newAccount.setProperty("state", state);
+    newAccount.setProperty("zipCode", zipCode);
+    if (account == null) {
+      newAccount.setProperty("searchHistory", searchHistory);
+    } else {
+      newAccount.setProperty("searchHistory", account.getSearchHistory());
+    }
+    newAccount.setProperty("isUserBusinessOwner", isUserBusinessOwner);
 
     // Store in datastore
-    datastore.put(account);
+    datastore.put(newAccount);
 
     // Redirect to account page
     response.sendRedirect("/login");

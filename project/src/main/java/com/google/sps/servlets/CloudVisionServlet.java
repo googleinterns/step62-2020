@@ -12,6 +12,7 @@ import com.google.sps.data.*;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
@@ -81,6 +82,13 @@ public class CloudVisionServlet extends HttpServlet {
     // Retrieve the temporary vision annotation from the business account.
     Business business = ServletLibrary.retrieveBusinessInfo(datastore, userService.getCurrentUser().getUserId());
     String tempVisionAnnotation = business.getTempVisionAnnotation();
+    // If there is nothing stored, simply return null.
+    if (tempVisionAnnotation == null) {
+      String json = null;
+      response.setContentType("application/json;");
+      response.getWriter().println(json);
+      return;
+    }
 
     // Extract labels and description from the cloud vision annotation, formatted
     // as a json. 
@@ -89,6 +97,9 @@ public class CloudVisionServlet extends HttpServlet {
     // Send the json of the cloud vision annotation over.
     response.setContentType("application/json;");
     response.getWriter().println(json);
+
+    // TODO: set the tempVisionAnnotation to null once it has been sent out, so
+    // that future products that are added start off with a blank form.
   }
 
   @Override
@@ -103,10 +114,20 @@ public class CloudVisionServlet extends HttpServlet {
     AnnotateImageResponse imageResponse = VisionLibrary.handleCloudVisionRequest(blobBytes, allFeatures);
     String tempVisionAnnotation = VisionLibrary.formatImageResponse(imagesService, gson, imageResponse, blobKey);
 
-    // Store the response in the business account.
-    Entity business = new Entity("Business", userService.getCurrentUser().getUserId());
-    business.setProperty("tempVisionAnnotation", tempVisionAnnotation);
-    datastore.put(business);
+    // Store the response in the business account, and using already existing
+    // information to prevent datastore overwriting the old data.
+    String userId = userService.getCurrentUser().getUserId();
+    Business business = ServletLibrary.retrieveBusinessInfo(datastore, userId);
+    Entity updatedBusiness = new Entity("Business", userId);
+    updatedBusiness.setProperty("businessId", business.getBusinessId());
+    updatedBusiness.setProperty("businessDisplayName", business.getBusinessDisplayName());
+    updatedBusiness.setProperty("street", business.getStreet());
+    updatedBusiness.setProperty("city", business.getCity());
+    updatedBusiness.setProperty("state", business.getState());
+    updatedBusiness.setProperty("zipCode", business.getZipCode());
+    updatedBusiness.setProperty("productIds", business.getProductIds());
+    updatedBusiness.setProperty("tempVisionAnnotation", new Text(tempVisionAnnotation));
+    datastore.put(updatedBusiness);
 
     // Redirect to the create product form. 
     response.sendRedirect("/createProduct.html");

@@ -35,4 +35,12 @@ public class Account {
     this.state = state;
     this.zipCode = zipCode;
   }
+
+  public List<String> getSearchHistory() {
+    return searchHistory;
+  }
+
+  public boolean getIsUserBusinessOwner() {
+    return isUserBusinessOwner;
+  }
 }

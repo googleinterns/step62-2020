@@ -12,7 +12,7 @@
     <script src="https://raw.githack.com/sabieber/token-autocomplete/master/built/token-autocomplete.js"></script>
     <link href="https://raw.githack.com/sabieber/token-autocomplete/master/lib/token-autocomplete.css" rel="stylesheet" type="text/css" media="all">
   </head>
-  <body >
+  <body onload="refreshCreateProductForm()">
     <!-- Always shows a header, even in smaller screens. -->
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
       <header class="mdl-layout__header">
@@ -43,7 +43,7 @@
         <div class="page-content" id="content">
           <!-- Your content goes here -->
           <h1>Create a Product</h1>
-          <form method="POST">
+          <form id="analyzeImageForm" class="hidden" method="POST" enctype="multipart/form-data">
             <p>
               Upload a photo of your product here so we can automatically
               generate labels for it. Please try to take a picture where the 
@@ -54,17 +54,35 @@
               Analyze Image!
             </button>
           </form> 
-          <br/><br/>
-          <p>
-            Here is the photo that you uploaded. Feel free to retake and 
-            submit the photo again!
-          </p>
-          <div id="input image"></div>
-          <br/><br/>
+          <div id="inputImage"></div>
           <form action="/createProduct" method="POST">
-            <p>Hello there.</p>
-            
-           
+            <h4>Product Name</h4>
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input class="mdl-textfield__input" type="text" id="productDisplayName" name="productDisplayName">
+              <label class="mdl-textfield__label" for="productDisplayName">Product Name</label>
+            </div>
+            <h4>Product Category</h4>
+            <select name="productCategory" id="productCategory">
+              <option value="homegoods-v2" selected>Home Goods</option>
+              <option value="apparel-v2">Apparel</option>
+              <option value="toys-v2">Toys</option>
+              <option value="packagedgoods-v1">Packaged Goods</option>
+              <option value="general-v1">General</option>
+            </select>
+            <br/><br/>
+            <h4>Product Set<h4>
+            <input list="productSetList" name="productSetDisplayName" id="productSetDisplayName">
+            <datalist id="productSetList"></datalist>
+            <h4>Upload more images (optional)</h4>
+            <input type="file" name="images[]" id="images[]" accept="image/*" multiple>
+            <br/><br/>
+            <h4>Labels/Tags:</h4>
+            <div id="labelsBox"></div>
+            <br/><br/>
+            <h4>Product Description:</h4>
+            <div class="mdl-textfield mdl-js-textfield">
+              <textarea class="mdl-textfield__input" type="text" rows= "4" id="productDescription" name="productDescription"></textarea>
+            </div>
             <br/><br/>
             <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
               Create Product!

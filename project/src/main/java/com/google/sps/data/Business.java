@@ -30,6 +30,34 @@ public class Business {
     this.tempVisionAnnotation = tempVisionAnnotation;
   }
 
+  public String getBusinessId() {
+    return businessId;
+  }
+
+  public String getBusinessDisplayName() {
+    return businessDisplayName;
+  }
+
+  public String getStreet() {
+    return street;
+  }
+
+  public String getCity() {
+    return city;
+  }
+
+  public String getState() {
+    return state;
+  }
+
+  public String getZipCode() {
+    return zipCode;
+  }
+
+  public List<String> getProductIds() {
+    return productIds;
+  }
+
   public String getTempVisionAnnotation() {
     return tempVisionAnnotation;
   }

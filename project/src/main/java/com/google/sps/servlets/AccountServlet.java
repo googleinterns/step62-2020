@@ -42,10 +42,9 @@ public class AccountServlet extends HttpServlet {
     // First check if the user is logged in, otherwise redirect to google login page.
     if (userService.isUserLoggedIn()) {
       // Next check if the account is registered in the database, otherwise go to account creation.
-      Entity result = ServletLibrary.checkAccountIsRegistered(datastore, userService.getCurrentUser().getUserId());
-      if (result != null) {
+      Account account = ServletLibrary.retrieveAccountInfo(datastore, userService, userService.getCurrentUser().getUserId());
+      if (account != null) {
         // Retrieve all account information.
-        Account account = ServletLibrary.retrieveAccountInfo(result, userService);
         String json = gson.toJson(account);
         response.setContentType("application/json;");
         response.getWriter().println(json);

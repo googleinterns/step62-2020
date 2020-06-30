@@ -42,7 +42,6 @@ function retrieveProductSetDisplayNames() {
     names.forEach(name => {
       let newOption = document.createElement("option");
       newOption.value = name;
-      console.log(name);
       dropdownList.appendChild(newOption);
     });
   });
@@ -50,9 +49,49 @@ function retrieveProductSetDisplayNames() {
 
 // Get the blobstore url to submit the image form to.
 function getBlobstoreUrl() {
-  fetch("/getBlobstoreUrl").then(response=> response.text()).then(url => url);
-  console.log(url);
+  fetch("/getBlobstoreUrl").then(response=> response.text()).then(url => {
+    const myForm = document.getElementById("analyzeImageForm");
+    myForm.action = url;
+    myForm.classList.remove("hidden");
+  });
+  
 }
 
 // Fetch the cloud vision image annotation to auto fill the create product form
 // with labels.
+// TODO: add a loading animation when retrieving the json.
+function retrieveProductFromInfo() {
+  fetch("/cloudVision").then(response => response.json()).then(productInfo => {
+    console.log(productInfo);
+    // Set up input image display box.
+    const imageBox = document.getElementById("inputImage");
+    const imageText = document.createElement('h4');
+    imageText.innerText = "No image has been uploaded yet.";
+    const imageUrl = document.createElement('img');
+    if (productInfo != null) {
+      imageText.innerText = "Image that you uploaded:"
+      imageUrl.src = productInfo.annotation.imageURL;
+      imageUrl.width = 300;
+    }
+    imageBox.appendChild(imageText);
+    // If there is no product yet, return and don't attempt to autofill the form.
+    if (productInfo == null) return;
+    imageBox.appendChild(imageUrl);
+
+    // Fill the tags and description based on the cloud vision annotation.
+    let formattedLabels = [];
+    productInfo.labels.forEach(label => formattedLabels.push({value:label, text:label}));
+    const tokenAutocomplete = new TokenAutocomplete({
+                name: 'labels',
+                selector: '#labelsBox',
+                initialTokens: formattedLabels});
+    const descriptionBox = document.getElementById("productDescription");
+    descriptionBox.innerText = productInfo.description;
+  });
+}
+
+function refreshCreateProductForm() {
+  getBlobstoreUrl();
+  retrieveProductSetDisplayNames();
+  retrieveProductFromInfo();
+}

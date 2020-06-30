@@ -143,11 +143,13 @@ public class VisionLibrary {
   }
 
   // This cleans up a imageLabel list by removing duplicates and blank labels.
+  // Also remove labels with a score of less than 40% (this can be adjusted later)
   public static List<ImageLabel> cleanUpLabels(List<ImageLabel> labels) {
     List<ImageLabel> cleanedList = new ArrayList<>();
     Set<String> seen = new HashSet<>();
     for (ImageLabel label : labels) {
-      String description = label.getDescription();
+      String description = label.getDescription().toLowerCase();
+      if (label.getScore() < 0.4f) continue;
       if (seen.contains(description)) continue;
       if (description.isEmpty()) continue;
       cleanedList.add(label);
@@ -169,7 +171,7 @@ public class VisionLibrary {
                                                .stream()
                                                .map(elem -> new ImageLabel(elem, 0.0f))
                                                .collect(Collectors.toList());
-    List<String> getTextInImage = annotation.getTextInImage();
+    List<String> textInImage = annotation.getTextInImage();
     List<ImageLabel> dominantColors = annotation.getDominantColors();
     List<ImageLabel> objectsInImage = annotation.getObjectsInImage();
     List<ImageLabel> logosInImage = annotation.getLogosInImage();
@@ -192,7 +194,7 @@ public class VisionLibrary {
     // Get the description from the OCR. We only get the first item because
     // the vision api makes the first element of the list a string concatenation
     // of all the text it finds.
-    String description = null;
+    String description = "";
     if (!textInImage.isEmpty()) description = textInImage.get(0);
 
     return gson.toJson(new ProductFormInfo(annotation, labels, description));
@@ -286,7 +288,6 @@ public class VisionLibrary {
     }
 
     return getNearestColorString(nearestColor);
-    // return nearestColor.toString();
   }
 
   // https://stackoverflow.com/questions/6334311/whats-the-best-way-to-round-a-color-object-to-the-nearest-color-constant

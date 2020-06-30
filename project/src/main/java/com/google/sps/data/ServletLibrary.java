@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
@@ -22,15 +23,6 @@ public class ServletLibrary {
     return UUID.randomUUID().toString();
   }
 
-  // Checks database to see if account exists, if it does, returns the entitu from datastore.
-  public static Entity checkAccountIsRegistered(DatastoreService datastore, String userId) {
-    Filter filter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);
-    Query query = new Query("Account").setFilter(filter);
-    PreparedQuery pq = datastore.prepare(query);
-    Entity result = pq.asSingleEntity();
-    return result;
-  }
-
   // Checks database to see if product set exists, if it does, returns the entity.
   public static Entity checkProductSetExists(DatastoreService datastore, String productSetDisplayName) {
     Filter filter = new FilterPredicate("productSetDisplayName", FilterOperator.EQUAL, productSetDisplayName);
@@ -40,9 +32,16 @@ public class ServletLibrary {
     return result;
   }
 
-  // Formats an account entity object from datastore into an account class.
-  public static Account retrieveAccountInfo(Entity entity, UserService userService) {
-    String userId = entity.getProperty("userId").toString();
+  // Returns an Account object with all the information that is stored in datstore.
+  // If the account is not in datastore, returns null.
+  public static Account retrieveAccountInfo(DatastoreService datastore, UserService userService, String userId) {
+    Filter filter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);
+    Query query = new Query("Account").setFilter(filter);
+    PreparedQuery pq = datastore.prepare(query);
+    Entity entity = pq.asSingleEntity();
+
+    if (entity == null) return null;
+
     String logoutUrl = userService.createLogoutURL("/index.html");
     String nickname = entity.getProperty("nickname").toString();
     String userEmail = entity.getProperty("userEmail").toString();
@@ -94,6 +93,9 @@ public class ServletLibrary {
     PreparedQuery pq = datastore.prepare(query);
     Entity entity = pq.asSingleEntity();
     
+    // If there is no business account, simply return null.
+    if (entity == null) return null;
+
     // Formatting entity into the business class
     String businessDisplayName = entity.getProperty("businessDisplayName").toString();
     String street = entity.getProperty("street").toString();
@@ -102,7 +104,11 @@ public class ServletLibrary {
     String zipCode = entity.getProperty("zipCode").toString();
     @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
       List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
-    String tempVisionAnnotation = entity.getProperty("tempVisionAnnotation").toString();
+    String tempVisionAnnotation = null;
+    Text annotationObject = (Text) entity.getProperty("tempVisionAnnotation");
+    if (annotationObject != null) {
+      tempVisionAnnotation = annotationObject.getValue();
+    }
 
     return new Business(businessId,
                         businessDisplayName,
