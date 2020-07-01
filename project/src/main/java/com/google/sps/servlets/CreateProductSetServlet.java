@@ -9,32 +9,23 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
- 
-import com.google.appengine.api.users.UserService;
-import com.google.appengine.api.users.UserServiceFactory;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
- 
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.SortDirection;
- 
-import com.google.appengine.api.datastore.Entity;
+
+import com.google.sps.data.ServletsLibrary;
  
  
  
-@WebServlet("/product-catalog")
-public class ProductCatalogServlet extends HttpServlet {
+@WebServlet("/product-set")
+public class CreateProductSetServlet extends HttpServlet {
  
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String projectId = request.getParameter("project-id");
-    String computeRegion = request.getParameter("compute-region");
+    String projectId = "cloudberry-step-2020";
+    String computeRegion = "us-east1";
     String productSetId = request.getParameter("product-set-id");
     String productSetDisplay = request.getParameter("product-set-display");
  
-    createProductSet(projectId, computeRegion, productSetId, productSetDisplay);
+    ServletsLibrary.createProductSet(projectId, computeRegion, productSetId, productSetDisplay);
     
-    response.sendRedirect("/create-product-set.html");
+    response.sendRedirect("/index.html");
   }
  
   public static void createProductSet(

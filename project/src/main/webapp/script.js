@@ -12,17 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/**
- * Adds a random greeting to the page.
- */
-function addRandomGreeting() {
-  const greetings =
-      ['Hello world!', '¡Hola Mundo!', '你好，世界！', 'Bonjour le monde!'];
+function loadProductSets() {
 
-  // Pick a random greeting.
-  const greeting = greetings[Math.floor(Math.random() * greetings.length)];
-
-  // Add it to the page.
-  const greetingContainer = document.getElementById('greeting-container');
-  greetingContainer.innerText = greeting;
+  fetch("/product-list").then(response => response.json()).then((productSets) => {
+    console.log(productSets);
+    const setListElement = document.getElementById("product-set-list");
+    setListElement.innerHTML = "";
+    
+ 
+    productSets.forEach((productSet) => {  
+      setListElement.appendChild(createProductSetElement(productSet));
+      setListElement.appendChild(document.createElement("br"));
+    })
+  });
 }
+
+
+function createProductSetElement(productSet) {
+  const linebreak = document.createElement("br");
+
+  const productSetElement = document.createElement("li");
+  productSetElement.className = "productSet";
+
+  const titleElement = document.createElement("span");
+  titleElement.innerText = productSet.setId+": "+productSet.setName;
+
+  productSetElement.appendChild(titleElement);
+  productSetElement.appendChild(linebreak);
+
+  return productSetElement;
+}
+

@@ -7,7 +7,7 @@ import java.util.*;
  
 import java.io.IOException;
 
-public class ServletLibrary{
+public class ServletsLibrary{
 
 
 
@@ -34,6 +34,9 @@ public class ServletLibrary{
 
         Productset productset = new Productset(productSet.getName().substring(productSet.getName().lastIndexOf('/') + 1),
                                     productSet.getDisplayName());
+        // The set id of a product set is the last directory of a file path and to get this file path
+        // the index of the last backslash symbol is determined and a substring from the index to the end of the file path is made
+        // to get the set id of a product set.
         productsets.add(productset);
         }
     }
