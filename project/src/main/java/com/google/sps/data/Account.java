@@ -3,13 +3,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Account {
-	private String userId;
-	private String logoutUrl; 
-	private String nickname;
-	private String userEmail;
-	private boolean isUserBusinessOwner;
-	private List<String> searchHistory; 
-	private String street;
+  private String userId;
+  private String logoutUrl; 
+  private String nickname;
+  private String userEmail;
+  private boolean isUserBusinessOwner;
+  private List<String> searchHistory; 
+  private String street;
   private String city;
   private String state;
   private String zipCode;

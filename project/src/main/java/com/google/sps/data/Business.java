@@ -3,9 +3,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Business {
-	private String businessId;
+  private String businessId;
   private String businessDisplayName;
-	private String street;
+  private String street;
   private String city;
   private String state;
   private String zipCode;
