@@ -15,15 +15,15 @@ public class Account {
   private String zipCode;
 
   public Account(String userId,
-                  String logoutUrl,
-                  String nickname,
-                  String userEmail,
-                  boolean isUserBusinessOwner,
-                  List<String> searchHistory,
-                  String street,
-                  String city,
-                  String state,
-                  String zipCode) {
+                 String logoutUrl,
+                 String nickname,
+                 String userEmail,
+                 boolean isUserBusinessOwner,
+                 List<String> searchHistory,
+                 String street,
+                 String city,
+                 String state,
+                 String zipCode) {
     this.userId = userId;
     this.logoutUrl = logoutUrl;
     this.nickname = nickname;

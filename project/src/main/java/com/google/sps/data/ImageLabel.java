@@ -9,6 +9,21 @@ public class ImageLabel {
     this.score = score;
   }
 
+  // we only really care about the description when comparing two given labels.
+  @Override
+  public int hashCode() {
+    return description.hashCode();
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
+    ImageLabel other = (ImageLabel) obj;
+    if (description.equals(other.getDescription())) return true;
+    return false;
+  }
+
   public String getDescription() {
     return description;
   }

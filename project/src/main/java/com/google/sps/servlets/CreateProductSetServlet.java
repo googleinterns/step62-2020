@@ -37,7 +37,8 @@ public class CreateProductSetServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String productSetDisplayName = request.getParameter("productSetDisplayName");
     // Only add the product set if doesn't already exist in the database.
-    Entity result = ServletLibrary.checkProductSetExists(datastore, productSetDisplayName);
+    // Third parameter indicates that we are searching using the display name instead of the product set id. 
+    ProductSetEntity result = ServletLibrary.retrieveProductSetInfo(datastore, productSetDisplayName, true);
     if (result == null) {
       String productSetId = ServletLibrary.generateUUID();
       Entity productSet = new Entity("ProductSet", productSetId);

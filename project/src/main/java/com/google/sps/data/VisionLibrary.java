@@ -67,6 +67,9 @@ public class VisionLibrary {
   }
 
   public static String formatImageResponse(ImagesService imagesService, Gson gson, AnnotateImageResponse imageResponse, BlobKey blobKey) {
+    // Check for null.
+    if (imageResponse == null) return null;
+    
     // These are labels for the overall image based on what the vision api thinks.
     List<EntityAnnotation> labelAnnotations = imageResponse.getLabelAnnotationsList();
 
@@ -145,17 +148,13 @@ public class VisionLibrary {
   // This cleans up a imageLabel list by removing duplicates and blank labels.
   // Also remove labels with a score of less than 40% (this can be adjusted later)
   public static List<ImageLabel> cleanUpLabels(List<ImageLabel> labels) {
-    List<ImageLabel> cleanedList = new ArrayList<>();
-    Set<String> seen = new HashSet<>();
+    Set<ImageLabel> hashList = new HashSet<>();
     for (ImageLabel label : labels) {
-      String description = label.getDescription().toLowerCase();
       if (label.getScore() < 0.4f) continue;
-      if (seen.contains(description)) continue;
-      if (description.isEmpty()) continue;
-      cleanedList.add(label);
-      seen.add(description);
+      if (label.getDescription().isEmpty()) continue;
+      hashList.add(label);
     }
-    return cleanedList;
+    return new ArrayList(hashList);
   }
 
   // extracts labels and description from a cloud vision annotation, returning
@@ -196,8 +195,9 @@ public class VisionLibrary {
     // of all the text it finds.
     String description = "";
     if (!textInImage.isEmpty()) description = textInImage.get(0);
+    String imageUrl = annotation.getImageUrl();
 
-    return gson.toJson(new ProductFormInfo(annotation, labels, description));
+    return gson.toJson(new ProductFormInfo(annotation, labels, description, imageUrl));
   }
 
   /**
@@ -275,7 +275,17 @@ public class VisionLibrary {
   }
   
   public static String getNearestColor(Color color) {
-    Color[] constantColors = new Color[] { Color.black, Color.blue, Color.cyan, Color.gray, Color.green, Color.magenta, Color.orange, Color.pink, Color.red, Color.white, Color.yellow };
+    Color[] constantColors = new Color[] {Color.black, 
+                                          Color.blue, 
+                                          Color.cyan, 
+                                          Color.gray, 
+                                          Color.green, 
+                                          Color.magenta, 
+                                          Color.orange, 
+                                          Color.pink, 
+                                          Color.red, 
+                                          Color.white, 
+                                          Color.yellow };
     Color nearestColor = null;
     Integer nearestDistance = new Integer(Integer.MAX_VALUE);
 
@@ -295,6 +305,7 @@ public class VisionLibrary {
   // the main idea is that the closest color visually is not necessarily the closest
   // color in terms of a strict euclidean distance.
   public static int colorDistance(Color c1, Color c2) {
+    // This code is for testing. TODO: Go back to this, and improve color recognition results quality.
     // int red1 = c1.getRed();
     // int red2 = c2.getRed();
     // int rmean = (red1 + red2) >> 1;
@@ -309,7 +320,9 @@ public class VisionLibrary {
   }  
 
   public static Color convertToJavaColor(com.google.type.Color color) {
-    return new Color(Math.round(color.getRed()), Math.round(color.getGreen()), Math.round(color.getBlue()));
+    return new Color(Math.round(color.getRed()), 
+                     Math.round(color.getGreen()), 
+                     Math.round(color.getBlue()));
   }
 
   public static String getNearestColorString(Color color) {

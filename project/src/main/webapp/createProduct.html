@@ -56,6 +56,8 @@
           </form> 
           <div id="inputImage"></div>
           <form action="/createProduct" method="POST">
+            <input type="hidden" name="cloudVisionAnnotation">
+            <input type="hidden" name="mainImageUrl">
             <h4>Product Name</h4>
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
               <input class="mdl-textfield__input" type="text" id="productDisplayName" name="productDisplayName">
@@ -74,14 +76,21 @@
             <input list="productSetList" name="productSetDisplayName" id="productSetDisplayName">
             <datalist id="productSetList"></datalist>
             <h4>Upload more images (optional)</h4>
-            <input type="file" name="images[]" id="images[]" accept="image/*" multiple>
+            <input type="file" name="images" id="images" accept="image/*" multiple>
             <br/><br/>
-            <h4>Labels/Tags:</h4>
+            <h4>Labels/Tags</h4>
             <div id="labelsBox"></div>
             <br/><br/>
-            <h4>Product Description:</h4>
+            <h4>Product Description</h4>
             <div class="mdl-textfield mdl-js-textfield">
               <textarea class="mdl-textfield__input" type="text" rows= "4" id="productDescription" name="productDescription"></textarea>
+            </div>
+            <br/>
+            <h4>Price (in dollars $x.xx)</h4>
+            <div class="mdl-textfield mdl-js-textfield">
+              <input class="mdl-textfield__input" type="text" pattern="^\d+\.\d{2}$" id="price">
+              <label class="mdl-textfield__label" for="price">Number...</label>
+              <span class="mdl-textfield__error">Input is not a number!</span>
             </div>
             <br/><br/>
             <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">

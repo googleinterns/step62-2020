@@ -70,13 +70,19 @@ function retrieveProductFromInfo() {
     const imageUrl = document.createElement('img');
     if (productInfo != null) {
       imageText.innerText = "Image that you uploaded:"
-      imageUrl.src = productInfo.annotation.imageURL;
+      imageUrl.src = productInfo.imageUrl;
       imageUrl.width = 300;
     }
     imageBox.appendChild(imageText);
     // If there is no product yet, return and don't attempt to autofill the form.
     if (productInfo == null) return;
     imageBox.appendChild(imageUrl);
+    document.getElementById("mainImageUrl").value = productInfo.imageUrl;
+
+    // Store the product info as a string in the form. (This will be hidden in
+    // the html.)
+    const hiddenAnnotation = document.getElementById("cloudVisionAnnotation");
+    hiddenAnnotation.value = JSON.stringify(productInfo);
 
     // Fill the tags and description based on the cloud vision annotation.
     let formattedLabels = [];

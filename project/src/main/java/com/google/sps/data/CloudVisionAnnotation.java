@@ -33,6 +33,10 @@ public class CloudVisionAnnotation {
     this.logosInImage = logosInImage;
   }
 
+  public String getImageUrl() {
+    return imageURL;
+  }
+
   public List<ImageLabel> getGenericLabels() {
     return genericLabels;
   }

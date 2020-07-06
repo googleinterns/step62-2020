@@ -116,6 +116,9 @@ public class CloudVisionServlet extends HttpServlet {
 
     // Store the response in the business account, and using already existing
     // information to prevent datastore overwriting the old data.
+    // TODO: this may not be the best way to change one property of an entity. 
+    //       I could just retrieve the entity only, set the property, and push 
+    //       back in datastore.
     String userId = userService.getCurrentUser().getUserId();
     Business business = ServletLibrary.retrieveBusinessInfo(datastore, userId);
     Entity updatedBusiness = new Entity("Business", userId);
