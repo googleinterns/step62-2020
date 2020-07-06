@@ -20,7 +20,7 @@ public class ImageLabel {
     if (obj == null) return false;
     if (getClass() != obj.getClass()) return false;
     ImageLabel other = (ImageLabel) obj;
-    if (description.equals(other.getDescription())) return true;
+    if (description.toLowerCase().equals(other.getDescription().toLowerCase())) return true;
     return false;
   }
 

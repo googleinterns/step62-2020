@@ -36,7 +36,7 @@ public class ServletLibrary {
 
     if (entity == null) return null;
 
-    // Retrieving properties from enitity, and checking they are valid types.
+    // Retrieving properties from entity, and checking they are valid types.
     Object _productSetId = entity.getProperty("productSetId");
     Object _productSetDisplayName = entity.getProperty("productSetDisplayName");
     String productSetId;
@@ -46,7 +46,7 @@ public class ServletLibrary {
       productSetId = _productSetId.toString();
       productSetDisplayName = _productSetDisplayName.toString();
     } else {
-      System.err.println("Enitity properties are of an incorrect type.");
+      System.err.println("Entity properties are of an incorrect type.");
       return null;
     }
     @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
@@ -123,7 +123,7 @@ public class ServletLibrary {
     PreparedQuery pq = datastore.prepare(query);
     List<ProductSetEntity> results = new ArrayList<>();
     for (Entity entity : pq.asIterable()) {
-      // Retrieving properties from enitity, and checking they are valid types.
+      // Retrieving properties from entity, and checking they are valid types.
       Object _productSetId = entity.getProperty("productSetId");
       Object _productSetDisplayName = entity.getProperty("productSetDisplayName");
       String productSetId;
@@ -200,5 +200,85 @@ public class ServletLibrary {
                         zipCode,
                         productIds,
                         tempVisionAnnotation);
+  }
+
+  public static void addProductToLabels(DatastoreService datastore, String productId, List<String> labels) {
+    for (String label : labels) {
+      Filter filter = new FilterPredicate("label", FilterOperator.EQUAL, label.toLowerCase());
+      Query query = new Query("ProductLabel").setFilter(filter);
+      PreparedQuery pq = datastore.prepare(query);
+      Entity entity = pq.asSingleEntity();
+      // If the label doesnt already exist, create a new one and store. Otherwise,
+      // add the product id to the list contained in the existing entity.
+      if (entity == null) {
+        Entity productLabel = new Entity("ProductLabel");
+        productLabel.setProperty("label", label.toLowerCase());
+        List<String> productIds = new ArrayList<>();
+        productIds.add(productId);
+        productLabel.setProperty("productIds", productIds);
+        datastore.put(productLabel);
+      } else {
+        @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
+          List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
+        productIds.add(productId);
+        entity.setProperty("productIds", productIds);
+        datastore.put(entity);
+      }
+    }
+  }
+
+  public static void addProductToProductSet(DatastoreService datastore, String productId, String productSetId) {
+    Filter filter = new FilterPredicate("productSetId", FilterOperator.EQUAL, productSetId);
+    Query query = new Query("ProductSet").setFilter(filter);
+    PreparedQuery pq = datastore.prepare(query);
+    Entity entity = pq.asSingleEntity();
+    if (entity == null) {
+      System.err.println("Product Set must be created first before adding a product!");
+    } else {
+      @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
+        List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
+      productIds.add(productId);
+      entity.setProperty("productIds", productIds);
+      datastore.put(entity);
+    }
+  }
+
+  public static void addProductToProductCategory(DatastoreService datastore, String productId, String productCategory) {
+    Filter filter = new FilterPredicate("productCategory", FilterOperator.EQUAL, productCategory);
+    Query query = new Query("ProductCategory").setFilter(filter);
+    PreparedQuery pq = datastore.prepare(query);
+    Entity entity = pq.asSingleEntity();
+    // If the category doesnt already exist, create a new one and store. Otherwise,
+    // add the product id to the list contained in the existing entity.
+    if (entity == null) {
+      entity = new Entity("ProductCategory");
+      entity.setProperty("productCategory", productCategory);
+      List<String> productIds = new ArrayList<>();
+      productIds.add(productId);
+      entity.setProperty("productIds", productIds);
+      datastore.put(entity);
+    } else {
+      @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
+        List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
+      productIds.add(productId);
+      entity.setProperty("productIds", productIds);
+      datastore.put(entity);
+    }
+  }
+
+  public static void addProductToBusiness(DatastoreService datastore, String productId, String businessId) {
+    Filter filter = new FilterPredicate("businessId", FilterOperator.EQUAL, businessId);
+    Query query = new Query("Business").setFilter(filter);
+    PreparedQuery pq = datastore.prepare(query);
+    Entity entity = pq.asSingleEntity();
+    if (entity == null) {
+      System.err.println("Business must be created first before adding a product!");
+    } else {
+      @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
+        List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
+      productIds.add(productId);
+      entity.setProperty("productIds", productIds);
+      datastore.put(entity);
+    }
   }
 }

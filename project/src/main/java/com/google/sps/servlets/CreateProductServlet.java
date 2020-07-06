@@ -56,6 +56,7 @@ public class CreateProductServlet extends HttpServlet {
       Entity productSet = new Entity("ProductSet", productSetId);
       productSet.setProperty("productSetId", productSetId);
       productSet.setProperty("productSetDisplayName", productSetDisplayName);
+      productSet.setProperty("productIds", new ArrayList<String>());
       datastore.put(productSet);
     } else {
       productSetId = result.getProductSetId();
@@ -72,10 +73,13 @@ public class CreateProductServlet extends HttpServlet {
     List<String> imageUrls = new ArrayList<>();
     imageUrls.add(request.getParameter("mainImageUrl"));
 
+    // Get annotation and labels.
     String cloudVisionAnnotation = request.getParameter("cloudVisionAnnotation");
     String productDescription = request.getParameter("productDescription");
-    List<String> labels = Arrays.asList(request.getParameterValues("labels"));
-
+    List<String> labels = new ArrayList<>(Arrays.asList(request.getParameterValues("labels")));
+    labels.add(productDisplayName.toLowerCase());
+    labels.add(productSetDisplayName.toLowerCase());
+    labels.add(productCategory.toLowerCase());
 
     // Create a product set entity and store in datastore.
     Entity product = new Entity("Product", productId);
@@ -91,8 +95,11 @@ public class CreateProductServlet extends HttpServlet {
     product.setProperty("cloudVisionAnnotation", new Text(cloudVisionAnnotation));
     datastore.put(product);
 
-    // TODO: set product labels, product sets, product category, and business 
-    // to contain the new product id.
+    // Add product to relevant tables in datastore.
+    ServletLibrary.addProductToLabels(datastore, productId, labels);
+    ServletLibrary.addProductToProductSet(datastore, productId, productSetId);
+    ServletLibrary.addProductToProductCategory(datastore, productId, productCategory);
+    ServletLibrary.addProductToBusiness(datastore, productId, businessId);
 
     response.sendRedirect("/businessAccount.html");
   }

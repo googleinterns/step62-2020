@@ -44,6 +44,7 @@ public class CreateProductSetServlet extends HttpServlet {
       Entity productSet = new Entity("ProductSet", productSetId);
       productSet.setProperty("productSetId", productSetId);
       productSet.setProperty("productSetDisplayName", productSetDisplayName);
+      productSet.setProperty("productIds", new ArrayList<String>());
       datastore.put(productSet);
     }
 
