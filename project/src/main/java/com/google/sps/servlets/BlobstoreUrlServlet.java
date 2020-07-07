@@ -12,6 +12,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.appengine.tools.cloudstorage.GcsFileOptions;
+import com.google.appengine.tools.cloudstorage.GcsFilename;
+import com.google.appengine.tools.cloudstorage.GcsInputChannel;
+import com.google.appengine.tools.cloudstorage.GcsOutputChannel;
+import com.google.appengine.tools.cloudstorage.GcsService;
+import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
+import com.google.appengine.tools.cloudstorage.RetryParams;
+import com.google.appengine.api.blobstore.UploadOptions;
+import com.google.appengine.api.blobstore.FileInfo;
+
+
 @WebServlet("/getBlobstoreUrl")
 public class BlobstoreUrlServlet extends HttpServlet {
 
@@ -24,8 +35,10 @@ public class BlobstoreUrlServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
-    String uploadUrl = blobstoreService.createUploadUrl("/cloudVision");
+    String bucketName = "cloudberry-step-2020-test-bucket";
+    UploadOptions bucket = UploadOptions.Builder.withGoogleStorageBucketName(bucketName);
+
+    String uploadUrl = blobstoreService.createUploadUrl("/cloudVision", bucket);
 
     response.setContentType("text/html");
     response.getWriter().println(uploadUrl);
