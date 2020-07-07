@@ -33,6 +33,7 @@ public class BlobstoreUrlServlet extends HttpServlet {
     blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
   }
 
+  //Creates an upload url for an image using a cloud storage bucket
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String bucketName = "cloudberry-step-2020-test-bucket";

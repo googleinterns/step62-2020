@@ -35,26 +35,29 @@ import com.google.cloud.storage.StorageOptions;
 
 public class CloudStorageLibrary {
 
+    //Generates GCS file path. Still working on this. Explain logic and explain what the file path looks like
     public static String getFileName(HttpServletRequest request, BlobstoreService blobstore) {
         Map<String, List<FileInfo>> files = blobstore.getFileInfos(request);
         Set< Map.Entry<String, List<FileInfo>> > fileSet = files.entrySet();
-        List<FileInfo> fileList = new ArrayList<FileInfo>();
 
         for (Map.Entry<String, List<FileInfo>> fileMap : fileSet) { 
-            fileList = fileMap.getValue();
-            for(FileInfo file : fileList) {
-                return file.getGsObjectName();
+            try {
+                return fileMap.getValue().get(0).getGsObjectName();
+            } catch (Exception e) {
+                return "";
             }
         }
         return "";
     }
 
+    //Check file name here
     public static String getUploadedFileUrl(HttpServletRequest request, BlobstoreService blobstore) {
         BlobKey blobKey = blobstore.createGsBlobKey(getFileName(request, blobstore));
         
         return "/image-serve?blobKey=" + blobKey.getKeyString();
     }
 
+    //Creates a bucket with the given project and bucket name
     public static void CreateBucket(String projectId, String bucketName) {
         Storage storage = StorageOptions.newBuilder().setProjectId(projectId).
                           build().getService();
