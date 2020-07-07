@@ -51,7 +51,7 @@ public class ServletLibrary {
     }
     @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
       List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
-
+    if (productIds == null) productIds = new ArrayList<String>();
     return new ProductSetEntity(productSetId, productSetDisplayName, productIds);
   } 
 
@@ -103,7 +103,7 @@ public class ServletLibrary {
     String logoutUrl = userService.createLogoutURL("/index.html");
     @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
       List<String> searchHistory = (ArrayList<String>) entity.getProperty("searchHistory"); 
-    
+    if (searchHistory == null) searchHistory = new ArrayList<String>();
 
     return new Account(userId,
                        logoutUrl,
@@ -138,6 +138,7 @@ public class ServletLibrary {
       }
       @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
         List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
+      if (productIds == null) productIds = new ArrayList<String>();
 
       results.add(new ProductSetEntity(productSetId, productSetDisplayName, productIds));
     }
@@ -187,6 +188,8 @@ public class ServletLibrary {
     }
     @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
       List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
+    if (productIds == null) productIds = new ArrayList<String>();
+
     String tempVisionAnnotation = null;
     if (annotationObject != null) {
       tempVisionAnnotation = annotationObject.getValue();
@@ -220,6 +223,7 @@ public class ServletLibrary {
       } else {
         @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
           List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
+        if (productIds == null) productIds = new ArrayList<String>();
         productIds.add(productId);
         entity.setProperty("productIds", productIds);
         datastore.put(entity);
@@ -237,6 +241,7 @@ public class ServletLibrary {
     } else {
       @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
         List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
+      if (productIds == null) productIds = new ArrayList<String>();
       productIds.add(productId);
       entity.setProperty("productIds", productIds);
       datastore.put(entity);
@@ -260,6 +265,7 @@ public class ServletLibrary {
     } else {
       @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
         List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
+      if (productIds == null) productIds = new ArrayList<String>();
       productIds.add(productId);
       entity.setProperty("productIds", productIds);
       datastore.put(entity);
@@ -276,6 +282,7 @@ public class ServletLibrary {
     } else {
       @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
         List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
+      if (productIds == null) productIds = new ArrayList<String>();
       productIds.add(productId);
       entity.setProperty("productIds", productIds);
       datastore.put(entity);

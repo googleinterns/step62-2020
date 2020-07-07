@@ -83,7 +83,7 @@ public class CloudVisionServlet extends HttpServlet {
     Business business = ServletLibrary.retrieveBusinessInfo(datastore, userService.getCurrentUser().getUserId());
     String tempVisionAnnotation = business.getTempVisionAnnotation();
     // If there is nothing stored, simply return null.
-    if (tempVisionAnnotation == null) {
+    if (tempVisionAnnotation.isEmpty()) {
       String json = null;
       response.setContentType("application/json;");
       response.getWriter().println(json);
