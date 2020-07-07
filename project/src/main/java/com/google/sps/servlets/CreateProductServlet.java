@@ -22,6 +22,7 @@ import com.google.sps.data.ProductSetEntity;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.HashSet;
 
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -80,6 +81,9 @@ public class CreateProductServlet extends HttpServlet {
     labels.add(productDisplayName.toLowerCase());
     labels.add(productSetDisplayName.toLowerCase());
     labels.add(productCategory.toLowerCase());
+    // Remove potential duplicates by converting to a hashset and converting 
+    // right back to a list.
+    labels = new ArrayList<>(new HashSet<>(labels));
 
     // Create a product set entity and store in datastore.
     Entity product = new Entity("Product", productId);
