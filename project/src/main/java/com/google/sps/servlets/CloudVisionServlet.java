@@ -81,6 +81,7 @@ public class CloudVisionServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Retrieve the temporary vision annotation from the business account.
     Business business = ServletLibrary.retrieveBusinessInfo(datastore, userService.getCurrentUser().getUserId());
+    // TODO: Handle the bug where this returns null. (It shouldn't), but I guess just redirect or something. 
     String tempVisionAnnotation = business.getTempVisionAnnotation();
     // If there is nothing stored, simply return null.
     if (tempVisionAnnotation.isEmpty()) {

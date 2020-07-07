@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.HashSet;
+import java.util.Set;
 
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -78,12 +79,19 @@ public class CreateProductServlet extends HttpServlet {
     String cloudVisionAnnotation = request.getParameter("cloudVisionAnnotation");
     String productDescription = request.getParameter("productDescription");
     List<String> labels = new ArrayList<>(Arrays.asList(request.getParameterValues("labels")));
-    labels.add(productDisplayName.toLowerCase());
-    labels.add(productSetDisplayName.toLowerCase());
-    labels.add(productCategory.toLowerCase());
-    // Remove potential duplicates by converting to a hashset and converting 
-    // right back to a list.
-    labels = new ArrayList<>(new HashSet<>(labels));
+    labels.add(productDisplayName);
+    labels.add(productSetDisplayName);
+    labels.add(productCategory); // TODO: remove the '-v1' or '-v2' at the end of the category string
+    // Remove potential duplicates, ignoring case, but preserving it when 
+    // returning the new list. We set labels to the new list that was generated.
+    Set<String> seen = new HashSet<>();
+    List<String> newLabels = new ArrayList<>();
+    for (String label : labels) {
+      if (seen.contains(label.toLowerCase())) continue;
+      seen.add(label.toLowerCase());
+      newLabels.add(label);
+    }
+    labels = newLabels;
 
     // Create a product set entity and store in datastore.
     Entity product = new Entity("Product", productId);
