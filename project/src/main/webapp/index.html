@@ -8,14 +8,18 @@
   </head>
   <body>
     <form action="/product-set" method="POST">
-    <label for="project-set-id">Set ID</label>
-    <input type="text" name="product-set-id">
-    <label for="project-set-display">Display name</label>
-    <input type="text" name="product-set-display">
-    <input type="submit"/>
-</form>
+        <label for="prodect-set-id">Set ID</label>
+        <input type="text" name="product-set-id">
+        <label for="prodect-set-display">Display name</label>
+        <input type="text" name="product-set-display">
+        <input type="submit"/>
+    </form>
 
     <button onclick="loadProductSets()">show sets</button>
     <div id="product-set-list"></div>
+
+
+    <a href="create-product.html">create a product</a>
+    <a href="delete-product-set.html">delete a product set</a>
   </body>
 </html>

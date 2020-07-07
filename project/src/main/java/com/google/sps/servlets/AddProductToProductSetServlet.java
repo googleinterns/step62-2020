@@ -9,26 +9,25 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
-
 import com.google.sps.data.ServletsLibrary;
-import com.google.sps.data.ProductSetItem;
  
- 
- 
-@WebServlet("/product-set")
-public class CreateProductSetServlet extends HttpServlet {
+@WebServlet("/add-product")
+public class AddProductToProductSetServlet extends HttpServlet {
  
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     try{
-        String projectId = "cloudberry-step-2020";
+        String projectId = "cloudberry-step-2";
         String computeRegion = "us-east1";
+        String productId = request.getParameter("product-id");
         String productSetId = request.getParameter("product-set-id");
-        String productSetDisplay = request.getParameter("product-set-display");
     
-        ProductSetItem productSetItem = ServletsLibrary.createProductSet(projectId, computeRegion, productSetId, productSetDisplay);
+        ServletsLibrary.addProductToProductSet(projectId, computeRegion, productId, productSetId);
     } catch(Exception e){
         response.getWriter().println("Cannot retrieve input");
     }
-    response.sendRedirect("/index.html");
-  }
+
+    
+    response.sendRedirect("create-product.html");
+
+  } 
 }
