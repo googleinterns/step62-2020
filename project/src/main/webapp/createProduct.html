@@ -43,6 +43,7 @@
         <div class="page-content" id="content">
           <!-- Your content goes here -->
           <h1>Create a Product</h1>
+          <div class="mdl-spinner mdl-js-spinner is-active" id="spinner"></div>
           <form id="analyzeImageForm" class="hidden" method="POST" enctype="multipart/form-data">
             <p>
               Upload a photo of your product here so we can automatically
@@ -54,8 +55,9 @@
               Analyze Image!
             </button>
           </form> 
-          <div id="inputImage"></div>
-          <form action="/createProduct" method="POST">
+          <div class="mdl-spinner mdl-js-spinner is-active" id="spinner2"></div>
+          <div id="inputImage" class="hidden"></div>
+          <form id="productForm" action="/createProduct" class="hidden" method="POST">
             <input type="hidden" id="cloudVisionAnnotation" name="cloudVisionAnnotation">
             <input type="hidden" id="mainImageUrl" name="mainImageUrl">
             <h4>Product Name</h4>

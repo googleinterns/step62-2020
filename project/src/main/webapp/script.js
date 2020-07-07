@@ -53,6 +53,9 @@ function getBlobstoreUrl() {
     const myForm = document.getElementById("analyzeImageForm");
     myForm.action = url;
     myForm.classList.remove("hidden");
+    const spinner = document.getElementById("spinner");
+    spinner.classList.remove("is-active");
+    spinner.classList.add("hidden");
   });
   
 }
@@ -93,6 +96,14 @@ function retrieveProductFromInfo() {
                 initialTokens: formattedLabels});
     const descriptionBox = document.getElementById("productDescription");
     descriptionBox.innerText = productInfo.description;
+
+    // Clear loading symbol and show the form.
+    const productForm = document.getElementById("productForm");
+    const spinner2 = document.getElementById("spinner2");
+    imageBox.classList.remove("hidden");
+    productForm.classList.remove("hidden");
+    spinner2.classList.remove("is-active");
+    spinner2.classList.add("hidden");
   });
 }
 
