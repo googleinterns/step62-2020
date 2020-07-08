@@ -296,7 +296,7 @@ public class ServletLibrary {
 
   // Retrieve a list of all the products offered by the business.
   // TODO: modify this function so that it will search with all kinds of parameters. This will be used for normal text search as well. 
-  public static List<ProductEntity> findProducts(DatastoreService datastore, String businessId) throws Exception{
+  public static List<ProductEntity> findProducts(DatastoreService datastore, String businessId) {
     // System.err.println("Testing error!");
     // return null;
     Filter filter = new FilterPredicate("businessId", FilterOperator.EQUAL, businessId);
@@ -304,6 +304,7 @@ public class ServletLibrary {
     PreparedQuery pq = datastore.prepare(query);
     List<ProductEntity> products = new ArrayList<>();
     for (Entity entity : pq.asIterable()) {
+
       // Extract and verify types of the different properties of a product.
       Object _productId = entity.getProperty("productId");
       Object _productDisplayName = entity.getProperty("productDisplayName");
@@ -321,7 +322,7 @@ public class ServletLibrary {
       String productDescription;
       String cloudVisionAnnotation;
 
-      // "This is the type:" + _price.getClass()
+      // verifying types of the values in a product entity.
       if ((_productId instanceof String) &&
           (_productDisplayName instanceof String) &&
           (_productSetId instanceof String) &&
@@ -343,9 +344,8 @@ public class ServletLibrary {
           cloudVisionAnnotation = textVisionAnnotation.getValue();
         }
       } else {
-        throw new Exception("Siiiiiiiike, you thought this would work");
-        // System.err.println("Entity properties are of an incorrect type.");
-        // return null;
+        System.err.println("Entity properties are of an incorrect type.");
+        return null;
       }
       @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
         List<String> imageUrls = (ArrayList<String>) entity.getProperty("imageUrls"); 

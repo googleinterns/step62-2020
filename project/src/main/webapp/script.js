@@ -124,6 +124,7 @@ function truncateString(str, length) {
               
 function retrieveProducts() {
   // TODO: implement filtering by product category, product set, sort by alphabet and price.
+  // TODO: find a better way to put images in cards. Right now, they often get cut off.
   fetch("/viewProducts").then(response => response.json()).then(products => {
     const searchResults = document.getElementById("searchResults");
     if (products == null) {
@@ -131,7 +132,6 @@ function retrieveProducts() {
       return;
     }
     products.forEach(product => {
-      console.log(product);
       const cardHtml = `<div class="product-card mdl-card mdl-shadow--2dp">
                           <div class="mdl-card__title" style="background-image: 
                             linear-gradient(to bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,1)), 

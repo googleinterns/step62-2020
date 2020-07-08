@@ -48,14 +48,9 @@ public class ViewProductsServlet extends HttpServlet {
     // TODO: sort alphabetically, by price.
     // TODO: text based search.
     // For now, we simply list all the products 
-    String json;
-    try {
-      List<ProductEntity> products = ServletLibrary.findProducts(datastore, userService.getCurrentUser().getUserId());
-      json = gson.toJson(products);
-    } catch (Exception e) {
-      throw new IOException(e);
-    }
-    
+
+    List<ProductEntity> products = ServletLibrary.findProducts(datastore, userService.getCurrentUser().getUserId());
+    String json = gson.toJson(products);
 
     response.setContentType("application/json;");
     response.getWriter().println(json);
