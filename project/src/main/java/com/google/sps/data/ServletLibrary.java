@@ -205,6 +205,8 @@ public class ServletLibrary {
                         tempVisionAnnotation);
   }
 
+  // For every label that a product has, we assign the product to that label in
+  // the labels table in datastore.
   public static void addProductToLabels(DatastoreService datastore, String productId, List<String> labels) {
     for (String label : labels) {
       Filter filter = new FilterPredicate("label", FilterOperator.EQUAL, label.toLowerCase());
@@ -231,6 +233,7 @@ public class ServletLibrary {
     }
   }
 
+  // Add product to the specified product set.
   public static void addProductToProductSet(DatastoreService datastore, String productId, String productSetId) {
     Filter filter = new FilterPredicate("productSetId", FilterOperator.EQUAL, productSetId);
     Query query = new Query("ProductSet").setFilter(filter);
@@ -248,6 +251,7 @@ public class ServletLibrary {
     }
   }
 
+  // Add product to the specified product category.
   public static void addProductToProductCategory(DatastoreService datastore, String productId, String productCategory) {
     Filter filter = new FilterPredicate("productCategory", FilterOperator.EQUAL, productCategory);
     Query query = new Query("ProductCategory").setFilter(filter);
@@ -272,6 +276,7 @@ public class ServletLibrary {
     }
   }
 
+  // Add product to the list of products offerec by the business.
   public static void addProductToBusiness(DatastoreService datastore, String productId, String businessId) {
     Filter filter = new FilterPredicate("businessId", FilterOperator.EQUAL, businessId);
     Query query = new Query("Business").setFilter(filter);
@@ -287,5 +292,80 @@ public class ServletLibrary {
       entity.setProperty("productIds", productIds);
       datastore.put(entity);
     }
+  }
+
+  // Retrieve a list of all the products offered by the business.
+  // TODO: modify this function so that it will search with all kinds of parameters. This will be used for normal text search as well. 
+  public static List<ProductEntity> findProducts(DatastoreService datastore, String businessId) throws Exception{
+    // System.err.println("Testing error!");
+    // return null;
+    Filter filter = new FilterPredicate("businessId", FilterOperator.EQUAL, businessId);
+    Query query = new Query("Product").setFilter(filter);
+    PreparedQuery pq = datastore.prepare(query);
+    List<ProductEntity> products = new ArrayList<>();
+    for (Entity entity : pq.asIterable()) {
+      // Extract and verify types of the different properties of a product.
+      Object _productId = entity.getProperty("productId");
+      Object _productDisplayName = entity.getProperty("productDisplayName");
+      Object _productSetId = entity.getProperty("productSetId");
+      Object _productCategory = entity.getProperty("productCategory");
+      Object _businessId = entity.getProperty("businessId");
+      Object _price = entity.getProperty("price");
+      Object _productDescription = entity.getProperty("productDescription");
+      Object _cloudVisionAnnotation = entity.getProperty("cloudVisionAnnotation");
+      String productId;
+      String productDisplayName;
+      String productSetId;
+      String productCategory;
+      float price; 
+      String productDescription;
+      String cloudVisionAnnotation;
+
+      // "This is the type:" + _price.getClass()
+      if ((_productId instanceof String) &&
+          (_productDisplayName instanceof String) &&
+          (_productSetId instanceof String) &&
+          (_productCategory instanceof String) &&
+          (_price instanceof Double) &&
+          (_productDescription instanceof String) &&
+          (_cloudVisionAnnotation instanceof Text)) {
+        productId = _productId.toString();
+        productDisplayName = _productDisplayName.toString();
+        productSetId = _productSetId.toString();
+        productCategory = _productCategory.toString();
+        Double doublePrice = (Double) _price;
+        price = doublePrice.floatValue();
+        productDescription = _productDescription.toString();
+        Text textVisionAnnotation = (Text) _cloudVisionAnnotation;
+        if (textVisionAnnotation == null) {
+          cloudVisionAnnotation = null;
+        } else {
+          cloudVisionAnnotation = textVisionAnnotation.getValue();
+        }
+      } else {
+        throw new Exception("Siiiiiiiike, you thought this would work");
+        // System.err.println("Entity properties are of an incorrect type.");
+        // return null;
+      }
+      @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
+        List<String> imageUrls = (ArrayList<String>) entity.getProperty("imageUrls"); 
+      if (imageUrls == null) imageUrls = new ArrayList<String>();
+      @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
+        List<String> labels = (ArrayList<String>) entity.getProperty("labels"); 
+      if (labels == null) labels = new ArrayList<>();
+
+      // Add the product to the products list.
+      products.add(new ProductEntity(productId,
+                                     productDisplayName,
+                                     productSetId,
+                                     productCategory,
+                                     businessId,
+                                     price,
+                                     imageUrls,
+                                     labels,
+                                     productDescription,
+                                     cloudVisionAnnotation));
+    }
+    return products;
   }
 }

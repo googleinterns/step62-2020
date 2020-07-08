@@ -4,6 +4,38 @@
   width: 700px;
 }
 
+#product-view {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
 #greeting-container {
   margin-top: 20px;
+}
+
+body {
+  background-color: #fafafa;
+}
+
+.product-card.mdl-card {
+  width: 320px;
+  height: 400px;
+}
+
+.product-card > .mdl-card__title {
+  height: 300px;
+  color: #fff;
+  background-position: center;
+  background-size: cover;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 340px);
+}
+
+.grid-item {
+  padding: 10px;
+  min-width: 320px;
+  justify-content: center;
 }

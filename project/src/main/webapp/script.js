@@ -112,3 +112,47 @@ function refreshCreateProductForm() {
   retrieveProductSetDisplayNames();
   retrieveProductFromInfo();
 }
+
+function truncateString(str, length) {
+    const ending = '...';
+    if (str.length > length) {
+      return str.substring(0, length - ending.length) + ending;
+    } else {
+      return str;
+    }
+  };
+              
+function retrieveProducts() {
+  // TODO: implement filtering by product category, product set, sort by alphabet and price.
+  fetch("/viewProducts").then(response => response.json()).then(products => {
+    const searchResults = document.getElementById("searchResults");
+    if (products == null) {
+      searchResults.innerText = "No products here!";
+      return;
+    }
+    products.forEach(product => {
+      console.log(product);
+      const cardHtml = `<div class="product-card mdl-card mdl-shadow--2dp">
+                          <div class="mdl-card__title" style="background-image: 
+                            linear-gradient(to bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,1)), 
+                            url('${product.imageUrls[0]}');">
+                            <h2 class="mdl-card__title-text">
+                              ${product.productDisplayName}
+                            </h2>
+                          </div>
+                          <div class="mdl-card__supporting-text">
+                            ${'$' + product.price.toFixed(2) + ' - ' + truncateString(product.productDescription, 50)}
+                          </div>
+                          <div class="mdl-card__actions mdl-card--border">
+                            <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+                              View
+                            </a>
+                          </div>
+                        </div>`;
+      const card = document.createElement("div");
+      card.classList.add("grid-item");
+      card.innerHTML = cardHtml;
+      searchResults.appendChild(card);
+    });
+  });
+}
