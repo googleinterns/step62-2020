@@ -35,4 +35,16 @@ public class ProductEntity {
     this.productDescription = productDescription;
     this.cloudVisionAnnotation = cloudVisionAnnotation;
   }
+
+  public String getProductId() {
+    return productId;
+  }
+
+  public String getProductSetId() {
+    return productSetId;
+  }
+
+  public String getBusinessId() {
+    return businessId;
+  }
 }

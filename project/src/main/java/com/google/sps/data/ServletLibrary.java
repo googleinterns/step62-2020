@@ -310,7 +310,6 @@ public class ServletLibrary {
       Object _productDisplayName = entity.getProperty("productDisplayName");
       Object _productSetId = entity.getProperty("productSetId");
       Object _productCategory = entity.getProperty("productCategory");
-      Object _businessId = entity.getProperty("businessId");
       Object _price = entity.getProperty("price");
       Object _productDescription = entity.getProperty("productDescription");
       Object _cloudVisionAnnotation = entity.getProperty("cloudVisionAnnotation");
@@ -367,5 +366,77 @@ public class ServletLibrary {
                                      cloudVisionAnnotation));
     }
     return products;
+  }
+
+  // Retrieves product information based on the product id. 
+  public static ProductEntity retrieveProductInfo(DatastoreService datastore, String productId) {
+    // Retrieving from datastore.
+    Filter filter = new FilterPredicate("productId", FilterOperator.EQUAL, productId);
+    Query query = new Query("Product").setFilter(filter);
+    PreparedQuery pq = datastore.prepare(query);
+    Entity entity = pq.asSingleEntity();
+
+    // Return null if the product doesn't exist in the database.
+    if (entity == null) return null;
+
+    // Extracting properties of the product entity.
+    Object _productDisplayName = entity.getProperty("productDisplayName");
+    Object _productSetId = entity.getProperty("productSetId");
+    Object _productCategory = entity.getProperty("productCategory");
+    Object _businessId = entity.getProperty("businessId");
+    Object _price = entity.getProperty("price");
+    Object _productDescription = entity.getProperty("productDescription");
+    Object _cloudVisionAnnotation = entity.getProperty("cloudVisionAnnotation");
+    String businessId;
+    String productDisplayName;
+    String productSetId;
+    String productCategory;
+    float price; 
+    String productDescription;
+    String cloudVisionAnnotation;
+
+    // Verifying the types of the properties are valid. 
+    if ((_businessId instanceof String) &&
+        (_productDisplayName instanceof String) &&
+        (_productSetId instanceof String) &&
+        (_productCategory instanceof String) &&
+        (_price instanceof Double) &&
+        (_productDescription instanceof String) &&
+        (_cloudVisionAnnotation instanceof Text)) {
+      businessId = _businessId.toString();
+      productDisplayName = _productDisplayName.toString();
+      productSetId = _productSetId.toString();
+      productCategory = _productCategory.toString();
+      Double doublePrice = (Double) _price;
+      price = doublePrice.floatValue();
+      productDescription = _productDescription.toString();
+      Text textVisionAnnotation = (Text) _cloudVisionAnnotation;
+      if (textVisionAnnotation == null) {
+        cloudVisionAnnotation = null;
+      } else {
+        cloudVisionAnnotation = textVisionAnnotation.getValue();
+      }
+    } else {
+      System.err.println("Entity properties are of an incorrect type.");
+      return null;
+    }
+    @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
+      List<String> imageUrls = (ArrayList<String>) entity.getProperty("imageUrls"); 
+    if (imageUrls == null) imageUrls = new ArrayList<String>();
+    @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
+      List<String> labels = (ArrayList<String>) entity.getProperty("labels"); 
+    if (labels == null) labels = new ArrayList<>();
+
+    return new ProductEntity(productId,
+                             productDisplayName,
+                             productSetId,
+                             productCategory,
+                             businessId,
+                             price,
+                             imageUrls,
+                             labels,
+                             productDescription,
+                             cloudVisionAnnotation);
+
   }
 }
