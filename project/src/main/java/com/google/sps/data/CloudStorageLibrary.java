@@ -39,7 +39,7 @@ public class CloudStorageLibrary {
     public static String getGcsFilePath(HttpServletRequest request, BlobstoreService blobstore) {
         Map<String, List<FileInfo>> files = blobstore.getFileInfos(request);
 
-        for (Map.Entry<String, List<FileInfo>> fileMap : file.entrySet()) { 
+        for (Map.Entry<String, List<FileInfo>> fileMap : files.entrySet()) { 
             try {
                 return fileMap.getValue().get(0).getGsObjectName();
             } catch (Exception e) {
