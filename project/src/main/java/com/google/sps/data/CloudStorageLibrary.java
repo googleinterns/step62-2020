@@ -35,46 +35,51 @@ import com.google.cloud.storage.StorageOptions;
 
 public class CloudStorageLibrary {
 
-    //Generates GCS file path. Still working on this. Explain logic and explain what the file path looks like
-    public static String getGcsFilePath(HttpServletRequest request, BlobstoreService blobstore) {
-        Map<String, List<FileInfo>> files = blobstore.getFileInfos(request);
-        Set< Map.Entry<String, List<FileInfo>> > fileSet = files.entrySet();
-
-        for (Map.Entry<String, List<FileInfo>> fileMap : fileSet) { 
+    //TODO(mrjwash) Generates GCS file path.Explain logic and explain what the file path looks like
+    public static String getGcsFilePath(Map<String, List<FileInfo>> files) {
+        for (Map.Entry<String, List<FileInfo>> fileMap : files.entrySet()) { 
             try {
                 return fileMap.getValue().get(0).getGsObjectName();
             } catch (Exception e) {
+                System.out.println(e);
                 return "";
             }
         }
         return "";
     }
 
-    public static String getServingFileUrl(BlobstoreService blobstore, String GcsFilePath) {
-        String tempFilePath = GcsFilePath.replaceFirst("/gs", "");
+    //Gets a url to directly serve the image
+    public static String getServingFileUrl(String gcsFilePath) {
+        if(gcsFilePath == null) {
+            return "";
+        } else if (gcsFilePath.isEmpty()) {
+            return "";
+        } else {
+            String tempFilePath = gcsFilePath.replaceFirst("/gs", "");
 
-        return "https://storage.googleapis.com" + tempFilePath;
+            return "https://storage.googleapis.com" + tempFilePath;
+        }
     }
 
-    //Check file name here
-    public static String getUploadedFileUrl(BlobstoreService blobstore, String GcsFilePath) {
-        BlobKey blobKey = blobstore.createGsBlobKey(GcsFilePath);
+    //TODO(mrjwash) Check file name here
+    public static String getUploadedFileUrl(BlobstoreService blobstore, String gcsFilePath) {
+        BlobKey blobKey = blobstore.createGsBlobKey(gcsFilePath);
         
         return "/getBlobstoreUrl?blobKey=" + blobKey.getKeyString();
     }
 
     //Creates a bucket with the given project and bucket name
     public static void CreateBucket(String projectId, String bucketName) {
-        Storage storage = StorageOptions.newBuilder().setProjectId(projectId).
-                          build().getService();
+        Storage storage = StorageOptions.newBuilder().setProjectId(projectId)
+                          .build().getService();
                           
         StorageClass storageClass = StorageClass.STANDARD;
 
         String location = "us-east1";
 
-        Bucket bucket = storage.create(BucketInfo.newBuilder(bucketName).
-                        setStorageClass(storageClass).setLocation(location).
-                        build());
+        Bucket bucket = storage.create(BucketInfo.newBuilder(bucketName)
+                        .setStorageClass(storageClass).setLocation(location)
+                        .build());
 
         System.out.println("Created bucket " + bucket.getName()
                            + " in " + bucket.getLocation()
