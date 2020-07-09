@@ -63,9 +63,15 @@ public class CloudStorageLibrary {
 
     //TODO(mrjwash) Check file name here
     public static String getUploadedFileUrl(BlobstoreService blobstore, String gcsFilePath) {
-        BlobKey blobKey = blobstore.createGsBlobKey(gcsFilePath);
+        if(gcsFilePath == null) {
+            return "";
+        } else if (gcsFilePath.isEmpty()) {
+            return "";
+        } else {
+            BlobKey blobKey = blobstore.createGsBlobKey(gcsFilePath);
         
-        return "/getBlobstoreUrl?blobKey=" + blobKey.getKeyString();
+            return "/getBlobstoreUrl?blobKey=" + blobKey.getKeyString();
+        }
     }
 
     //Creates a bucket with the given project and bucket name
