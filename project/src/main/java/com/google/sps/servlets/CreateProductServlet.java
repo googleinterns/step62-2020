@@ -76,6 +76,7 @@ public class CreateProductServlet extends HttpServlet {
     try {
       price = Float.parseFloat(request.getParameter("price"));
     } catch (NumberFormatException e) {
+      System.err.println("Float was not able to be parsed! Error:"+e);
       price = 0.0f;
     }
 
