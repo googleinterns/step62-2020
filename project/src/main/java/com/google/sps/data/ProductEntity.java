@@ -9,6 +9,7 @@ public class ProductEntity {
   private String productCategory;
   private String businessId;
   private float price; 
+  private List<String> gcsUrls; 
   private List<String> imageUrls; 
   private List<String> labels; 
   private String productDescription;
@@ -20,6 +21,7 @@ public class ProductEntity {
                        String productCategory,
                        String businessId,
                        float price,
+                       List<String> gcsUrls,
                        List<String> imageUrls,
                        List<String> labels,
                        String productDescription,
@@ -30,6 +32,7 @@ public class ProductEntity {
     this.productCategory = productCategory;
     this.businessId = businessId;
     this.price = price;
+    this.gcsUrls = gcsUrls;
     this.imageUrls = imageUrls;
     this.labels = labels;
     this.productDescription = productDescription;

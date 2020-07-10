@@ -345,6 +345,9 @@ public class ServletLibrary {
         return null;
       }
       @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
+        List<String> gcsUrls = (ArrayList<String>) entity.getProperty("gcsUrls"); 
+      if (gcsUrls == null) gcsUrls = new ArrayList<String>();
+      @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
         List<String> imageUrls = (ArrayList<String>) entity.getProperty("imageUrls"); 
       if (imageUrls == null) imageUrls = new ArrayList<String>();
       @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
@@ -358,6 +361,7 @@ public class ServletLibrary {
                                      productCategory,
                                      businessId,
                                      price,
+                                     gcsUrls,
                                      imageUrls,
                                      labels,
                                      productDescription,
@@ -419,6 +423,9 @@ public class ServletLibrary {
       return null;
     }
     @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
+        List<String> gcsUrls = (ArrayList<String>) entity.getProperty("gcsUrls"); 
+      if (gcsUrls == null) gcsUrls = new ArrayList<String>();
+    @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
       List<String> imageUrls = (ArrayList<String>) entity.getProperty("imageUrls"); 
     if (imageUrls == null) imageUrls = new ArrayList<String>();
     @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
@@ -431,10 +438,10 @@ public class ServletLibrary {
                              productCategory,
                              businessId,
                              price,
+                             gcsUrls,
                              imageUrls,
                              labels,
                              productDescription,
                              cloudVisionAnnotation);
-
   }
 }

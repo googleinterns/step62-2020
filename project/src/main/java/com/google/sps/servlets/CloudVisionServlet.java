@@ -106,14 +106,17 @@ public class CloudVisionServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Get the URL of the image that the user uploaded.
-    BlobKey blobKey = VisionLibrary.getBlobKey(blobstore, request, "imageURL");
-    String imageURL = VisionLibrary.getUploadedFileUrl(imagesService, blobKey);
+    String gcsUrl = CloudStorageLibrary.getGcsFilePath(request, blobstore);
+    BlobKey blobKey = blobstore.createGsBlobKey(gcsUrl);
+    String imageUrl = CloudStorageLibrary.getUploadedFileUrl(blobstore, gcsUrl);
+    // BlobKey blobKey = VisionLibrary.getBlobKey(blobstore, request, "imageURL");
+    // String imageURL = VisionLibrary.getUploadedFileUrl(imagesService, blobKey);
 
     // Use blobKey to send a request to the cloud vision api. We are guaranteed 
     // that the client uploaded an image.
     byte[] blobBytes = VisionLibrary.getBlobBytes(blobstore, blobKey);
     AnnotateImageResponse imageResponse = VisionLibrary.handleCloudVisionRequest(blobBytes, allFeatures);
-    String tempVisionAnnotation = VisionLibrary.formatImageResponse(imagesService, gson, imageResponse, blobKey);
+    String tempVisionAnnotation = VisionLibrary.formatImageResponse(gson, imageResponse, gcsUrl, imageUrl);
 
     // Store the response in the business account, and using already existing
     // information to prevent datastore overwriting the old data.

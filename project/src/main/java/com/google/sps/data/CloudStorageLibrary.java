@@ -61,7 +61,7 @@ public class CloudStorageLibrary {
     public static String getUploadedFileUrl(BlobstoreService blobstore, String gcsFilePath) {
         BlobKey blobKey = blobstore.createGsBlobKey(gcsFilePath);
         
-        return "/getBlobstoreUrl?blobKey=" + blobKey.getKeyString();
+        return "/serveBlobstoreImage?blobKey=" + blobKey.getKeyString();
     }
 
     //Creates a bucket with the given project and bucket name

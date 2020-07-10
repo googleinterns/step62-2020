@@ -42,6 +42,8 @@ public class CreateProductServlet extends HttpServlet {
     gson = new Gson();
   }
 
+  // IMPORTANT TODO(neelgandhi): When changing the product category, product set, 
+  // or labels, make sure those respective tables are also modified.
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Retrieve required parameters for the product set.
@@ -82,6 +84,8 @@ public class CreateProductServlet extends HttpServlet {
 
     // TODO: support for adding multiple images. For now, we are only adding
     // the initial image that was uploaded.
+    List<String> gcsUrls = new ArrayList<>();
+    gcsUrls.add(request.getParameter("mainGcsUrl"));
     List<String> imageUrls = new ArrayList<>();
     imageUrls.add(request.getParameter("mainImageUrl"));
 
@@ -111,6 +115,7 @@ public class CreateProductServlet extends HttpServlet {
     product.setProperty("productCategory", productCategory);
     product.setProperty("businessId", businessId);
     product.setProperty("price", price);
+    product.setProperty("gcsUrls", gcsUrls);
     product.setProperty("imageUrls", imageUrls);
     product.setProperty("labels", labels);
     product.setProperty("productDescription", productDescription);

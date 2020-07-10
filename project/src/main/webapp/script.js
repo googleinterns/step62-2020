@@ -80,11 +80,13 @@ function retrieveProductFormInfo() {
     // If there is no product yet, return and don't attempt to autofill the form.
     if (productInfo == null) {
       imageBox.classList.remove("hidden");
+      const spinner2 = document.getElementById("spinner2");
       spinner2.classList.remove("is-active");
       spinner2.classList.add("hidden");
       return;
     }
     imageBox.appendChild(imageUrl);
+    document.getElementById("mainGcsUrl").value = productInfo.gcsUrl;
     document.getElementById("mainImageUrl").value = productInfo.imageUrl;
 
     // Store the product info as a string in the form. (This will be hidden in
@@ -147,7 +149,7 @@ function retrieveProducts() {
                             </h2>
                           </div>
                           <div class="mdl-card__supporting-text">
-                            ${'$' + product.price.toFixed(2) + ' - ' + truncateString(product.productDescription, 50)}
+                            ${'$' + product.price.toFixed(2) + ' - ' + truncateString(product.productDescription, 80)}
                           </div>
                           <div class="mdl-card__actions mdl-card--border">
                             <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
@@ -209,6 +211,7 @@ function retrieveProductInfo() {
     // If there is no product yet, return and don't attempt to autofill the form.
     if (product == null) {
       imageBox.classList.remove("hidden");
+      const spinner2 = document.getElementById("spinner2");
       spinner2.classList.remove("is-active");
       spinner2.classList.add("hidden");
       return;
@@ -217,6 +220,7 @@ function retrieveProductInfo() {
     
     // Fill in the form information.
     document.getElementById("productId").value = product.productId;
+    document.getElementById("mainGcsUrl").value = product.gcsUrls[0];
     document.getElementById("mainImageUrl").value = product.imageUrls[0];
     document.getElementById("productDisplayName").value = product.productDisplayName;
     document.getElementById("productSetDisplayName").value = productSet.productSetDisplayName;

@@ -2,6 +2,7 @@ package com.google.sps.data;
 import java.util.List;
 
 public class CloudVisionAnnotation {
+  private String gcsUrl;
   private String imageURL;
   private List<ImageLabel> genericLabels;
   private List<ImageLabel> webLabels;
@@ -13,7 +14,8 @@ public class CloudVisionAnnotation {
   private List<ImageLabel> logosInImage;
 
 
-  public CloudVisionAnnotation(String imageURL,
+  public CloudVisionAnnotation(String gcsUrl,
+                               String imageURL,
                                List<ImageLabel> genericLabels,
                                List<ImageLabel> webLabels,
                                List<String> webBestLabels,
@@ -22,6 +24,7 @@ public class CloudVisionAnnotation {
                                List<ImageLabel> dominantColors,
                                List<ImageLabel> objectsInImage,
                                List<ImageLabel> logosInImage) {
+    this.gcsUrl = gcsUrl;
     this.imageURL = imageURL;
     this.genericLabels = genericLabels;
     this.webLabels = webLabels;
@@ -31,6 +34,10 @@ public class CloudVisionAnnotation {
     this.dominantColors = dominantColors;
     this.objectsInImage = objectsInImage;
     this.logosInImage = logosInImage;
+  }
+
+  public String getGcsUrl() {
+    return gcsUrl;
   }
 
   public String getImageUrl() {
