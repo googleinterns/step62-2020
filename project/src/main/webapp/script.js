@@ -53,6 +53,9 @@ function getBlobstoreUrl() {
     const myForm = document.getElementById("analyzeImageForm");
     myForm.action = url;
     myForm.classList.remove("hidden");
+    const spinner = document.getElementById("spinner");
+    spinner.classList.remove("is-active");
+    spinner.classList.add("hidden");
   });
   
 }
@@ -60,7 +63,7 @@ function getBlobstoreUrl() {
 // Fetch the cloud vision image annotation to auto fill the create product form
 // with labels.
 // TODO: add a loading animation when retrieving the json.
-function retrieveProductFromInfo() {
+function retrieveProductFormInfo() {
   fetch("/cloudVision").then(response => response.json()).then(productInfo => {
     console.log(productInfo);
     // Set up input image display box.
@@ -75,8 +78,15 @@ function retrieveProductFromInfo() {
     }
     imageBox.appendChild(imageText);
     // If there is no product yet, return and don't attempt to autofill the form.
-    if (productInfo == null) return;
+    if (productInfo == null) {
+      imageBox.classList.remove("hidden");
+      const spinner2 = document.getElementById("spinner2");
+      spinner2.classList.remove("is-active");
+      spinner2.classList.add("hidden");
+      return;
+    }
     imageBox.appendChild(imageUrl);
+    document.getElementById("mainGcsUrl").value = productInfo.gcsUrl;
     document.getElementById("mainImageUrl").value = productInfo.imageUrl;
 
     // Store the product info as a string in the form. (This will be hidden in
@@ -93,11 +103,151 @@ function retrieveProductFromInfo() {
                 initialTokens: formattedLabels});
     const descriptionBox = document.getElementById("productDescription");
     descriptionBox.innerText = productInfo.description;
+
+    // Clear loading symbol and show the form.
+    const productForm = document.getElementById("productForm");
+    const spinner2 = document.getElementById("spinner2");
+    imageBox.classList.remove("hidden");
+    productForm.classList.remove("hidden");
+    spinner2.classList.remove("is-active");
+    spinner2.classList.add("hidden");
   });
 }
 
 function refreshCreateProductForm() {
   getBlobstoreUrl();
   retrieveProductSetDisplayNames();
-  retrieveProductFromInfo();
+  retrieveProductFormInfo();
+}
+
+// Truncates the string and adds elipses to the desired length.
+function truncateString(str, length) {
+  const ending = '...';
+  if (str.length > length) {
+    return str.substring(0, length - ending.length) + ending;
+  } else {
+    return str;
+  }
+};
+              
+function retrieveProducts() {
+  // TODO: implement filtering by product category, product set, sort by alphabet and price.
+  // TODO: find a better way to put images in cards. Right now, they often get cut off.
+  fetch("/viewProducts").then(response => response.json()).then(products => {
+    const searchResults = document.getElementById("searchResults");
+    if (products == null) {
+      searchResults.innerText = "No products here!";
+      return;
+    }
+    products.forEach(product => {
+      const cardHtml = `<div class="product-card mdl-card mdl-shadow--2dp">
+                          <div class="mdl-card__title" style="background-image: 
+                            linear-gradient(to bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,1)), 
+                            url('${product.imageUrls[0]}');">
+                            <h2 class="mdl-card__title-text">
+                              ${product.productDisplayName}
+                            </h2>
+                          </div>
+                          <div class="mdl-card__supporting-text">
+                            ${'$' + product.price.toFixed(2) + ' - ' + truncateString(product.productDescription, 80)}
+                          </div>
+                          <div class="mdl-card__actions mdl-card--border">
+                            <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+                              View
+                            </a>
+                            <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
+                               href="/editProduct.html?productId=${product.productId}">
+                              Edit
+                            </a>
+                          </div>
+                        </div>`;
+      const card = document.createElement("div");
+      card.classList.add("grid-item");
+      card.innerHTML = cardHtml;
+      searchResults.appendChild(card);
+    });
+  });
+}
+
+// Gets parameters passed in through the url, and formats them in a dictionary.
+function getUrlParams() {
+  var params = {};
+  var parser = document.createElement('a');
+  parser.href = window.location.href;
+  var query = parser.search.substring(1);
+  var vars = query.split('&');
+  for (var i = 0; i < vars.length; i++) {
+    var pair = vars[i].split('=');
+    params[pair[0]] = decodeURIComponent(pair[1]);
+  }
+  return params;
+};
+
+function retrieveProductInfo() {
+  const params = getUrlParams();
+  const productId = params["productId"];
+  if (productId == null) {
+    document.getElementById("content").innerText = "Error: No product was selected";
+    return;
+  }
+  const queryString = "/productInfo?productId=" + productId;
+  fetch(queryString).then(response => response.json()).then(productInfo => {
+    // Get the relavant data from the product info object.
+    const product = productInfo.product;
+    const productSet = productInfo.productSet;
+
+    // Set up input image display box.
+    const imageBox = document.getElementById("inputImage");
+    const imageText = document.createElement('h4');
+    const imageUrl = document.createElement('img');
+    imageText.innerText = "No image was uploaded.";
+    if (product != null) {
+      imageText.innerText = "Image that was uploaded:"
+      imageUrl.src = product.imageUrls[0];
+      imageUrl.width = 300;
+    }
+    imageBox.appendChild(imageText);
+
+    // If there is no product yet, return and don't attempt to autofill the form.
+    if (product == null) {
+      imageBox.classList.remove("hidden");
+      const spinner2 = document.getElementById("spinner2");
+      spinner2.classList.remove("is-active");
+      spinner2.classList.add("hidden");
+      return;
+    }
+    imageBox.appendChild(imageUrl);
+    
+    // Fill in the form information.
+    document.getElementById("productId").value = product.productId;
+    document.getElementById("mainGcsUrl").value = product.gcsUrls[0];
+    document.getElementById("mainImageUrl").value = product.imageUrls[0];
+    document.getElementById("productDisplayName").value = product.productDisplayName;
+    document.getElementById("productSetDisplayName").value = productSet.productSetDisplayName;
+    document.getElementById("productCategory").value = product.productCategory;
+    document.getElementById("price").value = product.price.toFixed(2);
+    document.getElementById("productDescription").value = product.productDescription;
+    document.getElementById("cloudVisionAnnotation").value = product.cloudVisionAnnotation;
+
+    // Fill the labels/tags.
+    let formattedLabels = [];
+    product.labels.forEach(label => formattedLabels.push({value:label, text:label}));
+    const tokenAutocomplete = new TokenAutocomplete({
+                name: 'labels',
+                selector: '#labelsBox',
+                initialTokens: formattedLabels});
+
+    // Clear loading symbol and show the form.
+    const productForm = document.getElementById("productForm");
+    const spinner2 = document.getElementById("spinner2");
+    imageBox.classList.remove("hidden");
+    productForm.classList.remove("hidden");
+    spinner2.classList.remove("is-active");
+    spinner2.classList.add("hidden");
+  });
+}
+
+function refreshProductInfoPage() {
+  getBlobstoreUrl();
+  retrieveProductInfo();
 }

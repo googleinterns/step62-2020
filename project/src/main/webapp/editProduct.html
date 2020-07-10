@@ -12,7 +12,7 @@
     <script src="https://raw.githack.com/sabieber/token-autocomplete/master/built/token-autocomplete.js"></script>
     <link href="https://raw.githack.com/sabieber/token-autocomplete/master/lib/token-autocomplete.css" rel="stylesheet" type="text/css" media="all">
   </head>
-  <body onload="refreshCreateProductForm()">
+  <body onload="refreshProductInfoPage()">
     <!-- Always shows a header, even in smaller screens. -->
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
       <header class="mdl-layout__header">
@@ -42,7 +42,7 @@
       <main class="mdl-layout__content">
         <div class="page-content" id="content">
           <!-- Your content goes here -->
-          <h1>Create a Product</h1>
+          <h1>Edit Product</h1>
           <div class="mdl-spinner mdl-js-spinner is-active" id="spinner"></div>
           <form id="analyzeImageForm" class="hidden" method="POST" enctype="multipart/form-data">
             <p>
@@ -61,10 +61,10 @@
             <input type="hidden" id="cloudVisionAnnotation" name="cloudVisionAnnotation">
             <input type="hidden" id="mainGcsUrl" name="mainGcsUrl">
             <input type="hidden" id="mainImageUrl" name="mainImageUrl">
+            <input type="hidden" id="productId" name="productId">
             <h4>Product Name</h4>
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
               <input class="mdl-textfield__input" type="text" id="productDisplayName" name="productDisplayName">
-              <label class="mdl-textfield__label" for="productDisplayName">Product Name</label>
             </div>
             <h4>Product Category</h4>
             <select name="productCategory" id="productCategory">
@@ -92,12 +92,11 @@
             <h4>Price (in dollars $x.xx)</h4>
             <div class="mdl-textfield mdl-js-textfield">
               <input class="mdl-textfield__input" type="text" pattern="^\d+\.\d{2}$" id="price" name="price">
-              <label class="mdl-textfield__label" for="price">Number...</label>
               <span class="mdl-textfield__error">Input is not a number!</span>
             </div>
             <br/><br/>
             <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
-              Create Product!
+              Save Changes
             </button>
             <br/><br/>
           </form>
