@@ -2,6 +2,8 @@ package com.google.sps.data;
 import java.util.UUID;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -233,6 +235,48 @@ public class ServletLibrary {
     }
   }
 
+  public static void deleteProductFromLabels(DatastoreService datastore, 
+                                             String productId, 
+                                             List<String> labels) {
+    for (String label : labels) {
+      Filter filter = new FilterPredicate("label", FilterOperator.EQUAL, label.toLowerCase());
+      Query query = new Query("ProductLabel").setFilter(filter);
+      PreparedQuery pq = datastore.prepare(query);
+      Entity entity = pq.asSingleEntity();
+      // If the label exists, we remove the product from that label.
+      if (entity != null) {
+        @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
+          List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
+        if (productIds == null) productIds = new ArrayList<String>();
+        productIds.remove(productId);
+        entity.setProperty("productIds", productIds);
+        datastore.put(entity);
+      }
+    }
+  }
+
+  //Update product labels for an existing product.
+  public static void updateProductLabels(DatastoreService datastore, 
+                                         String productId,
+                                         List<String> oldLabels,
+                                         List<String> labels) {
+    // Check what needs to be deleted and added.
+    Set<String> oldLabelsSet = new HashSet<>(oldLabels);
+    Set<String> labelsSet = new HashSet<>(labels);
+    List<String> itemsToDelete = new ArrayList<>();
+    List<String> itemsToAdd = new ArrayList<>();
+    for (String oldLabel : oldLabels) {
+      if (!labelsSet.contains(oldLabel)) itemsToDelete.add(oldLabel);
+    }
+    for (String label : labels) {
+      if (!oldLabelsSet.contains(label)) itemsToAdd.add(label);
+    }
+
+    // Add new labels and delete old labels.
+    addProductToLabels(datastore, productId, itemsToAdd);
+    deleteProductFromLabels(datastore, productId, itemsToDelete);
+  }
+
   // Add product to the specified product set.
   public static void addProductToProductSet(DatastoreService datastore, String productId, String productSetId) {
     Filter filter = new FilterPredicate("productSetId", FilterOperator.EQUAL, productSetId);
@@ -249,6 +293,31 @@ public class ServletLibrary {
       entity.setProperty("productIds", productIds);
       datastore.put(entity);
     }
+  }
+
+  // Delete product from the specifiec set.
+  public static void deleteProductFromProductSet(DatastoreService datastore, String productId, String productSetId) {
+    Filter filter = new FilterPredicate("productSetId", FilterOperator.EQUAL, productSetId);
+    Query query = new Query("ProductSet").setFilter(filter);
+    PreparedQuery pq = datastore.prepare(query);
+    Entity entity = pq.asSingleEntity();
+    if (entity != null) {
+      @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
+        List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
+      if (productIds == null) productIds = new ArrayList<String>();
+      productIds.remove(productId);
+      entity.setProperty("productIds", productIds);
+      datastore.put(entity);
+    }
+  }
+
+  public static void updateProductSets(DatastoreService datastore, 
+                                       String productId, 
+                                       String oldProductSetId,
+                                       String productSetId) {
+    if (oldProductSetId.equals(productSetId)) return;
+    deleteProductFromProductSet(datastore, productId, oldProductSetId);
+    addProductToProductSet(datastore, productId, productSetId);
   }
 
   // Add product to the specified product category.
@@ -276,6 +345,34 @@ public class ServletLibrary {
     }
   }
 
+  // Delete a product from the specified product category.
+  public static void deleteProductFromProductCategory(DatastoreService datastore, 
+                                                      String productId, 
+                                                      String productCategory) {
+    Filter filter = new FilterPredicate("productCategory", FilterOperator.EQUAL, productCategory);
+    Query query = new Query("ProductCategory").setFilter(filter);
+    PreparedQuery pq = datastore.prepare(query);
+    Entity entity = pq.asSingleEntity();
+    // If the category exists, remove the product.
+    if (entity != null) {
+      @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
+        List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
+      if (productIds == null) productIds = new ArrayList<String>();
+      productIds.remove(productId);
+      entity.setProperty("productIds", productIds);
+      datastore.put(entity);
+    }
+  }
+
+  public static void updateProductCategories(DatastoreService datastore, 
+                                       String productId, 
+                                       String oldProductCategory,
+                                       String productCategory) {
+    if (oldProductCategory.equals(productCategory)) return;
+    deleteProductFromProductCategory(datastore, productId, oldProductCategory);
+    addProductToProductCategory(datastore, productId, productCategory);
+  }
+
   // Add product to the list of products offerec by the business.
   public static void addProductToBusiness(DatastoreService datastore, String productId, String businessId) {
     Filter filter = new FilterPredicate("businessId", FilterOperator.EQUAL, businessId);
@@ -289,6 +386,22 @@ public class ServletLibrary {
         List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
       if (productIds == null) productIds = new ArrayList<String>();
       productIds.add(productId);
+      entity.setProperty("productIds", productIds);
+      datastore.put(entity);
+    }
+  }
+
+  // Delete a given product from the business.
+  public static void deleteProductFromBusiness(DatastoreService datastore, String productId, String businessId) {
+    Filter filter = new FilterPredicate("businessId", FilterOperator.EQUAL, businessId);
+    Query query = new Query("Business").setFilter(filter);
+    PreparedQuery pq = datastore.prepare(query);
+    Entity entity = pq.asSingleEntity();
+    if (entity != null) {
+      @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
+        List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
+      if (productIds == null) productIds = new ArrayList<String>();
+      productIds.remove(productId);
       entity.setProperty("productIds", productIds);
       datastore.put(entity);
     }
