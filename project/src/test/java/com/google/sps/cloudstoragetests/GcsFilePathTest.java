@@ -1,4 +1,4 @@
-package com.google.sps.test;
+package com.google.sps;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +20,7 @@ public final class GcsFilePathTest {
     private static final Map<String, List<FileInfo>> NO_FILES = Collections.emptyMap();
 
     private static final Date date = new Date();
-    private static final Long size = 2726297.6;
+    private static final Long size = 27262L;
     private static final FileInfo file_1 = new FileInfo("contentTypeA", date, "file1", size,
                                                         "abcd1234", "/gs/myBucket/file1");
     private static final FileInfo file_2 = new FileInfo("contentTypeB", date, "file2", size,
@@ -54,16 +54,16 @@ public final class GcsFilePathTest {
     }
     
     @Test
-    public void EmptyMapForGcsFilePath() {
-        String actual = getGcsFilePath(NO_FILES);
+    public void emptyMapForGetGcsFilePath() {
+        String actual = CloudStorageLibrary.getGcsFilePath(NO_FILES);
         String expected = "";
 
         Assert.assertEquals(expected, actual);
     }
 
     @Test
-    public void GcsFilePathIsSet() {
-        String actual = getGcsFilePath(FILES);
+    public void getGcsFilePathIsSet() {
+        String actual = CloudStorageLibrary.getGcsFilePath(FILES);
         String expected = "/gs/myBucket/file1";
 
         Assert.assertEquals(expected, actual);
