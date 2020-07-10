@@ -45,7 +45,12 @@ public class CreateProductServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Retrieve required parameters for the product set.
-    String productId = ServletLibrary.generateUUID();
+    String productId = request.getParameter("productId");
+    boolean isNewProduct = false;
+    if (productId == null) {
+      isNewProduct = true;
+      productId = ServletLibrary.generateUUID();
+    }
     String productDisplayName = request.getParameter("productDisplayName");
     String productSetDisplayName = request.getParameter("productSetDisplayName");
 
@@ -67,8 +72,12 @@ public class CreateProductServlet extends HttpServlet {
     String productCategory = request.getParameter("productCategory");
     String businessId = userService.getCurrentUser().getUserId();
 
-    // TODO: catch any exceptions for string to float conversion.
-    float price = Float.parseFloat(request.getParameter("price"));
+    float price;
+    try {
+      price = Float.parseFloat(request.getParameter("price"));
+    } catch (NumberFormatException e) {
+      price = 0.0f;
+    }
 
     // TODO: support for adding multiple images. For now, we are only adding
     // the initial image that was uploaded.
@@ -107,12 +116,16 @@ public class CreateProductServlet extends HttpServlet {
     product.setProperty("cloudVisionAnnotation", new Text(cloudVisionAnnotation));
     datastore.put(product);
 
-    // Add product to relevant tables in datastore.
-    ServletLibrary.addProductToLabels(datastore, productId, labels);
-    ServletLibrary.addProductToProductSet(datastore, productId, productSetId);
-    ServletLibrary.addProductToProductCategory(datastore, productId, productCategory);
-    ServletLibrary.addProductToBusiness(datastore, productId, businessId);
+    // Add product to relevant tables in datastore, only if it is a new product.
+    if (isNewProduct) {
+      ServletLibrary.addProductToLabels(datastore, productId, labels);
+      ServletLibrary.addProductToProductSet(datastore, productId, productSetId);
+      ServletLibrary.addProductToProductCategory(datastore, productId, productCategory);
+      ServletLibrary.addProductToBusiness(datastore, productId, businessId);
+      response.sendRedirect("/businessAccount.html");
+    } else {
+      response.sendRedirect("/viewProducts.html");
+    }
 
-    response.sendRedirect("/businessAccount.html");
   }
 }

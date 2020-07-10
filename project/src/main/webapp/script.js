@@ -216,6 +216,7 @@ function retrieveProductInfo() {
     imageBox.appendChild(imageUrl);
     
     // Fill in the form information.
+    document.getElementById("productId").value = product.productId;
     document.getElementById("mainImageUrl").value = product.imageUrls[0];
     document.getElementById("productDisplayName").value = product.productDisplayName;
     document.getElementById("productSetDisplayName").value = productSet.productSetDisplayName;

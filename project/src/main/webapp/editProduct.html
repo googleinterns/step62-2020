@@ -57,9 +57,10 @@
           </form> 
           <div class="mdl-spinner mdl-js-spinner is-active" id="spinner2"></div>
           <div id="inputImage" class="hidden"></div>
-          <form id="productForm" action="/editProduct" class="hidden" method="POST">
+          <form id="productForm" action="/createProduct" class="hidden" method="POST">
             <input type="hidden" id="cloudVisionAnnotation" name="cloudVisionAnnotation">
             <input type="hidden" id="mainImageUrl" name="mainImageUrl">
+            <input type="hidden" id="productId" name="productId">
             <h4>Product Name</h4>
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
               <input class="mdl-textfield__input" type="text" id="productDisplayName" name="productDisplayName">
