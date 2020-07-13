@@ -409,6 +409,7 @@ public class ServletLibrary {
 
   // Retrieve a list of all the products offered by the business.
   // TODO: modify this function so that it will search with all kinds of parameters. This will be used for normal text search as well. 
+  // label name, product category, product set, product's name
   public static List<ProductEntity> findProducts(DatastoreService datastore, String businessId) {
     Filter filter = new FilterPredicate("businessId", FilterOperator.EQUAL, businessId);
     Query query = new Query("Product").setFilter(filter);

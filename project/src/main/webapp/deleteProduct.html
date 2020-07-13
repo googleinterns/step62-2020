@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
   </head>
-  <body onload="retrieveProducts()">
+  <body onload="deleteProduct()">
     <!-- Always shows a header, even in smaller screens. -->
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
       <header class="mdl-layout__header">
@@ -31,17 +31,24 @@
         <span class="mdl-layout-title">CloudBerry</span>
         <nav class="mdl-navigation">
           <a class="mdl-navigation__link" href="/index.html">Home</a>
-            <a class="mdl-navigation__link" href="">Browse</a>
-            <a class="mdl-navigation__link" href="">About</a>
-            <a class="mdl-navigation__link" href="/login">Account</a>
+          <a class="mdl-navigation__link" href="">Browse</a>
+          <a class="mdl-navigation__link" href="">About</a>
+          <a class="mdl-navigation__link" href="/login">Account</a>
         </nav>
       </div>
       <main class="mdl-layout__content">
-        <div class="page-content" id="product-view">
+        <div class="page-content" id="content">
           <!-- Your content goes here -->
-          <h1>Your Products</h1>
-          <div class="mdl-spinner mdl-js-spinner is-active" id="spinner"></div>
-          <div class="grid-container" id="searchResults"></div>
+          <h1>Delete a product</p>
+          <p>Are you sure you want to delete this product?</p>
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
+              href="/viewProducts.html">
+            No, take me back
+          </a>
+          <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect"
+              id="deleteProduct">
+            Yes, delete
+          </a>
         </div>
       </main>
     </div>

@@ -139,8 +139,11 @@ function retrieveProducts() {
   // TODO: find a better way to put images in cards. Right now, they often get cut off.
   fetch("/viewProducts").then(response => response.json()).then(products => {
     const searchResults = document.getElementById("searchResults");
-    if (products == null) {
+    const spinner = document.getElementById("spinner");
+    if (products == null || products.length == 0) {
       searchResults.innerText = "No products here!";
+      spinner.classList.remove("is-active");
+      spinner.classList.add("hidden");
       return;
     }
     products.forEach(product => {
@@ -163,6 +166,10 @@ function retrieveProducts() {
                                href="/editProduct.html?productId=${product.productId}">
                               Edit
                             </a>
+                            <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect"
+                               href="/deleteProduct.html?productId=${product.productId}">
+                              Delete
+                            </a>
                           </div>
                         </div>`;
       const card = document.createElement("div");
@@ -170,6 +177,8 @@ function retrieveProducts() {
       card.innerHTML = cardHtml;
       searchResults.appendChild(card);
     });
+    spinner.classList.remove("is-active");
+    spinner.classList.add("hidden");
   });
 }
 
@@ -276,4 +285,10 @@ function refreshProductInfoPage() {
   getBlobstoreUrl(true); // True indicates we are editing the product.
   retrieveProductSetDisplayNames();
   retrieveProductInfo();
+}
+
+function deleteProduct() {
+  const params = getUrlParams();
+  const productId = params["productId"];
+  document.getElementById("deleteProduct").href = "/deleteProduct?productId="+productId;
 }
