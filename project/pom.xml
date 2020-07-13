@@ -16,6 +16,18 @@
     <failOnMissingWebXml>false</failOnMissingWebXml>
   </properties>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.google.cloud</groupId>
+        <artifactId>libraries-bom</artifactId>
+        <version>7.0.0</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
      <dependency>
       <groupId>javax.servlet</groupId>
@@ -25,6 +37,7 @@
     </dependency>
 
     <dependency>
+
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.12</version>
@@ -48,7 +61,18 @@
       <artifactId>google-cloud-vision</artifactId>
       <version>1.70.0</version>
     </dependency>
-    
+
+    <dependency>
+      <groupId>com.google.cloud</groupId>
+      <artifactId>google-cloud-storage</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.appengine.tools</groupId>
+      <artifactId>appengine-gcs-client</artifactId>
+      <version>0.8</version>
+    </dependency>
+  
   </dependencies>
 
   <build>
@@ -60,8 +84,8 @@
         <artifactId>appengine-maven-plugin</artifactId>
         <version>2.2.0</version>
         <configuration>
-    
-          <deploy.projectId>cloudberry-step-2020</deploy.projectId>
+          <!-- TODO: set project ID to cloudberry-step-2020. -->
+          <deploy.projectId>neelgandhi-step-2020</deploy.projectId>
           <deploy.version>1</deploy.version>
         </configuration>
       </plugin>

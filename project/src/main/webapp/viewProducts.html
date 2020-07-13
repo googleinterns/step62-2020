@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
   </head>
-  <body>
+  <body onload="retrieveProducts()">
     <!-- Always shows a header, even in smaller screens. -->
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
       <header class="mdl-layout__header">
@@ -37,9 +37,11 @@
         </nav>
       </div>
       <main class="mdl-layout__content">
-        <div class="page-content" id="content">
+        <div class="page-content" id="product-view">
           <!-- Your content goes here -->
-          <h1>Hello There!</h1>
+          <h1>Your Products</h1>
+
+          <div class="grid-container" id="searchResults"></div>
         </div>
       </main>
     </div>

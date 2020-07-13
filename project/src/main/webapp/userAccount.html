@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Cloudberry</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.teal-orange.min.css" />
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+  </head>
+  <body onload="retrieveAccountInfo()">
+    <!-- Always shows a header, even in smaller screens. -->
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+      <header class="mdl-layout__header">
+        <div class="mdl-layout__header-row">
+          <!-- Title -->
+          <span class="mdl-layout-title">CloudBerry</span>
+          <!-- Add spacer, to align navigation to the right -->
+          <div class="mdl-layout-spacer"></div>
+          <!-- Navigation. We hide it in small screens. -->
+          <nav class="mdl-navigation mdl-layout--large-screen-only">
+            <a class="mdl-navigation__link" href="/index.html">Home</a>
+            <a class="mdl-navigation__link" href="">Browse</a>
+            <a class="mdl-navigation__link" href="">About</a>
+            <a class="mdl-navigation__link" href="/login">Account</a>
+          </nav>
+        </div>
+      </header>
+      <div class="mdl-layout__drawer">
+        <span class="mdl-layout-title">CloudBerry</span>
+        <nav class="mdl-navigation">
+          <a class="mdl-navigation__link" href="/index.html">Home</a>
+          <a class="mdl-navigation__link" href="">Browse</a>
+          <a class="mdl-navigation__link" href="">About</a>
+          <a class="mdl-navigation__link" href="/login">Account</a>
+        </nav>
+      </div>
+      <main class="mdl-layout__content">
+        <div class="page-content" id="content">
+          <!-- Your content goes here -->
+          <h1 id="userGreeting"></h1>
+          <a id="logout">
+            <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+              Log out
+            </button>
+          </a>
+          <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+            <div class="mdl-tabs__tab-bar">
+                <a href="#accountInfo" class="mdl-tabs__tab is-active">Account Info</a>
+                <a href="#searchHistory" class="mdl-tabs__tab">Search History</a>
+            </div>
+            <div class="mdl-tabs__panel is-active" id="accountInfo"><br/>
+              <form action="/createUserAccount" method="POST" >
+                <p>Username</p> 
+                <div class="mdl-textfield mdl-js-textfield">
+                  <input class="mdl-textfield__input" type="text" id="nickname" name="nickname">
+                </div><br/><br/>
+                <p>Address</p>
+                <div class="mdl-textfield mdl-js-textfield">
+                  <input class="mdl-textfield__input" type="text" id="street" name="street">
+                </div>
+                <div class="mdl-textfield mdl-js-textfield">
+                  <input class="mdl-textfield__input" type="text" id="city" name="city">
+                </div><br/>
+                <div class="mdl-textfield mdl-js-textfield">
+                  <input class="mdl-textfield__input" type="text" id="state" name="state">
+                </div>
+                <div class="mdl-textfield mdl-js-textfield">
+                  <input class="mdl-textfield__input" type="text" id="zipCode" name="zipCode">
+                </div>
+                <br/><br/>
+                <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                  Save Changes
+                </button>
+              </form>
+            </div>
+            <div class="mdl-tabs__panel" id="searchHistory"><br/>
+              Search history would appear here!
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
