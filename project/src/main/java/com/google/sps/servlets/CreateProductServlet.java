@@ -1,9 +1,13 @@
 package com.google.sps.servlets;
+
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+//Product Search Library
+import com.google.sps.data.ServletsLibrary;
 
 import com.google.gson.Gson;
 
@@ -132,6 +136,10 @@ public class CreateProductServlet extends HttpServlet {
     } else {
       response.sendRedirect("/viewProducts.html");
     }
-
+    
+    
+//TODO:Phillips Product Search functions 
+//     ServletsLibrary.createProduct(projectId, computeRegion, productId, productDisplayName, productCategory);
+//     ServletsLibrary.addProductToProductSet(projectId, computeRegion, productId, setId);
   }
 }

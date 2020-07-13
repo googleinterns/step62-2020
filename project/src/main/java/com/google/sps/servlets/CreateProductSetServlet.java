@@ -1,9 +1,13 @@
 package com.google.sps.servlets;
+
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+//Product Search Library
+import com.google.sps.data.ServletsLibrary;
 
 import com.google.gson.Gson;
 
@@ -49,6 +53,8 @@ public class CreateProductSetServlet extends HttpServlet {
     }
 
     // Product search api function goes here.
+    //TODO:Phillips Product Search Api
+    //ServletsLibrary.createProductSet(projectId, computeRegion, productSetId, productSetDisplay);
 
 
     response.sendRedirect("/businessAccount.html");
