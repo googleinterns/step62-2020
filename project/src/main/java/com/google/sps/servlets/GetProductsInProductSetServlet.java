@@ -11,24 +11,29 @@ import java.io.IOException;
 
 import com.google.gson.Gson;
 import com.google.sps.data.ProductSetItem;
+import com.google.sps.data.ProductItem;
 
 import com.google.sps.data.ServletsLibrary;
  
  
  
-@WebServlet("/product-set-list")
-public class GetProductSetsServlet extends HttpServlet {
+@WebServlet("/product-list")
+public class GetProductsInProductSetServlet extends HttpServlet {
   Gson gson = new Gson();
   
  
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    
+
     String projectId = "cloudberry-step-2020";
     String computeRegion = "us-east1";
-    
-    ArrayList<ProductSetItem> productSets = ServletsLibrary.listProductSets(projectId, computeRegion);
+    // String productSetId = request.getParameter("productSetId");
+    ArrayList<ProductItem> products = ServletsLibrary.listProducts(projectId, computeRegion);
+
     response.setContentType("application/json;");
-    response.getWriter().println(gson.toJson(productSets));
+    response.getWriter().println(gson.toJson(products));
+    
+    
+    
   }
   
 }

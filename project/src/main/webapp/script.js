@@ -14,7 +14,7 @@
 
 function loadProductSets() {
 
-  fetch("/product-list").then(response => response.json()).then((productSets) => {
+  fetch("/product-set-list").then(response => response.json()).then((productSets) => {
     console.log(productSets);
     const setListElement = document.getElementById("product-set-list");
     setListElement.innerHTML = "";
@@ -41,5 +41,40 @@ function createProductSetElement(productSet) {
   productSetElement.appendChild(linebreak);
 
   return productSetElement;
+}
+
+function deleteProductSet(){
+    const productSet = document.getElementById("delete-product-set");
+    fetch("/delete-product-set?productSet="+productSet, {method:"POST"}).then(() => loadProductSets());
+}
+
+function listProducts(){
+
+    fetch("/product-list").then(response => response.json()).then((products) => {
+        console.log(products);
+    
+    const productListElement = document.getElementById("products-list");
+    productListElement.innerHTML = "";
+
+    products.forEach((product) => {
+        productListElement.appendChild(createProductElement(product));
+        productListElement.appendChild(document.createElement("br"));
+    })
+  });
+}
+
+function createProductElement(product){
+    const linebreak = document.createElement("br");
+
+    const productElement = document.createElement("li");
+    productElement.className = "product";
+
+    const titleElement = document.createElement("span");
+    titleElement.innerText = product.productName+": "+product.productCategory;
+
+    productElement.appendChild(titleElement);
+    productElement.appendChild(linebreak);
+
+    return productElement;
 }
 

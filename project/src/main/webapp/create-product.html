@@ -8,9 +8,30 @@
   </head>
   <body>
     <form action="/create-product" method="POST">
-    <label for="product-id">Product ID</label>
-    <input type="text" name="product-id">
-    <label for="product-display">Product Display name</label>
-    <input type="text" name="product-display">
-    <input type="submit"/>
-</form>
+        <label for="product-set-id">Product Set ID</label>
+        <input type="text" name="product-set-id">
+        <label for="product-id">Product ID</label>
+        <input type="text" name="product-id">
+
+        <label for="product-category">Choose a product category</label>
+        <select name="product-category" id="product-category">
+            <option value="homegoods-v2">Home goods</option>
+            <option value="apparel-v2">Apparel</option>
+            <option value="toys-v2">Toys</option>
+            <option value="packagedgoods-v1">Packaged goods</option>
+            <option value="general-v1 ">General</option>
+        </select>
+
+
+        <label for="product-display">Product Display name</label>
+        <input type="text" name="product-display">
+        <input type="submit"/>
+    </form>
+
+    <!-- <label for="product-set">What Product Set</label>
+    <input type="text" name="product-set" id="product-set" onchange="listProducts()" value=""> -->
+
+    <button onclick="listProducts()">show products</button>
+    <div id="products-list"></div>
+    
+    

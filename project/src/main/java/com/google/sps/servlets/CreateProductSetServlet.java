@@ -19,16 +19,14 @@ import com.google.sps.data.ProductSetItem;
 public class CreateProductSetServlet extends HttpServlet {
  
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    try{
-        String projectId = "cloudberry-step-2020";
-        String computeRegion = "us-east1";
-        String productSetId = request.getParameter("product-set-id");
-        String productSetDisplay = request.getParameter("product-set-display");
+
+    String projectId = "cloudberry-step-2020";
+    String computeRegion = "us-east1";
+    String productSetId = request.getParameter("product-set-id");
+    String productSetDisplay = request.getParameter("product-set-display");
     
-        ProductSetItem productSetItem = ServletsLibrary.createProductSet(projectId, computeRegion, productSetId, productSetDisplay);
-    } catch(Exception e){
-        response.getWriter().println("Cannot retrieve input");
-    }
+    ProductSetItem productSetItem = ServletsLibrary.createProductSet(projectId, computeRegion, productSetId, productSetDisplay);
+ 
     response.sendRedirect("/index.html");
   }
 }

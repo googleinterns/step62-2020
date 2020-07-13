@@ -15,19 +15,15 @@ import com.google.sps.data.ServletsLibrary;
 public class CreateProductServlet extends HttpServlet {
  
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    try{
-        String projectId = "cloudberry-step-2";
-        String computeRegion = "us-east1";
-        String productId = request.getParameter("product-id");
-        String productDisplayName = request.getParameter("product-display");
-        String productCategory = "toys-v2";
-        String setId = "1";
+    String projectId = "cloudberry-step-2";
+    String computeRegion = "us-east1";
+    String productId = request.getParameter("product-id");
+    String productDisplayName = request.getParameter("product-display");
+    String productCategory = request.getParameter("product-category");
+    String setId = request.getParameter("product-set-id");
         
-        ServletsLibrary.createProduct(projectId, computeRegion, productId, productDisplayName, productCategory);
-        ServletsLibrary.addProductToProductSet(projectId, computeRegion, productId, setId);
-    } catch(Exception e){
-        response.getWriter().println("Cannot retreive input");
-    }
+    ServletsLibrary.createProduct(projectId, computeRegion, productId, productDisplayName, productCategory);
+    ServletsLibrary.addProductToProductSet(projectId, computeRegion, productId, setId);
     
     response.sendRedirect("create-product.html");
 

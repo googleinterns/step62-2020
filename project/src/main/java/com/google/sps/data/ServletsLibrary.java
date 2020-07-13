@@ -12,8 +12,7 @@ public class ServletsLibrary{
 
 
     public static ArrayList<ProductSetItem> listProductSets(String projectId,
-     String computeRegion)
-     throws IOException {
+     String computeRegion) throws IOException {
 
       ArrayList<ProductSetItem> productSets = new ArrayList<>();
 
@@ -41,7 +40,9 @@ public class ServletsLibrary{
         // to get the set id of a product set.
         productSets.add(productSetItem);
         }
-      }
+      } catch(Exception e){
+        System.err.println("Could not list product sets");
+    }
 
     return productSets;
   }
@@ -50,8 +51,7 @@ public class ServletsLibrary{
     String projectId, 
     String computeRegion, 
     String productSetId, 
-    String productSetDisplayName)
-    throws IOException {
+    String productSetDisplayName) throws IOException {
     
     ProductSetItem newProductSet = new ProductSetItem(productSetId, productSetDisplayName);
 
@@ -72,6 +72,8 @@ public class ServletsLibrary{
       ProductSet productSet = client.createProductSet(request);
       // Display the product set information
       System.out.println(String.format("Product set name: %s", productSet.getName()));
+    } catch(Exception e){
+        System.err.println("Could not create product set");
     }
     return newProductSet;
   }
@@ -81,8 +83,7 @@ public class ServletsLibrary{
     String computeRegion,
     String productId,
     String referenceImageId,
-    String gcsUri)
-    throws IOException {
+    String gcsUri) throws IOException {
     try (ProductSearchClient client = ProductSearchClient.create()) {
 
         // Get the full path of the product.
@@ -96,6 +97,8 @@ public class ServletsLibrary{
         // Display the reference image information.
         System.out.println(String.format("Reference image name: %s", image.getName()));
         System.out.println(String.format("Reference image uri: %s", image.getUri()));
+    } catch(Exception e){
+        System.err.println("Could not create reference image");
     }
   } 
 
@@ -103,8 +106,7 @@ public class ServletsLibrary{
     String projectId, 
     String computeRegion, 
     String productId, 
-    String productSetId)
-    throws IOException {
+    String productSetId) throws IOException {
     try (ProductSearchClient client = ProductSearchClient.create()) {
 
         // Get the full path of the product set.
@@ -118,6 +120,8 @@ public class ServletsLibrary{
         client.addProductToProductSet(formattedName, productPath);
 
         System.out.println(String.format("Product added to product set."));
+    } catch(Exception e){
+        System.err.println("Could not add product to product set");
     }
   }
 
@@ -126,8 +130,7 @@ public class ServletsLibrary{
     String computeRegion,
     String productId,
     String productDisplayName,
-    String productCategory)
-    throws IOException {
+    String productCategory) throws IOException {
     try (ProductSearchClient client = ProductSearchClient.create()) {
 
         // A resource that represents Google Cloud Platform location.
@@ -143,14 +146,15 @@ public class ServletsLibrary{
         Product product = client.createProduct(formattedParent, myProduct, productId);
         // Display the product information
         System.out.println(String.format("Product name: %s", product.getName()));
+    // } catch(Exception e){
+    //     System.err.println("Could not create product");
     }
   }
 
   public static ArrayList<ProductItem> listProductsInProductSet(
     String projectId, 
     String computeRegion, 
-    String productSetId) 
-    throws IOException {
+    String productSetId) throws IOException {
     ArrayList<ProductItem> productItems = new ArrayList<>();
     try (ProductSearchClient client = ProductSearchClient.create()) {
 
@@ -176,6 +180,8 @@ public class ServletsLibrary{
                 System.out.println(String.format("%s: %s", element.getKey(), element.getValue()));
             }
         }
+    } catch(Exception e){
+        System.err.println("Could not list products");
     }
     return productItems;
   }
@@ -193,6 +199,8 @@ public class ServletsLibrary{
         // Delete the product set.
         client.deleteProductSet(formattedName);
         System.out.println(String.format("Product set deleted"));
+    }  catch(Exception e){
+        System.err.println("Could not delete product set");
     }
   }
 
@@ -216,7 +224,37 @@ public class ServletsLibrary{
         client.removeProductFromProductSet(formattedParent, formattedName);
 
         System.out.println(String.format("Product removed from product set."));
+    } catch(Exception e){
+        System.err.println("Could not remove product");
     }
+  }
+
+  public static ArrayList<ProductItem> listProducts(String projectId, String computeRegion) throws IOException {
+    ArrayList<ProductItem> products = new ArrayList<>();
+    try (ProductSearchClient client = ProductSearchClient.create()) {
+
+        // A resource that represents Google Cloud Platform location.
+        String formattedParent = ProductSearchClient.formatLocationName(projectId, computeRegion);
+
+        // List all the products available in the region.
+        for (Product product : client.listProducts(formattedParent).iterateAll()) {
+        // Display the product information
+        System.out.println(String.format("\nProduct name: %s", product.getName()));
+        System.out.println(
+            String.format(
+                "Product id: %s",
+                product.getName().substring(product.getName().lastIndexOf('/') + 1)));
+        System.out.println(String.format("Product display name: %s", product.getDisplayName()));
+        System.out.println(String.format("Product category: %s", product.getProductCategory()));
+        System.out.println("Product labels:");
+        System.out.println(
+            String.format("Product labels: %s", product.getProductLabelsList().toString()));
+
+        ProductItem productItem = new ProductItem(product.getName().substring(product.getName().lastIndexOf('/') + 1), product.getDisplayName(), product.getProductCategory(), "0");
+        products.add(productItem);
+        }
+    }
+    return products;
   }
 
 }

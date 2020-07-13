@@ -20,6 +20,9 @@
 
 
     <a href="create-product.html">create a product</a>
-    <a href="delete-product-set.html">delete a product set</a>
+
+    <label for="product-set">What Product Set</label>
+    <input type="text" name="product-set" id="product-set" onchange="deleteProductSet()" value="">
+    <button onclick="deleteProductSet()">delete product set</button>
   </body>
 </html>

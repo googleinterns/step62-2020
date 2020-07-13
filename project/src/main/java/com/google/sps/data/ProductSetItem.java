@@ -9,4 +9,8 @@ public class ProductSetItem{
         this.setId = setId;
         this.setName = setName;
     }
+
+    public String toString(){
+        return setId+": "+setName;
+    }
 }

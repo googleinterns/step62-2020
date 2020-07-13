@@ -15,15 +15,13 @@ import com.google.sps.data.ServletsLibrary;
 public class DeleteProductSetServlet extends HttpServlet {
  
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    try{
-        String projectId = "cloudberry-step-2";
-        String computeRegion = "us-east1";
-        String productSetId = request.getParameter("product-set-id");
     
-        ServletsLibrary.deleteProductSet(projectId, computeRegion, productSetId);
-    } catch(Exception e){
-        response.getWriter().println("Cannot retrieve input");
-    }
+    String projectId = "cloudberry-step-2";
+    String computeRegion = "us-east1";
+    String productSetId = request.getParameter("productSet");
+    
+    ServletsLibrary.deleteProductSet(projectId, computeRegion, productSetId);
+
     response.sendRedirect("index.html");
 
   } 

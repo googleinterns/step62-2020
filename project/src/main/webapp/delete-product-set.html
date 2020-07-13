@@ -7,8 +7,7 @@
     <script src="script.js"></script>
   </head>
   <body>
-    <form action="/delete-product-set" method="POST">
-    <label for="prodect-set-id">Product Set ID</label>
-    <input type="text" name="product-set-id">
-    <input type="submit"/>
-</form>
+    <label for="product-set">What Product Set</label>
+    <input type="text" name="product-set" id="delete-product-set" onchange="deleteProductSet()" value="gclo">
+    <button onclick="deleteProductSet()">delete product set</button>
+    <div id="products-list"></div>
