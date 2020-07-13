@@ -31,7 +31,8 @@ public final class UploadedFileUrlTest {
 
         BLOBKEY = MOCK_BLOBSTORE.createGsBlobKey(GCS_FILE_NAME).getKeyString();
     }
-
+    
+    //Test to show what happens when you pass in a null value
     @Test
     public void uploadedNullGcsFileName() {
         String actual = CloudStorageLibrary.getUploadedFileUrl(MOCK_BLOBSTORE, null);
@@ -40,6 +41,7 @@ public final class UploadedFileUrlTest {
         Assert.assertEquals(expected, actual);
     }
 
+    //Test to show what happens when you pass in an empty string
     @Test
     public void uploadedEmptyGcsFileName() {
         String actual = CloudStorageLibrary.getUploadedFileUrl(MOCK_BLOBSTORE, "");
@@ -48,6 +50,7 @@ public final class UploadedFileUrlTest {
         Assert.assertEquals(expected, actual);
     }
 
+    //Test to show that the function works properly
     @Test
     public void uploadedGcsFileNameisSet() {
         String actual = CloudStorageLibrary.getUploadedFileUrl(MOCK_BLOBSTORE, GCS_FILE_NAME);

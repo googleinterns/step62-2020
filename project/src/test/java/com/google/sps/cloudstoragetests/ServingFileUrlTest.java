@@ -12,6 +12,7 @@ import com.google.sps.data.CloudStorageLibrary;
 public final class ServingFileUrlTest {
     private static final String GCS_FILE_NAME = "/gs/myBucket/myFile";
     
+    //Test to show what happens when you pass in a null value
     @Test
     public void servingNullGcsFileName() {
         String actual = CloudStorageLibrary.getServingFileUrl(null);
@@ -20,6 +21,7 @@ public final class ServingFileUrlTest {
         Assert.assertEquals(expected, actual);
     }
 
+    //Function that test what happens if you pass in a empty string
     @Test
     public void servingEmptyGcsFileName() {
         String actual = CloudStorageLibrary.getServingFileUrl("");
@@ -28,6 +30,7 @@ public final class ServingFileUrlTest {
         Assert.assertEquals(expected, actual);
     }
 
+    //Test to make sure the function works properly if you pass in a file name
     @Test
     public void servingGcsFileNameisSet() {
         String actual = CloudStorageLibrary.getServingFileUrl(GCS_FILE_NAME);

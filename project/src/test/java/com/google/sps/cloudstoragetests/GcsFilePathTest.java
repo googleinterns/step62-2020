@@ -17,8 +17,10 @@ import com.google.sps.data.CloudStorageLibrary;
 
 @RunWith(JUnit4.class)
 public final class GcsFilePathTest {
+    //Empty Map of files
     private static final Map<String, List<FileInfo>> NO_FILES = Collections.emptyMap();
 
+    //Defining sample files for testing
     private static final Date date = new Date();
     private static final Long size = 27262L;
     private static final FileInfo file_1 = new FileInfo("contentTypeA", date, "file1", size,
@@ -39,6 +41,7 @@ public final class GcsFilePathTest {
 
     private static final Map<String, List<FileInfo>> FILES = new HashMap<>();
 
+    //Adding the sample files to Lists and then the Lists to the Map
     @Before
     public void setUp() {
         FILE_LIST1.add(file_1);
@@ -53,6 +56,7 @@ public final class GcsFilePathTest {
         FILES.put("List2", FILE_LIST2);
     }
     
+    //Test what happens when you pass in an empty Map
     @Test
     public void emptyMapForGetGcsFilePath() {
         String actual = CloudStorageLibrary.getGcsFilePath(NO_FILES);
@@ -61,6 +65,7 @@ public final class GcsFilePathTest {
         Assert.assertEquals(expected, actual);
     }
 
+    //Test what happens when you pass in a map that contains files
     @Test
     public void getGcsFilePathIsSet() {
         String actual = CloudStorageLibrary.getGcsFilePath(FILES);
