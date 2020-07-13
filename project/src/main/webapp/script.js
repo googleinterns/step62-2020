@@ -159,7 +159,8 @@ function retrieveProducts() {
                             ${'$' + product.price.toFixed(2) + ' - ' + truncateString(product.productDescription, 80)}
                           </div>
                           <div class="mdl-card__actions mdl-card--border">
-                            <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+                            <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
+                               href="/product.html?productId=${product.productId}">
                               View
                             </a>
                             <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
@@ -291,4 +292,39 @@ function deleteProduct() {
   const params = getUrlParams();
   const productId = params["productId"];
   document.getElementById("deleteProduct").href = "/deleteProduct?productId="+productId;
+}
+
+// Retrieve and display product on the view product page.
+function viewProduct() {
+  const params = getUrlParams();
+  const productId = params["productId"];
+  const queryString = "/productInfo?productId=" + productId;
+  fetch(queryString).then(response => response.json()).then(productInfo => {
+    const product = productInfo.product;
+    const productSet = productInfo.productSet;
+    const business = productInfo.business;
+    document.getElementById("productPath").innerText = 
+      product.productCategory + " / " + productSet.productSetDisplayName;
+    document.getElementById("productSetDisplayName").innerText = product.productSetDisplayName;
+    document.getElementById("price").innerText = "Price: " + product.price.toFixed(2);
+    document.getElementById("productDescription").innerText = product.productDescription;
+    const labels = document.getElementById("labels");
+    product.labels.forEach(label => {
+      const chip = document.createElement("span");
+      chip.classList.add("mdl-chip");
+      chip.innerHTML = `<span class="mdl-chip__text">${label}</span>`;
+      labels.appendChild(chip);
+    });
+    document.getElementById("businessDisplayName").innerText = 
+      "Sold by: " + business.businessDisplayName;
+    document.getElementById("businessAddress").innerText = 
+      `${business.street}, ${business.city} ${business.state}, ${business.zipCode}`;
+    const similarWebsites = document.getElementById("similarWebsites");
+    product.cloudVisionAnnotation.webUrls.forEach(url => {
+      const link = document.createElement("a");
+      link.href = url;
+      link.innerText = url;
+      similarWebsites.appendChild(link);
+    });
+  });
 }
