@@ -136,7 +136,12 @@ public class CloudVisionServlet extends HttpServlet {
     updatedBusiness.setProperty("tempVisionAnnotation", new Text(tempVisionAnnotation));
     datastore.put(updatedBusiness);
 
-    // Redirect to the create product form. 
-    response.sendRedirect("/createProduct.html");
+    // Redirect to the create product form or the edit product form.
+    boolean isEditing = Boolean.parseBoolean(request.getParameter("edit"));
+    if (isEditing) {
+      response.sendRedirect("/editProduct.html?refreshImage=true&productId="+request.getParameter("editProductId"));
+    } else {
+      response.sendRedirect("/createProduct.html");
+    }
   }
 }

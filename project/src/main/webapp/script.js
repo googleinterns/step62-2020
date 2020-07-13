@@ -48,8 +48,14 @@ function retrieveProductSetDisplayNames() {
 }
 
 // Get the blobstore url to submit the image form to.
-function getBlobstoreUrl() {
-  fetch("/getBlobstoreUrl").then(response=> response.text()).then(url => {
+function getBlobstoreUrl(isEditing) {
+  let queryString = "/getBlobstoreUrl";
+  if (isEditing) {
+    const params = getUrlParams();
+    const productId = params["productId"];
+    queryString = queryString + "?edit=true&editProductId="+productId;
+  } 
+  fetch(queryString).then(response => response.text()).then(url => {
     const myForm = document.getElementById("analyzeImageForm");
     myForm.action = url;
     myForm.classList.remove("hidden");
@@ -57,7 +63,6 @@ function getBlobstoreUrl() {
     spinner.classList.remove("is-active");
     spinner.classList.add("hidden");
   });
-  
 }
 
 // Fetch the cloud vision image annotation to auto fill the create product form
@@ -65,7 +70,6 @@ function getBlobstoreUrl() {
 // TODO: add a loading animation when retrieving the json.
 function retrieveProductFormInfo() {
   fetch("/cloudVision").then(response => response.json()).then(productInfo => {
-    console.log(productInfo);
     // Set up input image display box.
     const imageBox = document.getElementById("inputImage");
     const imageText = document.createElement('h4');
@@ -115,7 +119,7 @@ function retrieveProductFormInfo() {
 }
 
 function refreshCreateProductForm() {
-  getBlobstoreUrl();
+  getBlobstoreUrl(false); // false indicates we are creating the product the first time.
   retrieveProductSetDisplayNames();
   retrieveProductFormInfo();
 }
@@ -183,18 +187,39 @@ function getUrlParams() {
   return params;
 };
 
+// Retrieves the information of a product from datastore, and autfills the
+// edit product form with that info.
 function retrieveProductInfo() {
   const params = getUrlParams();
   const productId = params["productId"];
+  let refreshImage = params["refreshImage"];
   if (productId == null) {
     document.getElementById("content").innerText = "Error: No product was selected";
     return;
   }
+  if (refreshImage == null) {
+    refreshImage = false;
+  } else {
+    refreshImage = true;
+  }
+  if (refreshImage) retrieveProductFormInfo();
   const queryString = "/productInfo?productId=" + productId;
   fetch(queryString).then(response => response.json()).then(productInfo => {
     // Get the relavant data from the product info object.
     const product = productInfo.product;
     const productSet = productInfo.productSet;
+
+    // If the user had submitted a new photo to be analyzed, only keep the following
+    // information.
+    if (refreshImage && product!=null && productSet!=null) {
+      document.getElementById("productId").value = product.productId;
+      document.getElementById("productDisplayName").value = product.productDisplayName;
+      document.getElementById("productSetDisplayName").value = productSet.productSetDisplayName;
+      document.getElementById("productCategory").value = product.productCategory;
+      document.getElementById("price").value = product.price.toFixed(2);
+      document.getElementById("productDescription").value = product.productDescription;
+      return;
+    }
 
     // Set up input image display box.
     const imageBox = document.getElementById("inputImage");
@@ -248,6 +273,7 @@ function retrieveProductInfo() {
 }
 
 function refreshProductInfoPage() {
-  getBlobstoreUrl();
+  getBlobstoreUrl(true); // True indicates we are editing the product.
+  retrieveProductSetDisplayNames();
   retrieveProductInfo();
 }
