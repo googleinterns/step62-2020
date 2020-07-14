@@ -12,7 +12,7 @@
     <script src="https://raw.githack.com/sabieber/token-autocomplete/master/built/token-autocomplete.js"></script>
     <link href="https://raw.githack.com/sabieber/token-autocomplete/master/lib/token-autocomplete.css" rel="stylesheet" type="text/css" media="all">
   </head>
-  <body onload="refreshProductInfoPage()">
+  <body onload="viewProduct()">
     <!-- Always shows a header, even in smaller screens. -->
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
       <header class="mdl-layout__header">
@@ -43,15 +43,21 @@
         <div class="page-content" id="content">
           <!-- Your content goes here -->
           <div class="mdl-spinner mdl-js-spinner is-active" id="spinner"></div>
-          <p id="productPath"></p>
-          <h1 id="productDisplayName"></h1>
-          <h4 id="price"></h4>
-          <p id="productDescription"></p>
-          <div id="labels"></div>
-          <p id="businessDisplayName"></p>
-          <p id="businessAddress"></p>
-          <div id="similarWebsites"></div>
-          
+          <div id="productContent" class="hidden">
+            <h1 id="productDisplayName"></h1>
+            <p id="productPath"></p>
+            <img id="mainImage" width="300px"/img>
+            <h4 id="price"></h4>
+            <h5>Description:</h5>
+            <p id="productDescription"></p>
+            <h5>Labels/Tags:</h5>
+            <div id="labels"></div>
+            <h5>Business Information</h5>
+            <p id="businessDisplayName"></p>
+            <p id="businessAddress"></p>
+            <h5>Similar product images</h5>
+            <div id="similarWebsites"></div>
+          </div>
         </div>
       </main>
     </div>

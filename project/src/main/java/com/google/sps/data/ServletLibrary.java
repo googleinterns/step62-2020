@@ -14,6 +14,8 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.CompositeFilter;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
 import com.google.appengine.api.users.UserService;
@@ -408,11 +410,63 @@ public class ServletLibrary {
   }
 
   // Retrieve a list of all the products offered by the business.
-  // TODO: modify this function so that it will search with all kinds of parameters. This will be used for normal text search as well. 
-  // label name, product category, product set, product's name
-  public static List<ProductEntity> findProducts(DatastoreService datastore, String businessId) {
-    Filter filter = new FilterPredicate("businessId", FilterOperator.EQUAL, businessId);
-    Query query = new Query("Product").setFilter(filter);
+  // TODO: integrate label searching with the textQuery.
+  public static List<ProductEntity> findProducts(DatastoreService datastore, 
+                                                 String businessId,
+                                                 String productSetId,
+                                                 String productCategory,
+                                                 String sortOrder,
+                                                 String textQuery) {
+    // Set the filters.
+    List<Filter> filters = new ArrayList<>();
+    if (businessId != null) {
+      filters.add(new FilterPredicate("businessId", FilterOperator.EQUAL, businessId));
+    }
+    if (productSetId != null) {
+      filters.add(new FilterPredicate("productSetId", FilterOperator.EQUAL, productSetId));
+    }
+    if (productCategory != null) {
+      filters.add(new FilterPredicate("productCategory", FilterOperator.EQUAL, productCategory));
+    }
+    CompositeFilter allFilters = null;
+    Filter singleFilter = null;
+    if (!filters.isEmpty()) {
+      if (filters.size() == 1) {
+        singleFilter = filters.get(0);
+      } else {
+        allFilters = CompositeFilterOperator.and(filters);
+      }
+    }
+
+    // Set the sort direction.
+    String sortCategory = null;
+    SortDirection sortDirection = null;
+    if (sortOrder.equals("alphabetical_descending")) {
+      sortCategory = "productDisplayName";
+      sortDirection = SortDirection.DESCENDING;
+    } else if (sortOrder.equals("alphabetical_ascending")) {
+      sortCategory = "productDisplayName";
+      sortDirection = SortDirection.ASCENDING;
+    } else if (sortOrder.equals("price_descending")) {
+      sortCategory = "price";
+      sortDirection = SortDirection.DESCENDING;
+    } else if (sortOrder.equals("price_ascending")) {
+      sortCategory = "price";
+      sortDirection = SortDirection.ASCENDING;
+    }
+
+    // Create the query.
+    Query query = new Query("Product");
+    if (allFilters != null) {
+      query.setFilter(allFilters);
+    } else if (singleFilter != null) {
+      query.setFilter(singleFilter);
+    }
+    if (sortCategory != null) {
+      query.addSort(sortCategory, sortDirection);
+    }
+    
+    // Run the query and return the results after formatting.
     PreparedQuery pq = datastore.prepare(query);
     List<ProductEntity> products = new ArrayList<>();
     for (Entity entity : pq.asIterable()) {
@@ -422,22 +476,22 @@ public class ServletLibrary {
       Object _productDisplayName = entity.getProperty("productDisplayName");
       Object _productSetId = entity.getProperty("productSetId");
       Object _productCategory = entity.getProperty("productCategory");
+      Object _businessId = entity.getProperty("businessId");
       Object _price = entity.getProperty("price");
       Object _productDescription = entity.getProperty("productDescription");
       Object _cloudVisionAnnotation = entity.getProperty("cloudVisionAnnotation");
       String productId;
       String productDisplayName;
-      String productSetId;
-      String productCategory;
       float price; 
       String productDescription;
       String cloudVisionAnnotation;
 
-      // verifying types of the values in a product entity.
+      // Verifying types of the values in a product entity.
       if ((_productId instanceof String) &&
           (_productDisplayName instanceof String) &&
           (_productSetId instanceof String) &&
           (_productCategory instanceof String) &&
+          (_businessId instanceof String) &&
           (_price instanceof Double) &&
           (_productDescription instanceof String) &&
           (_cloudVisionAnnotation instanceof Text)) {
@@ -445,6 +499,7 @@ public class ServletLibrary {
         productDisplayName = _productDisplayName.toString();
         productSetId = _productSetId.toString();
         productCategory = _productCategory.toString();
+        businessId = _businessId.toString();
         Double doublePrice = (Double) _price;
         price = doublePrice.floatValue();
         productDescription = _productDescription.toString();

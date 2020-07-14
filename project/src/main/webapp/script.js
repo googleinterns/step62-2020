@@ -96,7 +96,7 @@ function retrieveProductFormInfo() {
     // Store the product info as a string in the form. (This will be hidden in
     // the html.)
     const hiddenAnnotation = document.getElementById("cloudVisionAnnotation");
-    hiddenAnnotation.value = JSON.stringify(productInfo);
+    hiddenAnnotation.value = JSON.stringify(productInfo.annotation);
 
     // Fill the tags and description based on the cloud vision annotation.
     let formattedLabels = [];
@@ -134,20 +134,29 @@ function truncateString(str, length) {
   }
 };
               
+// Display cards containing the products.
 function retrieveProducts() {
-  // TODO: implement filtering by product category, product set, sort by alphabet and price.
-  // TODO: find a better way to put images in cards. Right now, they often get cut off.
-  fetch("/viewProducts").then(response => response.json()).then(products => {
-    const searchResults = document.getElementById("searchResults");
-    const spinner = document.getElementById("spinner");
+  const searchResults = document.getElementById("searchResults");
+  searchResults.innerHTML = "";
+  const spinner = document.getElementById("spinner");
+  spinner.classList.add("is-active");
+
+  let productSetDisplayName = document.getElementById("productSetDisplayName").value;
+  if (productSetDisplayName === "") productSetDisplayName = "none";
+  const productCategory = document.getElementById("productCategory").value;
+  const sortOrder = document.getElementById("sortOrder").value;
+  let queryString = "/viewProducts?productSetDisplayName=" + productSetDisplayName + 
+                    "&productCategory=" + productCategory + 
+                    "&sortOrder=" + sortOrder + 
+                    "&businessId=getFromDatabase";
+  fetch(queryString).then(response => response.json()).then(products => {
     if (products == null || products.length == 0) {
       searchResults.innerText = "No products here!";
       spinner.classList.remove("is-active");
-      spinner.classList.add("hidden");
       return;
     }
     products.forEach(product => {
-      const cardHtml = `<div class="product-card mdl-card mdl-shadow--2dp">
+      const cardHtml = `<div class="product-card mdl-card mdl-shadow--4dp">
                           <div class="mdl-card__title" style="background-image: 
                             linear-gradient(to bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,1)), 
                             url('${product.imageUrls[0]}');">
@@ -179,8 +188,12 @@ function retrieveProducts() {
       searchResults.appendChild(card);
     });
     spinner.classList.remove("is-active");
-    spinner.classList.add("hidden");
   });
+}
+
+function refreshViewProductsPage() {
+  retrieveProductSetDisplayNames();
+  retrieveProducts();
 }
 
 // Gets parameters passed in through the url, and formats them in a dictionary.
@@ -303,10 +316,13 @@ function viewProduct() {
     const product = productInfo.product;
     const productSet = productInfo.productSet;
     const business = productInfo.business;
+    // Fill out the appropriate places on the form.
     document.getElementById("productPath").innerText = 
+      business.businessDisplayName + " / " + 
       product.productCategory + " / " + productSet.productSetDisplayName;
-    document.getElementById("productSetDisplayName").innerText = product.productSetDisplayName;
-    document.getElementById("price").innerText = "Price: " + product.price.toFixed(2);
+    document.getElementById("productDisplayName").innerText = product.productDisplayName;
+    document.getElementById("mainImage").src = product.imageUrls[0];
+    document.getElementById("price").innerText = "$" + product.price.toFixed(2);
     document.getElementById("productDescription").innerText = product.productDescription;
     const labels = document.getElementById("labels");
     product.labels.forEach(label => {
@@ -318,13 +334,20 @@ function viewProduct() {
     document.getElementById("businessDisplayName").innerText = 
       "Sold by: " + business.businessDisplayName;
     document.getElementById("businessAddress").innerText = 
-      `${business.street}, ${business.city} ${business.state}, ${business.zipCode}`;
+      `Business Address: ${business.street}, ${business.city} ${business.state}, ${business.zipCode}`;
     const similarWebsites = document.getElementById("similarWebsites");
-    product.cloudVisionAnnotation.webUrls.forEach(url => {
+    (JSON.parse(product.cloudVisionAnnotation)).webUrls.forEach(url => {
       const link = document.createElement("a");
       link.href = url;
       link.innerText = url;
       similarWebsites.appendChild(link);
+      similarWebsites.appendChild(document.createElement("br"));
     });
+
+    // Remove the loading spinner and load the page.
+    const spinner = document.getElementById("spinner");
+    spinner.classList.remove("is-active");
+    spinner.classList.add("hidden");
+    document.getElementById("productContent").classList.remove("hidden");
   });
 }
