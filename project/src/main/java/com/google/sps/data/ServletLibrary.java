@@ -400,7 +400,7 @@ public class ServletLibrary {
     PreparedQuery pq = datastore.prepare(query);
     Entity entity = pq.asSingleEntity();
     if (entity != null) {
-      @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
+      @SuppressWarnings("unchecked") // Documentation says suppress warning this way
         List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
       if (productIds == null) productIds = new ArrayList<String>();
       productIds.remove(productId);

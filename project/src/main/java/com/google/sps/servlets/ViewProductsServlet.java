@@ -45,11 +45,13 @@ public class ViewProductsServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // TODO: text based search.
 
+    // Retrieve parameters from the request
     String productSetDisplayName = request.getParameter("productSetDisplayName");
     String productCategory = request.getParameter("productCategory");
     String businessId = request.getParameter("businessId");
     String sortOrder = request.getParameter("sortOrder");
 
+    // Set parameters to apprpriate defaults, if necessary.
     if (businessId.equals("getFromDatabase")) {
       businessId = userService.getCurrentUser().getUserId();
     }
@@ -66,6 +68,7 @@ public class ViewProductsServlet extends HttpServlet {
       productSetId = productSet.getProductSetId();
     }
 
+    // Search database based on the filters. 
     List<ProductEntity> products = 
       ServletLibrary.findProducts(datastore, 
                                   businessId,
@@ -75,6 +78,7 @@ public class ViewProductsServlet extends HttpServlet {
                                   null); // textQuery
     String json = gson.toJson(products);
 
+    // Send the response.
     response.setContentType("application/json;");
     response.getWriter().println(json);
   }
