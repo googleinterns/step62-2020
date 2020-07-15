@@ -109,8 +109,6 @@ public class CloudVisionServlet extends HttpServlet {
     String gcsUrl = CloudStorageLibrary.getGcsFilePath(request, blobstore);
     BlobKey blobKey = blobstore.createGsBlobKey(gcsUrl);
     String imageUrl = CloudStorageLibrary.getUploadedFileUrl(blobstore, gcsUrl);
-    // BlobKey blobKey = VisionLibrary.getBlobKey(blobstore, request, "imageURL");
-    // String imageURL = VisionLibrary.getUploadedFileUrl(imagesService, blobKey);
 
     // Use blobKey to send a request to the cloud vision api. We are guaranteed 
     // that the client uploaded an image.
