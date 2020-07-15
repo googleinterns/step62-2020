@@ -9,15 +9,17 @@ import java.io.IOException;
 
 public class ProductSearchLibrary{
 
-    private static final String formattedParent = ProductSearchClient.formatLocationName("cloudberry-step-2020", "us-east1");
-
+    private static final String projectId = "cloudberry-step-2020";
+    private static final String computeRegion = "us-east1";
+    
     public static ArrayList<ProductSetItem> listProductSets(String projectId,
      String computeRegion) throws IOException {
 
       ArrayList<ProductSetItem> productSets = new ArrayList<>();
 
       try (ProductSearchClient client = ProductSearchClient.create()) {
-        
+        // A resource that represents Google Cloud Platform location.
+        String formattedParent = ProductSearchClient.formatLocationName(projectId, computeRegion);
         // List all the product sets available in the region.
         for (ProductSet productSet : client.listProductSets(formattedParent).iterateAll()) {
         // Display the product set information
@@ -53,6 +55,9 @@ public class ProductSearchLibrary{
     ProductSetItem newProductSet = new ProductSetItem(productSetId, productSetDisplayName);
 
     try (ProductSearchClient client = ProductSearchClient.create()) {
+      
+      // A resource that represents Google Cloud Platform location.
+      String formattedParent = ProductSearchClient.formatLocationName(projectId, computeRegion);
  
       // Create a product set with the product set specification in the region.
       ProductSet myProductSet =
@@ -79,13 +84,13 @@ public class ProductSearchLibrary{
     try (ProductSearchClient client = ProductSearchClient.create()) {
 
         // Get the full path of the product.
-        String formattedParentWithId =
-            ProductSearchClient.formatProductName("cloudberry-step-2020", "us-east1", productId);
+        String formattedParent =
+            ProductSearchClient.formatProductName(projectId, computeRegion, productId);
         // Create a reference image.
         ReferenceImage referenceImage = ReferenceImage.newBuilder().setUri(gcsUri).build();
 
         ReferenceImage image =
-            client.createReferenceImage(formattedParentWithId, referenceImage, referenceImageId);
+            client.createReferenceImage(formattedParent, referenceImage, referenceImageId);
         // Display the reference image information.
         System.out.println(String.format("Reference image name: %s", image.getName()));
         System.out.println(String.format("Reference image uri: %s", image.getUri()));
@@ -101,10 +106,10 @@ public class ProductSearchLibrary{
 
         // Get the full path of the product set.
         String formattedName =
-            ProductSearchClient.formatProductSetName("cloudberry-step-2020", "us-east1", productSetId);
+            ProductSearchClient.formatProductSetName(projectId, computeRegion, productSetId);
 
         // Get the full path of the product.
-        String productPath = ProductName.of("cloudberry-step-2020", "us-east1", productId).toString();
+        String productPath = ProductName.of(projectId, computeRegion, productId).toString();
 
         // Add the product to the product set.
         client.addProductToProductSet(formattedName, productPath);
@@ -120,7 +125,9 @@ public class ProductSearchLibrary{
     String productDisplayName,
     String productCategory) throws IOException {
     try (ProductSearchClient client = ProductSearchClient.create()) {
-        
+
+        // A resource that represents Google Cloud Platform location.
+        String formattedParent = ProductSearchClient.formatLocationName(projectId, computeRegion);
         // Create a product with the product specification in the region.
         // Multiple labels are also supported.
         Product myProduct =
@@ -132,6 +139,8 @@ public class ProductSearchLibrary{
         Product product = client.createProduct(formattedParent, myProduct, productId);
         // Display the product information
         System.out.println(String.format("Product name: %s", product.getName()));
+    // } catch(Exception e){
+    //     System.err.println("Could not create product");
     }
   }
 
@@ -197,7 +206,7 @@ public class ProductSearchLibrary{
     try (ProductSearchClient client = ProductSearchClient.create()) {
 
         // Get the full path of the product set.
-        String formattedParentWithId =
+        String formattedParent =
             ProductSearchClient.formatProductSetName(projectId, computeRegion, productSetId);
 
         // Get the full path of the product.
@@ -205,7 +214,7 @@ public class ProductSearchLibrary{
             ProductSearchClient.formatProductName(projectId, computeRegion, productId);
 
         // Remove the product from the product set.
-        client.removeProductFromProductSet(formattedParentWithId, formattedName);
+        client.removeProductFromProductSet(formattedParent, formattedName);
 
         System.out.println(String.format("Product removed from product set."));
     } catch(Exception e){
@@ -216,6 +225,9 @@ public class ProductSearchLibrary{
   public static ArrayList<ProductItem> listProducts() throws IOException {
     ArrayList<ProductItem> products = new ArrayList<>();
     try (ProductSearchClient client = ProductSearchClient.create()) {
+
+        // A resource that represents Google Cloud Platform location.
+        String formattedParent = ProductSearchClient.formatLocationName(projectId, computeRegion);
 
         // List all the products available in the region.
         for (Product product : client.listProducts(formattedParent).iterateAll()) {
