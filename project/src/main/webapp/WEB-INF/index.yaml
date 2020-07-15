@@ -1,6 +1,6 @@
 indexes:
 
-  # All combinations with price descending.
+  # Query combinations with price descending.
 - kind: Product
   properties:
   - name: businessId
@@ -49,7 +49,7 @@ indexes:
     direction: desc
 
 
-# All combinations with price ascending (default).
+# Query combinations with price ascending (default).
 - kind: Product
   properties:
   - name: businessId
@@ -91,7 +91,7 @@ indexes:
   - name: price
 
 
-# All combinations with productDisplayName descending.
+# Query combinations with productDisplayName descending.
 - kind: Product
   properties:
   - name: businessId
@@ -139,7 +139,7 @@ indexes:
   - name: productDisplayName
     direction: desc
 
-# All combinations with productDisplayName ascending (default).
+# Query combinations with productDisplayName ascending (default).
 - kind: Product
   properties:
   - name: businessId
@@ -181,7 +181,7 @@ indexes:
   - name: productDisplayName
 
 
-# All combinations without any sorting.
+# Query combinations without any sorting.
 - kind: Product
   properties:
   - name: businessId
