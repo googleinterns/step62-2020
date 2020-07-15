@@ -36,11 +36,12 @@
             <a class="mdl-navigation__link" href="/login">Account</a>
         </nav>
       </div>
+      <!-- This page is created to ensure that creating a product with product search works -->
       <main class="mdl-layout__content">
         <div class="page-content" id="content">
           <!-- Your content goes here -->
-          <h1>Hello There!</h1>
-          <a href="product-lists.html">check available products in product search database</a>
+          <button onclick="loadProduct()">Show products</button>
+          <div id="product-list"></div>
         </div>
       </main>
     </div>

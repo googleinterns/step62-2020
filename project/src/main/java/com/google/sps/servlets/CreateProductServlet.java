@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 //Product Search Library
-import com.google.sps.data.ServletsLibrary;
+import com.google.sps.data.ProductSearchLibrary;
 
 import com.google.gson.Gson;
 
@@ -138,8 +138,13 @@ public class CreateProductServlet extends HttpServlet {
     }
     
     
-//TODO:Phillips Product Search functions 
-//     ServletsLibrary.createProduct(projectId, computeRegion, productId, productDisplayName, productCategory);
-//     ServletsLibrary.addProductToProductSet(projectId, computeRegion, productId, setId);
+    // TODO:Phillips Product Search functions 
+    // Functions to create product and add to a product set in the product search database
+    ProductSearchLibrary.createProduct(productId, productDisplayName, productCategory);
+    ProductSearchLibrary.addProductToProductSet(productId, productSetId);
+    
+    //Create reference image for a product to facilitate the searching for a product by image
+    //image gcsuri used for reference image id
+    ProductSearchLibrary.createReferenceImage(productId, request.getParameter("mainGcsUrl"), request.getParameter("mainGcsUrl"));
   }
 }

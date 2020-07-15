@@ -7,9 +7,7 @@ import java.util.*;
  
 import java.io.IOException;
 
-public class ServletsLibrary{
-
-
+public class ProductSearchLibrary{
 
     public static ArrayList<ProductSetItem> listProductSets(String projectId,
      String computeRegion) throws IOException {
@@ -47,9 +45,7 @@ public class ServletsLibrary{
     return productSets;
   }
 
-  public static ProductSetItem createProductSet(
-    String projectId, 
-    String computeRegion, 
+  public static ProductSetItem createProductSet( 
     String productSetId, 
     String productSetDisplayName) throws IOException {
     
@@ -58,7 +54,7 @@ public class ServletsLibrary{
     try (ProductSearchClient client = ProductSearchClient.create()) {
       
       // A resource that represents Google Cloud Platform location.
-      String formattedParent = ProductSearchClient.formatLocationName(projectId, computeRegion);
+      String formattedParent = ProductSearchClient.formatLocationName("cloudberry-step-2020", "us-east1");
  
       // Create a product set with the product set specification in the region.
       ProductSet myProductSet =
@@ -79,8 +75,6 @@ public class ServletsLibrary{
   }
 
   public static void createReferenceImage(
-    String projectId,
-    String computeRegion,
     String productId,
     String referenceImageId,
     String gcsUri) throws IOException {
@@ -88,7 +82,7 @@ public class ServletsLibrary{
 
         // Get the full path of the product.
         String formattedParent =
-            ProductSearchClient.formatProductName(projectId, computeRegion, productId);
+            ProductSearchClient.formatProductName("cloudberry-step-2020", "us-east1", productId);
         // Create a reference image.
         ReferenceImage referenceImage = ReferenceImage.newBuilder().setUri(gcsUri).build();
 
@@ -103,18 +97,16 @@ public class ServletsLibrary{
   } 
 
   public static void addProductToProductSet(
-    String projectId, 
-    String computeRegion, 
     String productId, 
     String productSetId) throws IOException {
     try (ProductSearchClient client = ProductSearchClient.create()) {
 
         // Get the full path of the product set.
         String formattedName =
-            ProductSearchClient.formatProductSetName(projectId, computeRegion, productSetId);
+            ProductSearchClient.formatProductSetName("cloudberry-step-2020", "us-east1", productSetId);
 
         // Get the full path of the product.
-        String productPath = ProductName.of(projectId, computeRegion, productId).toString();
+        String productPath = ProductName.of("cloudberry-step-2020", "us-east1", productId).toString();
 
         // Add the product to the product set.
         client.addProductToProductSet(formattedName, productPath);
@@ -126,15 +118,13 @@ public class ServletsLibrary{
   }
 
   public static void createProduct(
-    String projectId,
-    String computeRegion,
     String productId,
     String productDisplayName,
     String productCategory) throws IOException {
     try (ProductSearchClient client = ProductSearchClient.create()) {
 
         // A resource that represents Google Cloud Platform location.
-        String formattedParent = ProductSearchClient.formatLocationName(projectId, computeRegion);
+        String formattedParent = ProductSearchClient.formatLocationName("cloudberry-step-2020", "us-east1");
         // Create a product with the product specification in the region.
         // Multiple labels are also supported.
         Product myProduct =
@@ -174,7 +164,7 @@ public class ServletsLibrary{
             System.out.println(String.format("Product category: %s", product.getProductCategory()));
             System.out.println("Product labels: ");
             ProductItem productItem = new ProductItem(product.getName().substring(product.getName().lastIndexOf('/') + 1), product.getDisplayName(),
-                                        product.getProductCategory(), productSetId);
+                                        product.getProductCategory());
             productItems.add(productItem);
             for (Product.KeyValue element : product.getProductLabelsList()) {
                 System.out.println(String.format("%s: %s", element.getKey(), element.getValue()));
@@ -229,12 +219,12 @@ public class ServletsLibrary{
     }
   }
 
-  public static ArrayList<ProductItem> listProducts(String projectId, String computeRegion) throws IOException {
+  public static ArrayList<ProductItem> listProducts() throws IOException {
     ArrayList<ProductItem> products = new ArrayList<>();
     try (ProductSearchClient client = ProductSearchClient.create()) {
 
         // A resource that represents Google Cloud Platform location.
-        String formattedParent = ProductSearchClient.formatLocationName(projectId, computeRegion);
+        String formattedParent = ProductSearchClient.formatLocationName("cloudberry-step-2020", "us-east1");
 
         // List all the products available in the region.
         for (Product product : client.listProducts(formattedParent).iterateAll()) {
@@ -250,7 +240,7 @@ public class ServletsLibrary{
         System.out.println(
             String.format("Product labels: %s", product.getProductLabelsList().toString()));
 
-        ProductItem productItem = new ProductItem(product.getName().substring(product.getName().lastIndexOf('/') + 1), product.getDisplayName(), product.getProductCategory(), "0");
+        ProductItem productItem = new ProductItem(product.getName().substring(product.getName().lastIndexOf('/') + 1), product.getDisplayName(), product.getProductCategory());
         products.add(productItem);
         }
     }

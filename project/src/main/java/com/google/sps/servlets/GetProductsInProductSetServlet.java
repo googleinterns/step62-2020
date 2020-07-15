@@ -13,7 +13,7 @@ import com.google.gson.Gson;
 import com.google.sps.data.ProductSetItem;
 import com.google.sps.data.ProductItem;
 
-import com.google.sps.data.ServletsLibrary;
+import com.google.sps.data.ProductSearchLibrary;
  
  
  
@@ -27,12 +27,10 @@ public class GetProductsInProductSetServlet extends HttpServlet {
     String projectId = "cloudberry-step-2020";
     String computeRegion = "us-east1";
     // String productSetId = request.getParameter("productSetId");
-    ArrayList<ProductItem> products = ServletsLibrary.listProducts(projectId, computeRegion);
+    ArrayList<ProductItem> products = ProductSearchLibrary.listProducts();
 
     response.setContentType("application/json;");
-    response.getWriter().println(gson.toJson(products));
-    
-    
+    response.getWriter().println(gson.toJson(products)); 
     
   }
   

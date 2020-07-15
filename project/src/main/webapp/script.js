@@ -252,3 +252,34 @@ function refreshProductInfoPage() {
   getBlobstoreUrl();
   retrieveProductInfo();
 }
+
+function loadProduct() {
+
+  fetch("/product-list").then(response => response.json()).then((products) => {
+
+    const productListElement = document.getElementById("product-list");
+    productListElement.innerHTML = "";
+    
+ 
+    products.forEach((product) => {  
+      productListElement.appendChild(createProductElement(product));
+      productListElement.appendChild(document.createElement("br"));
+    })
+  });
+}
+
+
+function createProductElement(product) {
+  const linebreak = document.createElement("br");
+
+  const productElement = document.createElement("li");
+  productElement.className = "product";
+
+  const titleElement = document.createElement("span");
+  titleElement.innerText = product.productName+": "+product.productId;
+
+  productElement.appendChild(titleElement);
+  productElement.appendChild(linebreak);
+
+  return productElement;
+}

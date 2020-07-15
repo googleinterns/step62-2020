@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
-import com.google.sps.data.ServletsLibrary;
+import com.google.sps.data.ProductSearchLibrary;
  
 @WebServlet("/delete-product-set")
 public class DeleteProductSetServlet extends HttpServlet {
@@ -20,7 +20,7 @@ public class DeleteProductSetServlet extends HttpServlet {
     String computeRegion = "us-east1";
     String productSetId = request.getParameter("productSet");
     
-    ServletsLibrary.deleteProductSet(projectId, computeRegion, productSetId);
+    ProductSearchLibrary.deleteProductSet(projectId, computeRegion, productSetId);
 
     response.sendRedirect("index.html");
 

@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
-import com.google.sps.data.ServletsLibrary;
+import com.google.sps.data.ProductSearchLibrary;
  
 @WebServlet("/remove-product")
 public class RemoveProductFromSetServlet extends HttpServlet {
@@ -21,7 +21,7 @@ public class RemoveProductFromSetServlet extends HttpServlet {
         String productId = request.getParameter("product-id");
         String productSetId = request.getParameter("product-set-id");
     
-        ServletsLibrary.removeProductFromProductSet(projectId, computeRegion, productId, productSetId);
+        ProductSearchLibrary.removeProductFromProductSet(projectId, computeRegion, productId, productSetId);
     } catch(Exception e){
         response.getWriter().println("Cannot retrieve input");
     }
