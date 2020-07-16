@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
   </head>
-  <body onload="refreshViewProductsPage()">
+  <body onload="deleteProduct()">
     <!-- Always shows a header, even in smaller screens. -->
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
       <header class="mdl-layout__header">
@@ -37,34 +37,18 @@
         </nav>
       </div>
       <main class="mdl-layout__content">
-        <div class="page-content" id="product-view">
+        <div class="page-content" id="content">
           <!-- Your content goes here -->
-          <h1>Your Products</h1>
-          <p>Filter your search:</p>
-          Product Category:
-          <select name="productCategory" id="productCategory" onchange="retrieveProducts()">
-            <option value="none" selected></option>
-            <option value="homegoods-v2">Home Goods</option>
-            <option value="apparel-v2">Apparel</option>
-            <option value="toys-v2">Toys</option>
-            <option value="packagedgoods-v1">Packaged Goods</option>
-            <option value="general-v1">General</option>
-          </select>
-          Product Set:
-          <input list="productSetList" name="productSetDisplayName" id="productSetDisplayName"
-                 onchange="retrieveProducts()">
-          <datalist id="productSetList"></datalist>
-          Sort By: 
-          <select name="sortOrder" id="sortOrder" onchange="retrieveProducts()">
-            <option value="none" selected></option>
-            <option value="price_ascending">price (low -> high)</option>
-            <option value="price_descending">price (high -> low)</option>
-            <option value="name_ascending">name (a -> z)</option>
-            <option value="name_descending">name (z -> a)</option>
-          </select>
-          <br/><br/>
-          <div class="mdl-spinner mdl-js-spinner" id="spinner"></div>
-          <div class="grid-container" id="searchResults"></div>
+          <h1>Delete a product</p>
+          <p>Are you sure you want to delete this product?</p>
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
+              href="/viewProducts.html">
+            No, take me back
+          </a>
+          <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect"
+              id="deleteProduct">
+            Yes, delete
+          </a>
         </div>
       </main>
     </div>

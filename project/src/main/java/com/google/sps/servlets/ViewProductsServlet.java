@@ -17,8 +17,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 
-import com.google.sps.data.ServletLibrary;
-import com.google.sps.data.ProductEntity;
+import com.google.sps.data.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,14 +43,42 @@ public class ViewProductsServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // TODO: Option to throw in parameters such as product category, product set
-    // TODO: sort alphabetically, by price.
     // TODO: text based search.
-    // For now, we simply list all the products 
 
-    List<ProductEntity> products = ServletLibrary.findProducts(datastore, userService.getCurrentUser().getUserId());
+    // Retrieve parameters from the request
+    String productSetDisplayName = request.getParameter("productSetDisplayName");
+    String productCategory = request.getParameter("productCategory");
+    String businessId = request.getParameter("businessId");
+    String sortOrder = request.getParameter("sortOrder");
+
+    // Set parameters to apprpriate defaults, if necessary.
+    if (businessId.equals("getFromDatabase")) {
+      businessId = userService.getCurrentUser().getUserId();
+    }
+    if (productCategory.equals("none")) {
+      productCategory = null;
+    }
+    String productSetId = null;
+    ProductSetEntity productSet = null;
+    if (!productSetDisplayName.equals("none")) {
+      // true indicates we are searching with the displayname instead of the id.
+      productSet = ServletLibrary.retrieveProductSetInfo(datastore, productSetDisplayName, true);
+    }
+    if (productSet != null) {
+      productSetId = productSet.getProductSetId();
+    }
+
+    // Search database based on the filters. 
+    List<ProductEntity> products = 
+      ServletLibrary.findProducts(datastore, 
+                                  businessId,
+                                  productSetId, 
+                                  productCategory, 
+                                  sortOrder, 
+                                  null); // textQuery
     String json = gson.toJson(products);
 
+    // Send the response.
     response.setContentType("application/json;");
     response.getWriter().println(json);
   }

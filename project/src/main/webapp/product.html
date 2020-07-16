@@ -8,8 +8,11 @@
     <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
+    <!-- Scripts and styling for tags (under MIT License): https://github.com/sabieber/token-autocomplete -->
+    <script src="https://raw.githack.com/sabieber/token-autocomplete/master/built/token-autocomplete.js"></script>
+    <link href="https://raw.githack.com/sabieber/token-autocomplete/master/lib/token-autocomplete.css" rel="stylesheet" type="text/css" media="all">
   </head>
-  <body onload="refreshViewProductsPage()">
+  <body onload="viewProduct()">
     <!-- Always shows a header, even in smaller screens. -->
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
       <header class="mdl-layout__header">
@@ -37,34 +40,24 @@
         </nav>
       </div>
       <main class="mdl-layout__content">
-        <div class="page-content" id="product-view">
+        <div class="page-content" id="content">
           <!-- Your content goes here -->
-          <h1>Your Products</h1>
-          <p>Filter your search:</p>
-          Product Category:
-          <select name="productCategory" id="productCategory" onchange="retrieveProducts()">
-            <option value="none" selected></option>
-            <option value="homegoods-v2">Home Goods</option>
-            <option value="apparel-v2">Apparel</option>
-            <option value="toys-v2">Toys</option>
-            <option value="packagedgoods-v1">Packaged Goods</option>
-            <option value="general-v1">General</option>
-          </select>
-          Product Set:
-          <input list="productSetList" name="productSetDisplayName" id="productSetDisplayName"
-                 onchange="retrieveProducts()">
-          <datalist id="productSetList"></datalist>
-          Sort By: 
-          <select name="sortOrder" id="sortOrder" onchange="retrieveProducts()">
-            <option value="none" selected></option>
-            <option value="price_ascending">price (low -> high)</option>
-            <option value="price_descending">price (high -> low)</option>
-            <option value="name_ascending">name (a -> z)</option>
-            <option value="name_descending">name (z -> a)</option>
-          </select>
-          <br/><br/>
-          <div class="mdl-spinner mdl-js-spinner" id="spinner"></div>
-          <div class="grid-container" id="searchResults"></div>
+          <div class="mdl-spinner mdl-js-spinner is-active" id="spinner"></div>
+          <div id="productContent" class="hidden">
+            <h1 id="productDisplayName"></h1>
+            <p id="productPath"></p>
+            <img id="mainImage" width="300px"/img>
+            <h4 id="price"></h4>
+            <h5>Description:</h5>
+            <p id="productDescription"></p>
+            <h5>Labels/Tags:</h5>
+            <div id="labels"></div>
+            <h5>Business Information</h5>
+            <p id="businessDisplayName"></p>
+            <p id="businessAddress"></p>
+            <h5>Similar product images</h5>
+            <div id="similarWebsites"></div>
+          </div>
         </div>
       </main>
     </div>

@@ -39,3 +39,34 @@ body {
   min-width: 320px;
   justify-content: center;
 }
+
+
+/* Google style search bar */
+.bar{
+  margin: 0 auto;
+  width:575px;
+  border-radius:30px;
+  border:1px solid #dcdcdc;
+  background-color: white;
+}
+.bar:hover{
+  box-shadow: 1px 1px 8px 1px #dcdcdc;
+}
+.bar:focus-within{
+  box-shadow: 1px 1px 8px 1px #dcdcdc;
+  outline:none;
+}
+.searchbar{
+  height:45px;
+  border:none;
+  width:500px;
+  font-size:16px;
+  outline: none;
+  margin-left:10px;
+  
+}
+.searchIcon{
+  position: relative;
+  bottom: 2px;
+  margin-left: 20px; 
+}

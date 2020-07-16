@@ -109,8 +109,6 @@ public class CloudVisionServlet extends HttpServlet {
     String gcsUrl = CloudStorageLibrary.getGcsFilePath(request, blobstore);
     BlobKey blobKey = blobstore.createGsBlobKey(gcsUrl);
     String imageUrl = CloudStorageLibrary.getUploadedFileUrl(blobstore, gcsUrl);
-    // BlobKey blobKey = VisionLibrary.getBlobKey(blobstore, request, "imageURL");
-    // String imageURL = VisionLibrary.getUploadedFileUrl(imagesService, blobKey);
 
     // Use blobKey to send a request to the cloud vision api. We are guaranteed 
     // that the client uploaded an image.
@@ -136,7 +134,12 @@ public class CloudVisionServlet extends HttpServlet {
     updatedBusiness.setProperty("tempVisionAnnotation", new Text(tempVisionAnnotation));
     datastore.put(updatedBusiness);
 
-    // Redirect to the create product form. 
-    response.sendRedirect("/createProduct.html");
+    // Redirect to the create product form or the edit product form.
+    boolean isEditing = Boolean.parseBoolean(request.getParameter("edit"));
+    if (isEditing) {
+      response.sendRedirect("/editProduct.html?refreshImage=true&productId="+request.getParameter("editProductId"));
+    } else {
+      response.sendRedirect("/createProduct.html");
+    }
   }
 }

@@ -21,8 +21,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 
-import com.google.sps.data.ServletLibrary;
-import com.google.sps.data.ProductSetEntity;
+import com.google.sps.data.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -46,8 +45,6 @@ public class CreateProductServlet extends HttpServlet {
     gson = new Gson();
   }
 
-  // IMPORTANT TODO(neelgandhi): When changing the product category, product set, 
-  // or labels, make sure those respective tables are also modified.
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Retrieve required parameters for the product set.
@@ -111,6 +108,19 @@ public class CreateProductServlet extends HttpServlet {
     }
     labels = newLabels;
 
+    // Add product to tables or update relevant tables in datastore.
+    if (isNewProduct) {
+      ServletLibrary.addProductToLabels(datastore, productId, labels);
+      ServletLibrary.addProductToProductSet(datastore, productId, productSetId);
+      ServletLibrary.addProductToProductCategory(datastore, productId, productCategory);
+      ServletLibrary.addProductToBusiness(datastore, productId, businessId);
+    } else {
+      ProductEntity oldProduct = ServletLibrary.retrieveProductInfo(datastore, productId);
+      ServletLibrary.updateProductLabels(datastore, productId, oldProduct.getLabels(), labels);
+      ServletLibrary.updateProductSets(datastore, productId, oldProduct.getProductSetId(), productSetId);
+      ServletLibrary.updateProductCategories(datastore, productId, oldProduct.getProductCategory(), productCategory);
+    }
+
     // Create a product set entity and store in datastore.
     Entity product = new Entity("Product", productId);
     product.setProperty("productId", productId);
@@ -126,20 +136,15 @@ public class CreateProductServlet extends HttpServlet {
     product.setProperty("cloudVisionAnnotation", new Text(cloudVisionAnnotation));
     datastore.put(product);
 
-    // Add product to relevant tables in datastore, only if it is a new product.
     if (isNewProduct) {
-      ServletLibrary.addProductToLabels(datastore, productId, labels);
-      ServletLibrary.addProductToProductSet(datastore, productId, productSetId);
-      ServletLibrary.addProductToProductCategory(datastore, productId, productCategory);
-      ServletLibrary.addProductToBusiness(datastore, productId, businessId);
       response.sendRedirect("/businessAccount.html");
     } else {
       response.sendRedirect("/viewProducts.html");
     }
-    
-    
+
 //TODO:Phillips Product Search functions 
 //     ServletsLibrary.createProduct(projectId, computeRegion, productId, productDisplayName, productCategory);
 //     ServletsLibrary.addProductToProductSet(projectId, computeRegion, productId, setId);
+
   }
 }
