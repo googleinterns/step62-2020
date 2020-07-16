@@ -36,6 +36,14 @@ import com.google.cloud.storage.StorageOptions;
 
 public class CloudStorageLibrary {
 
+    public static Boolean isObjectInBucket(BlobstoreService blobstore, BlobInfoFactory blobInfoFactory,
+                                           String gcsFilePath) {
+        BlobKey blobKey = blobstore.createGsBlobKey(gcsFilePath);
+        BlobInfo blobInfo = blobInfoFactory.loadBlobInfo(blobKey);
+
+        return (blobInfo != null);
+    }
+
     //TODO(mrjwash) Generates GCS file path.Explain logic and explain what the file path looks like
     public static String getGcsFilePath(Map<String, List<FileInfo>> files) {
         for (Map.Entry<String, List<FileInfo>> fileMap : files.entrySet()) { 
@@ -50,12 +58,17 @@ public class CloudStorageLibrary {
     }
 
     //Gets a url to directly serve the image
-    public static String getServingFileUrl(String gcsFilePath) {
-        if(gcsFilePath == null) {
+    public static String getServingFileUrl(BlobstoreService blobstore, BlobInfoFactory blobInfoFactory, 
+                                           String gcsFilePath) {
+        if (blobstore == null || blobInfoFactory == null || gcsFilePath == null) {
             return "";
         } else if (gcsFilePath.isEmpty()) {
             return "";
         } else {
+            if (!(isObjectInBucket(blobstore, blobInfoFactory, gcsFilePath))) {
+                return "";
+            }
+
             String tempFilePath = gcsFilePath.replaceFirst("/gs", "");
 
             return "https://storage.googleapis.com" + tempFilePath;
@@ -63,12 +76,17 @@ public class CloudStorageLibrary {
     }
 
     //TODO(mrjwash) Check file name here
-    public static String getUploadedFileUrl(BlobstoreService blobstore, String gcsFilePath) {
-        if(gcsFilePath == null) {
+    public static String getUploadedFileUrl(BlobstoreService blobstore, BlobInfoFactory blobInfoFactory,
+                                            String gcsFilePath) {
+        if (blobstore == null || blobInfoFactory == null || gcsFilePath == null) {
             return "";
         } else if (gcsFilePath.isEmpty()) {
             return "";
         } else {
+            if (!(isObjectInBucket(blobstore,blobInfoFactory,gcsFilePath))) {
+                return "";
+            }
+            
             BlobKey blobKey = blobstore.createGsBlobKey(gcsFilePath);
         
             return "/getBlobstoreUrl?blobKey=" + blobKey.getKeyString();
