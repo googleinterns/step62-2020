@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
   </head>
-  <body>
+  <body onload="refreshBrowsePage()">
     <!-- Always shows a header, even in smaller screens. -->
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
       <header class="mdl-layout__header">
@@ -37,9 +37,34 @@
         </nav>
       </div>
       <main class="mdl-layout__content">
-        <div class="page-content" id="content">
+        <div class="page-content" id="product-view">
           <!-- Your content goes here -->
-          <h1>Hello There!</h1>
+          <h1>Your Products</h1>
+          <p>Filter your search:</p>
+          Product Category:
+          <select name="productCategory" id="productCategory" onchange="browseProducts()">
+            <option value="none" selected></option>
+            <option value="homegoods-v2">Home Goods</option>
+            <option value="apparel-v2">Apparel</option>
+            <option value="toys-v2">Toys</option>
+            <option value="packagedgoods-v1">Packaged Goods</option>
+            <option value="general-v1">General</option>
+          </select>
+          Product Set:
+          <input list="productSetList" name="productSetDisplayName" id="browseProducts()"
+                 onchange="retrieveProducts()">
+          <datalist id="productSetList"></datalist>
+          Sort By: 
+          <select name="sortOrder" id="sortOrder" onchange="browseProducts()">
+            <option value="none" selected></option>
+            <option value="price_ascending">price (low -> high)</option>
+            <option value="price_descending">price (high -> low)</option>
+            <option value="name_ascending">name (a -> z)</option>
+            <option value="name_descending">name (z -> a)</option>
+          </select>
+          <br/><br/>
+          <div class="mdl-spinner mdl-js-spinner" id="spinner"></div>
+          <div class="grid-container" id="searchResults"></div>
         </div>
       </main>
     </div>

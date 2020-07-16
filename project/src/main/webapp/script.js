@@ -351,3 +351,38 @@ function viewProduct() {
     document.getElementById("productContent").classList.remove("hidden");
   });
 }
+
+// Toggles between shoing and hiding the option to search by image.
+function toggleImageUpload() {
+  const imageButton = document.getElementById("imageUpload");
+  if (imageButton.style.display === "block") {
+    imageButton.style.display = "none";
+  } else {
+    imageButton.style.display = "block";
+  }
+}
+
+// Validates the form to check there is a non empty input.
+function checkSearchForm() {
+  return document.getElementById("imageUpload").files.length > 0 ||
+         // Remove all white space to check if text input is non empty.
+         document.getElementById("textSearch").value.replace(/\s/g, '').length > 0;
+}
+
+
+// TODO: implement brosweProducts, refreshBrowsePage, and retrieveBusinesses functions. 
+// Display cards on the browse page. These cards don't have edit or delete
+// functionality.
+function browseProducts() {
+  return null;
+}
+
+function refreshBrowsePage() {
+  retrieveProductSetDisplayNames();
+  retrievBusinesses();
+  browseProducts();
+}
+
+function retrievBusinesses() {
+  return null;
+}
