@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
 // Retrieves account information from the database to display in the account
 // dashboard of the user.
 function retrieveAccountInfo() {
@@ -300,6 +301,7 @@ function refreshProductInfoPage() {
   retrieveProductSetDisplayNames();
   retrieveProductInfo();
 }
+
 
 function deleteProduct() {
   const params = getUrlParams();
