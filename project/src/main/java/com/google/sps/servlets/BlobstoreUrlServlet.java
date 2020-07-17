@@ -36,10 +36,18 @@ public class BlobstoreUrlServlet extends HttpServlet {
   //Creates an upload url for an image using a cloud storage bucket
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String bucketName = "cloudberry-step-2020-test-bucket";
+    // TODO: make sure to set it to the cloudberry bucket when moving to cloudberry.
+    
+    // String bucketName = "cloudberry-step-2020-test-bucket"; // Use twhen deploying to cloudberry.
+    String bucketName = "neelgandhi-step-2020-test-bucket"; // Use when deploying to neelgandhi.
     UploadOptions bucket = UploadOptions.Builder.withGoogleStorageBucketName(bucketName);
 
-    String uploadUrl = blobstoreService.createUploadUrl("/cloudVision", bucket);
+    boolean isEditing = Boolean.parseBoolean(request.getParameter("edit"));
+    String urlPath = "/cloudVision";
+    if (isEditing) {
+      urlPath = urlPath + "?edit=true&editProductId=" + request.getParameter("editProductId");
+    }
+    String uploadUrl = blobstoreService.createUploadUrl(urlPath, bucket);
 
     response.setContentType("text/html");
     response.getWriter().println(uploadUrl);

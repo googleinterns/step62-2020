@@ -4,6 +4,69 @@
   width: 700px;
 }
 
+#product-view {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
 #greeting-container {
   margin-top: 20px;
+}
+
+body {
+  background-color: #fafafa;
+}
+
+.product-card.mdl-card {
+  width: 320px;
+  height: 400px;
+}
+
+.product-card > .mdl-card__title {
+  height: 300px;
+  color: #fff;
+  background-position: center;
+  background-size: cover;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 340px);
+}
+
+.grid-item {
+  padding: 10px;
+  min-width: 320px;
+  justify-content: center;
+}
+
+
+/* Google style search bar */
+.bar{
+  margin: 0 auto;
+  width:575px;
+  border-radius:30px;
+  border:1px solid #dcdcdc;
+  background-color: white;
+}
+.bar:hover{
+  box-shadow: 1px 1px 8px 1px #dcdcdc;
+}
+.bar:focus-within{
+  box-shadow: 1px 1px 8px 1px #dcdcdc;
+  outline:none;
+}
+.searchbar{
+  height:45px;
+  border:none;
+  width:500px;
+  font-size:16px;
+  outline: none;
+  margin-left:10px;
+  
+}
+.searchIcon{
+  position: relative;
+  bottom: 2px;
+  margin-left: 20px; 
 }

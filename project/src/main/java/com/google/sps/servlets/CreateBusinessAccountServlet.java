@@ -72,8 +72,7 @@ public class CreateBusinessAccountServlet extends HttpServlet {
     } else {
       newBusiness.setProperty("productIds", business.getProductIds());
     }
-    Text tempVisionAnnotation = null; // Need to declare type for datastore to know.
-    newBusiness.setProperty("tempVisionAnnotation", tempVisionAnnotation);
+    newBusiness.setProperty("tempVisionAnnotation", new Text(""));
 
     // Store in datastore
     datastore.put(newAccount);

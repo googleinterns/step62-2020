@@ -1,0 +1,204 @@
+indexes:
+
+  # Query combinations with price descending.
+- kind: Product
+  properties:
+  - name: businessId
+  - name: productCategory
+  - name: productSetId
+  - name: price
+    direction: desc
+    
+- kind: Product
+  properties:
+  - name: businessId
+  - name: price
+    direction: desc
+
+- kind: Product
+  properties:
+  - name: productCategory
+  - name: price
+    direction: desc
+
+- kind: Product
+  properties:
+  - name: productSetId
+  - name: price
+    direction: desc
+
+- kind: Product
+  properties:
+  - name: businessId
+  - name: productCategory
+  - name: price
+    direction: desc
+
+- kind: Product
+  properties:
+  - name: businessId
+  - name: productSetId
+  - name: price
+    direction: desc
+
+- kind: Product
+  properties:
+  - name: productCategory
+  - name: productSetId
+  - name: price
+    direction: desc
+
+
+# Query combinations with price ascending (default).
+- kind: Product
+  properties:
+  - name: businessId
+  - name: productCategory
+  - name: productSetId
+  - name: price
+    
+- kind: Product
+  properties:
+  - name: businessId
+  - name: price
+
+- kind: Product
+  properties:
+  - name: productCategory
+  - name: price
+
+- kind: Product
+  properties:
+  - name: productSetId
+  - name: price
+
+- kind: Product
+  properties:
+  - name: businessId
+  - name: productCategory
+  - name: price
+
+- kind: Product
+  properties:
+  - name: businessId
+  - name: productSetId
+  - name: price
+
+- kind: Product
+  properties:
+  - name: productCategory
+  - name: productSetId
+  - name: price
+
+
+# Query combinations with productDisplayName descending.
+- kind: Product
+  properties:
+  - name: businessId
+  - name: productCategory
+  - name: productSetId
+  - name: productDisplayName
+    direction: desc
+    
+- kind: Product
+  properties:
+  - name: businessId
+  - name: productDisplayName
+    direction: desc
+
+- kind: Product
+  properties:
+  - name: productCategory
+  - name: productDisplayName
+    direction: desc
+
+- kind: Product
+  properties:
+  - name: productSetId
+  - name: productDisplayName
+    direction: desc
+
+- kind: Product
+  properties:
+  - name: businessId
+  - name: productCategory
+  - name: productDisplayName
+    direction: desc
+
+- kind: Product
+  properties:
+  - name: businessId
+  - name: productSetId
+  - name: productDisplayName
+    direction: desc
+
+- kind: Product
+  properties:
+  - name: productCategory
+  - name: productSetId
+  - name: productDisplayName
+    direction: desc
+
+# Query combinations with productDisplayName ascending (default).
+- kind: Product
+  properties:
+  - name: businessId
+  - name: productCategory
+  - name: productSetId
+  - name: productDisplayName
+    
+- kind: Product
+  properties:
+  - name: businessId
+  - name: productDisplayName
+
+- kind: Product
+  properties:
+  - name: productCategory
+  - name: productDisplayName
+
+- kind: Product
+  properties:
+  - name: productSetId
+  - name: productDisplayName
+
+- kind: Product
+  properties:
+  - name: businessId
+  - name: productCategory
+  - name: productDisplayName
+
+- kind: Product
+  properties:
+  - name: businessId
+  - name: productSetId
+  - name: productDisplayName
+
+- kind: Product
+  properties:
+  - name: productCategory
+  - name: productSetId
+  - name: productDisplayName
+
+
+# Query combinations without any sorting.
+- kind: Product
+  properties:
+  - name: businessId
+  - name: productCategory
+  - name: productSetId
+
+- kind: Product
+  properties:
+  - name: businessId
+  - name: productCategory
+
+- kind: Product
+  properties:
+  - name: businessId
+  - name: productSetId
+
+- kind: Product
+  properties:
+  - name: productCategory
+  - name: productSetId

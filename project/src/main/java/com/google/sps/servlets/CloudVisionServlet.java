@@ -81,9 +81,10 @@ public class CloudVisionServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Retrieve the temporary vision annotation from the business account.
     Business business = ServletLibrary.retrieveBusinessInfo(datastore, userService.getCurrentUser().getUserId());
+    // TODO: Handle the bug where this returns null. (It shouldn't), but I guess just redirect or something. 
     String tempVisionAnnotation = business.getTempVisionAnnotation();
     // If there is nothing stored, simply return null.
-    if (tempVisionAnnotation == null) {
+    if (tempVisionAnnotation.isEmpty()) {
       String json = null;
       response.setContentType("application/json;");
       response.getWriter().println(json);
@@ -105,14 +106,15 @@ public class CloudVisionServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Get the URL of the image that the user uploaded.
-    BlobKey blobKey = VisionLibrary.getBlobKey(blobstore, request, "imageURL");
-    String imageURL = VisionLibrary.getUploadedFileUrl(imagesService, blobKey);
+    String gcsUrl = CloudStorageLibrary.getGcsFilePath(request, blobstore);
+    BlobKey blobKey = blobstore.createGsBlobKey(gcsUrl);
+    String imageUrl = CloudStorageLibrary.getUploadedFileUrl(blobstore, gcsUrl);
 
     // Use blobKey to send a request to the cloud vision api. We are guaranteed 
     // that the client uploaded an image.
     byte[] blobBytes = VisionLibrary.getBlobBytes(blobstore, blobKey);
     AnnotateImageResponse imageResponse = VisionLibrary.handleCloudVisionRequest(blobBytes, allFeatures);
-    String tempVisionAnnotation = VisionLibrary.formatImageResponse(imagesService, gson, imageResponse, blobKey);
+    String tempVisionAnnotation = VisionLibrary.formatImageResponse(gson, imageResponse, gcsUrl, imageUrl);
 
     // Store the response in the business account, and using already existing
     // information to prevent datastore overwriting the old data.
@@ -132,7 +134,12 @@ public class CloudVisionServlet extends HttpServlet {
     updatedBusiness.setProperty("tempVisionAnnotation", new Text(tempVisionAnnotation));
     datastore.put(updatedBusiness);
 
-    // Redirect to the create product form. 
-    response.sendRedirect("/createProduct.html");
+    // Redirect to the create product form or the edit product form.
+    boolean isEditing = Boolean.parseBoolean(request.getParameter("edit"));
+    if (isEditing) {
+      response.sendRedirect("/editProduct.html?refreshImage=true&productId="+request.getParameter("editProductId"));
+    } else {
+      response.sendRedirect("/createProduct.html");
+    }
   }
 }
