@@ -45,8 +45,11 @@ public class CloudStorageLibrary {
         return (blobInfo != null);
     }
 
-    //TODO(mrjwash): Explain logic and explain what the file path looks like
+    /*Function to get the gcsuri from an uploaded file. We use a map because 
+      getFileInfos() returns a map of the files that have been uploaded.*/
     public static String getGcsFilePath(Map<String, List<FileInfo>> files) {
+        //We only need the first element of the map because we upload one image at a time
+        //TODO(mrjwash): When we switch to multiple I have to parse for the newest upload using getCreation();
         for (Map.Entry<String, List<FileInfo>> fileMap : files.entrySet()) { 
             try {
                 //getGsObjectName() actually returns the gcsuri for a file
