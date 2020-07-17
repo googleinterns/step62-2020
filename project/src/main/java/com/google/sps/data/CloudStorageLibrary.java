@@ -44,7 +44,7 @@ public class CloudStorageLibrary {
         return (blobInfo != null);
     }
 
-    //TODO(mrjwash) Generates GCS file path.Explain logic and explain what the file path looks like
+    //TODO(mrjwash): Explain logic and explain what the file path looks like
     public static String getGcsFilePath(Map<String, List<FileInfo>> files) {
         for (Map.Entry<String, List<FileInfo>> fileMap : files.entrySet()) { 
             try {
@@ -88,8 +88,6 @@ public class CloudStorageLibrary {
             }
             
             BlobKey blobKey = blobstore.createGsBlobKey(gcsFilePath);
-        
-            return "/getBlobstoreUrl?blobKey=" + blobKey.getKeyString();
         }
     }
 
