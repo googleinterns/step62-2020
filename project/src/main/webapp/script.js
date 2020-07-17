@@ -157,7 +157,7 @@ function retrieveProducts() {
       return;
     }
     products.forEach(product => {
-      const cardHtml = `<div class="product-card mdl-card mdl-shadow--4dp">
+      const cardHtml = `<div class="product-card mdl-card mdl-shadow--2dp">
                           <div class="mdl-card__title" style="background-image: 
                             linear-gradient(to bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,1)), 
                             url('${product.imageUrls[0]}');">
@@ -384,7 +384,6 @@ function browseProducts() {
   let productSetDisplayName = document.getElementById("productSetDisplayName").value;
   if (productSetDisplayName === "") productSetDisplayName = "none";
   let businessId = document.getElementById("businessId").value;
-  if (businessId === "") businessId = "none";
   const productCategory = document.getElementById("productCategory").value;
   const sortOrder = document.getElementById("sortOrder").value;
   let queryString = "/browse?productSetDisplayName=" + productSetDisplayName + 
@@ -398,7 +397,7 @@ function browseProducts() {
       return;
     }
     products.forEach(product => {
-      const cardHtml = `<div class="product-card mdl-card mdl-shadow--4dp">
+      const cardHtml = `<div class="product-card mdl-card mdl-shadow--2dp">
                           <div class="mdl-card__title" style="background-image: 
                             linear-gradient(to bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,1)), 
                             url('${product.imageUrls[0]}');">
@@ -425,20 +424,13 @@ function browseProducts() {
   });
 }
 
-function refreshBrowsePage() {
-  retrieveProductSetDisplayNames();
-  retrievBusinesses();
-  setBrowseInputs();
-  browseProducts();
-}
-
-function retrievBusinesses() {
+function retrieveBusinesses() {
   fetch("/createBusinessAccount").then(response => response.json()).then(names => {
-    const dropdownList = document.getElementById("businessList");
+    const dropdownList = document.getElementById("businessId");
     names.forEach(name => {
       let newOption = document.createElement("option");
       newOption.value = name.businessId;
-      newOption.innertext = name.businessDisplayName;
+      newOption.innerText = name.businessDisplayName;
       dropdownList.appendChild(newOption);
     });
   });
@@ -453,3 +445,12 @@ function setBrowseInputs() {
 
   // TODO: if user had uploaded an image, display it here.
 }
+
+function refreshBrowsePage() {
+  retrieveProductSetDisplayNames();
+  retrieveBusinesses();
+  setBrowseInputs();
+  browseProducts();
+}
+
+

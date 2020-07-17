@@ -235,7 +235,7 @@ public class ServletLibrary {
     if (datastore == null) {
       System.err.println("ListAllBusinesses: datastore is null!");
     }
-    Query query = new Query("Business").addSort("productSetDisplayName", SortDirection.ASCENDING);
+    Query query = new Query("Business").addSort("businessDisplayName", SortDirection.ASCENDING);
     PreparedQuery pq = datastore.prepare(query);
     List<Business> results = new ArrayList<>();
     for (Entity entity : pq.asIterable()) {
@@ -575,10 +575,10 @@ public class ServletLibrary {
     // Set the sort direction.
     String sortCategory = null;
     SortDirection sortDirection = null;
-    if (sortOrder.equals("alphabetical_descending")) {
+    if (sortOrder.equals("name_descending")) {
       sortCategory = "productDisplayName";
       sortDirection = SortDirection.DESCENDING;
-    } else if (sortOrder.equals("alphabetical_ascending")) {
+    } else if (sortOrder.equals("name_ascending")) {
       sortCategory = "productDisplayName";
       sortDirection = SortDirection.ASCENDING;
     } else if (sortOrder.equals("price_descending")) {

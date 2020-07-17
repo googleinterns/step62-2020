@@ -75,6 +75,8 @@ public class CreateProductServlet extends HttpServlet {
     String productCategory = request.getParameter("productCategory");
     String businessId = userService.getCurrentUser().getUserId();
 
+    // TODO: add businessDisplayName as a searchable tag.
+
     float price;
     try {
       price = Float.parseFloat(request.getParameter("price"));
