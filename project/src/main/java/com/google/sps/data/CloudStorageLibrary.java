@@ -1,4 +1,5 @@
 package com.google.sps.data;
+
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.blobstore.BlobInfo;
@@ -35,12 +36,21 @@ import com.google.cloud.storage.StorageOptions;
 
 public class CloudStorageLibrary {
 
-    //TODO(mrjwash): Explain logic and explain what the file path looks like
-    public static String getGcsFilePath(HttpServletRequest request, BlobstoreService blobstore) {
-        Map<String, List<FileInfo>> files = blobstore.getFileInfos(request);
+    //Function to determine if the gcs file path is valid
+    public static Boolean doesGcsuriExist(BlobstoreService blobstore, BlobInfoFactory blobInfoFactory,
+                                           String gcsFilePath) {
+        BlobKey blobKey = blobstore.createGsBlobKey(gcsFilePath);
+        BlobInfo blobInfo = blobInfoFactory.loadBlobInfo(blobKey);
 
-        for (Map.Entry<String, List<FileInfo>> fileMap : files.entrySet()) { 
+        return (blobInfo != null);
+    }
+
+    //Function that Generates GCS file path. You pass in a Map of file returned from getFileInfos()
+    public static String getGcsFilePath(Map<String, List<FileInfo>> files) {
+        for (Map.Entry<String, List<FileInfo>> fileMap : files.entrySet()) {
+            //Since we are only uploading one file at a time, we only need the first element in the map 
             try {
+                //getGsObjectName() actually returns the gcsuri for a file
                 return fileMap.getValue().get(0).getGsObjectName();
             } catch (Exception e) {
                 System.out.println(e);
@@ -50,18 +60,40 @@ public class CloudStorageLibrary {
         return "";
     }
 
-    //Creates a url so we can directly serve the image
-    public static String getServingFileUrl(BlobstoreService blobstore, String gcsFilePath) {
-        String tempFilePath = gcsFilePath.replaceFirst("/gs", "");
+    //Gets a url to directly serve the image
+    public static String getServingFileUrl(BlobstoreService blobstore, BlobInfoFactory blobInfoFactory, 
+                                           String gcsFilePath) {
+        if (blobstore == null || blobInfoFactory == null || gcsFilePath == null) {
+            return "";
+        } else if (gcsFilePath.isEmpty()) {
+            return "";
+        } else {
+            if (!(doesGcsuriExist(blobstore, blobInfoFactory, gcsFilePath))) {
+                return "";
+            }
 
-        return "https://storage.googleapis.com" + tempFilePath;
+            String tempFilePath = gcsFilePath.replaceFirst("/gs", "");
+
+            return "https://storage.googleapis.com" + tempFilePath;
+        }
     }
 
-    //TODO(mrjwash): Add comment and Check file name here
-    public static String getUploadedFileUrl(BlobstoreService blobstore, String gcsFilePath) {
-        BlobKey blobKey = blobstore.createGsBlobKey(gcsFilePath);
+    //Function that gets the upload Url for a given gcsuri
+    public static String getUploadedFileUrl(BlobstoreService blobstore, BlobInfoFactory blobInfoFactory,
+                                            String gcsFilePath) {
+        if (blobstore == null || blobInfoFactory == null || gcsFilePath == null) {
+            return "";
+        } else if (gcsFilePath.isEmpty()) {
+            return "";
+        } else {
+            if (!(doesGcsuriExist(blobstore,blobInfoFactory,gcsFilePath))) {
+                return "";
+            }
+            
+            BlobKey blobKey = blobstore.createGsBlobKey(gcsFilePath);
         
-        return "/getBlobstoreUrl?blobKey=" + blobKey.getKeyString();
+            return "/getBlobstoreUrl?blobKey=" + blobKey.getKeyString();
+        }
     }
 
     //Creates a bucket with the given project and bucket name
