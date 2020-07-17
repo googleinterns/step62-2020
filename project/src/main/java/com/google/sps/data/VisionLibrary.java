@@ -66,7 +66,7 @@ public class VisionLibrary {
     return imageResponse;
   }
 
-  public static String formatImageResponse(ImagesService imagesService, Gson gson, AnnotateImageResponse imageResponse, BlobKey blobKey) {
+  public static String formatImageResponse(Gson gson, AnnotateImageResponse imageResponse, String gcsUrl, String imageUrl) {
     // Check for null.
     if (imageResponse == null) return null;
     
@@ -133,8 +133,8 @@ public class VisionLibrary {
       logosInImage.add(new ImageLabel(logo.getDescription(), logo.getScore()));
     }
 
-    String imageURL = getUploadedFileUrl(imagesService, blobKey);
-    return gson.toJson(new CloudVisionAnnotation(imageURL,
+    return gson.toJson(new CloudVisionAnnotation(gcsUrl,
+                                                 imageUrl,
                                                  cleanUpLabels(genericLabels),
                                                  cleanUpLabels(webLabels),
                                                  webBestLabels,
@@ -195,9 +195,10 @@ public class VisionLibrary {
     // of all the text it finds.
     String description = "";
     if (!textInImage.isEmpty()) description = textInImage.get(0);
+    String gcsUrl = annotation.getGcsUrl();
     String imageUrl = annotation.getImageUrl();
 
-    return gson.toJson(new ProductFormInfo(annotation, labels, description, imageUrl));
+    return gson.toJson(new ProductFormInfo(annotation, labels, description, gcsUrl, imageUrl));
   }
 
   /**

@@ -45,10 +45,9 @@ public class CloudStorageLibrary {
         return (blobInfo != null);
     }
 
-    //Function that Generates GCS file path. You pass in a Map of file returned from getFileInfos()
+    //TODO(mrjwash): Explain logic and explain what the file path looks like
     public static String getGcsFilePath(Map<String, List<FileInfo>> files) {
-        for (Map.Entry<String, List<FileInfo>> fileMap : files.entrySet()) {
-            //Since we are only uploading one file at a time, we only need the first element in the map 
+        for (Map.Entry<String, List<FileInfo>> fileMap : files.entrySet()) { 
             try {
                 //getGsObjectName() actually returns the gcsuri for a file
                 return fileMap.getValue().get(0).getGsObjectName();
