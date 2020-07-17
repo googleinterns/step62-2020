@@ -24,62 +24,78 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.appengine.api.blobstore.BlobInfo;
-import com.google.appengine.api.blobstore.BlobInfoFactory;
-import com.google.appengine.api.blobstore.BlobKey;
-import com.google.appengine.api.blobstore.BlobstoreService;
-import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
-import com.google.appengine.api.images.ImagesService;
-import com.google.appengine.api.images.ImagesServiceFactory;
-import com.google.appengine.api.images.ServingUrlOptions;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Map;
-
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
-import com.google.cloud.vision.v1.*;
-import com.google.cloud.vision.v1.WebDetection.WebEntity;
-import com.google.cloud.vision.v1.WebDetection.WebLabel;
-import com.google.cloud.vision.v1.WebDetection.WebPage;
-import com.google.protobuf.ByteString;
-import java.io.ByteArrayOutputStream;
-
-import java.util.Random;
-import java.math.BigDecimal; 
 
 
 @WebServlet("/browse")
 public class BrowseServlet extends HttpServlet {
 
   protected Gson gson;
-  protected BlobstoreService blobstore;
+  protected DatastoreService datastore;
   protected UserService userService;
 
   public BrowseServlet() {
     super();
     gson = new Gson();
-    blobstore = BlobstoreServiceFactory.getBlobstoreService();
+    datastore = DatastoreServiceFactory.getDatastoreService();
     userService = UserServiceFactory.getUserService();
   }
 
-  // @Override
-  // public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-  //   return;
-  // }
+  @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    // TODO: text based search.
+
+    // Retrieve parameters from the request
+    String productSetDisplayName = request.getParameter("productSetDisplayName");
+    String productCategory = request.getParameter("productCategory");
+    String businessId = request.getParameter("businessId");
+    String sortOrder = request.getParameter("sortOrder");
+
+    // Set parameters to apprpriate defaults, if necessary.
+    if (businessId.equals("none")) {
+      businessId = null;
+    }
+    if (productCategory.equals("none")) {
+      productCategory = null;
+    }
+    String productSetId = null;
+    ProductSetEntity productSet = null;
+    if (!productSetDisplayName.equals("none")) {
+      // true indicates we are searching with the displayname instead of the id.
+      productSet = ServletLibrary.retrieveProductSetInfo(datastore, productSetDisplayName, true);
+    }
+    if (productSet != null) {
+      productSetId = productSet.getProductSetId();
+    }
+
+    // Search database based on the filters. 
+    List<ProductEntity> products = 
+      ServletLibrary.findProducts(datastore, 
+                                  businessId,
+                                  productSetId, 
+                                  productCategory, 
+                                  sortOrder, 
+                                  null); // textQuery
+    String json = gson.toJson(products);
+
+    // Send the response.
+    response.setContentType("application/json;");
+    response.getWriter().println(json);
+  }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String textSearch = request.getParameter("textSearch");
+    if (textSearch == null) throw new IOException("why is this null!!!!");
     // TODO: Check for uploaded files. As part of the querystring, we should 
     // get the blobKey.
     String queryString = "/browse.html?";
 
     // TODO: check the textString
     if (!textSearch.isEmpty()) {
-      queryString.add("textSearch="+textSearch);
+      queryString = queryString + "textSearch=" + textSearch;
     }
 
     response.sendRedirect(queryString);

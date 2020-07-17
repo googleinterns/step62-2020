@@ -372,19 +372,84 @@ function checkSearchForm() {
 }
 
 
-// TODO: implement brosweProducts, refreshBrowsePage, and retrieveBusinesses functions. 
+// TODO: add textSearch as an option (eventually image search as well).
 // Display cards on the browse page. These cards don't have edit or delete
 // functionality.
 function browseProducts() {
-  return null;
+  const searchResults = document.getElementById("searchResults");
+  searchResults.innerHTML = "";
+  const spinner = document.getElementById("spinner");
+  spinner.classList.add("is-active");
+
+  let productSetDisplayName = document.getElementById("productSetDisplayName").value;
+  if (productSetDisplayName === "") productSetDisplayName = "none";
+  let businessId = document.getElementById("businessId").value;
+  if (businessId === "") businessId = "none";
+  const productCategory = document.getElementById("productCategory").value;
+  const sortOrder = document.getElementById("sortOrder").value;
+  let queryString = "/browse?productSetDisplayName=" + productSetDisplayName + 
+                    "&productCategory=" + productCategory + 
+                    "&sortOrder=" + sortOrder + 
+                    "&businessId=" + businessId;
+  fetch(queryString).then(response => response.json()).then(products => {
+    if (products == null || products.length == 0) {
+      searchResults.innerText = "No products here!";
+      spinner.classList.remove("is-active");
+      return;
+    }
+    products.forEach(product => {
+      const cardHtml = `<div class="product-card mdl-card mdl-shadow--4dp">
+                          <div class="mdl-card__title" style="background-image: 
+                            linear-gradient(to bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,1)), 
+                            url('${product.imageUrls[0]}');">
+                            <h2 class="mdl-card__title-text">
+                              ${product.productDisplayName}
+                            </h2>
+                          </div>
+                          <div class="mdl-card__supporting-text">
+                            ${'$' + product.price.toFixed(2) + ' - ' + truncateString(product.productDescription, 80)}
+                          </div>
+                          <div class="mdl-card__actions mdl-card--border">
+                            <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
+                               href="/product.html?productId=${product.productId}">
+                              View
+                            </a>
+                          </div>
+                        </div>`;
+      const card = document.createElement("div");
+      card.classList.add("grid-item");
+      card.innerHTML = cardHtml;
+      searchResults.appendChild(card);
+    });
+    spinner.classList.remove("is-active");
+  });
 }
 
 function refreshBrowsePage() {
   retrieveProductSetDisplayNames();
   retrievBusinesses();
+  setBrowseInputs();
   browseProducts();
 }
 
 function retrievBusinesses() {
-  return null;
+  fetch("/createBusinessAccount").then(response => response.json()).then(names => {
+    const dropdownList = document.getElementById("businessList");
+    names.forEach(name => {
+      let newOption = document.createElement("option");
+      newOption.value = name.businessId;
+      newOption.innertext = name.businessDisplayName;
+      dropdownList.appendChild(newOption);
+    });
+  });
+}
+
+function setBrowseInputs() {
+  const params = getUrlParams();
+  const textSearch = params["textSearch"];
+  if (textSearch != null) {
+    document.getElementById("textSearch").value = textSearch;
+  }
+
+  // TODO: if user had uploaded an image, display it here.
 }

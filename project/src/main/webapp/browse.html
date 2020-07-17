@@ -39,8 +39,19 @@
       <main class="mdl-layout__content">
         <div class="page-content" id="product-view">
           <!-- Your content goes here -->
-          <h1>Your Products</h1>
+          <div class="bar">
+            <img class="searchIcon" src="/images/search.png" height="15px">
+            <input class="searchbar" type="text" title="Search" id="textSearch" name="textSearch">
+            <a href="javascript:void(0);" onclick="toggleImageUpload()">
+              <img class="cameraIcon" src="/images/google-camera.svg" height="20px">
+            </a>
+            <input class="hiddenButton" type="file" name="imageUpload" id="imageUpload" accept="image/*">
+          </div>
           <p>Filter your search:</p>
+          Business:
+          <input list="businessList" name="businessId" id="businessId"
+                 onchange="browseProducts()">
+          <datalist id="businessList"></datalist>
           Product Category:
           <select name="productCategory" id="productCategory" onchange="browseProducts()">
             <option value="none" selected></option>
@@ -51,8 +62,8 @@
             <option value="general-v1">General</option>
           </select>
           Product Set:
-          <input list="productSetList" name="productSetDisplayName" id="browseProducts()"
-                 onchange="retrieveProducts()">
+          <input list="productSetList" name="productSetDisplayName" id="productSetDisplayName"
+                 onchange="browseProducts()">
           <datalist id="productSetList"></datalist>
           Sort By: 
           <select name="sortOrder" id="sortOrder" onchange="browseProducts()">

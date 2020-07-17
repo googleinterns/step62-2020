@@ -40,11 +40,12 @@
         <div class="page-content" id="content">
           <!-- Your content goes here -->
           <img class="centerImage" src="/images/logo_transparent.png" width="400px">
-          <form id="searchForm" method="POST" action="/browse" enctype="multipart/form-data" 
+          <form id="searchForm" method="POST" action="/browse"
                 onsubmit="return checkSearchForm()">
             <div class="bar">
               <img class="searchIcon" src="/images/search.png" height="15px">
-              <input class="searchbar" type="text" title="Search" id="textSearch" name="textSearch">
+              <input class="searchbar" type="text" title="Search" id="textSearch" 
+                     name="textSearch" autocomplete="off">
               <a href="javascript:void(0);" onclick="toggleImageUpload()">
                 <img class="cameraIcon" src="/images/google-camera.svg" height="20px">
               </a>

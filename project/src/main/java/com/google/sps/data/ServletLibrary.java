@@ -230,6 +230,70 @@ public class ServletLibrary {
                         tempVisionAnnotation);
   }
 
+  // Lists all businesses stored in the database.
+  public static List<Business> listAllBusinesses(DatastoreService datastore) {
+    if (datastore == null) {
+      System.err.println("ListAllBusinesses: datastore is null!");
+    }
+    Query query = new Query("Business").addSort("productSetDisplayName", SortDirection.ASCENDING);
+    PreparedQuery pq = datastore.prepare(query);
+    List<Business> results = new ArrayList<>();
+    for (Entity entity : pq.asIterable()) {
+      // Formatting entity into the business class. Checking if the types are valid.
+      Object _businessId = entity.getProperty("businessId");
+      Object _businessDisplayName = entity.getProperty("businessDisplayName");
+      Object _street = entity.getProperty("street");
+      Object _city = entity.getProperty("city");
+      Object _state = entity.getProperty("state");
+      Object _zipCode = entity.getProperty("zipCode");
+      Object _annotationObject = entity.getProperty("tempVisionAnnotation");
+      String businessId;
+      String businessDisplayName;
+      String street;
+      String city;
+      String state;
+      String zipCode;
+      Text annotationObject;
+      if ((_businessId instanceof String) &&
+          (_businessDisplayName instanceof String) &&
+          (_street instanceof String) &&
+          (_city instanceof String) &&
+          (_state instanceof String) &&
+          (_zipCode instanceof String) &&
+          (_annotationObject instanceof Text)) {
+        businessId = _businessId.toString();
+        businessDisplayName = _businessDisplayName.toString();
+        street = _street.toString();
+        city = _city.toString();
+        state = _state.toString();
+        zipCode = _zipCode.toString();
+        annotationObject = (Text) _annotationObject;
+      } else {
+        System.err.println("Entity properties are of an incorrect type.");
+        return null;
+      }
+      @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
+        List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
+      if (productIds == null) productIds = new ArrayList<String>();
+
+      String tempVisionAnnotation = null;
+      if (annotationObject != null) {
+        tempVisionAnnotation = annotationObject.getValue();
+      }
+
+      results.add(new Business(businessId,
+                               businessDisplayName,
+                               street,
+                               city,
+                               state,
+                               zipCode,
+                               productIds,
+                               tempVisionAnnotation));
+    }
+
+    return results;
+  }
+
   // For every label that a product has, we assign the product to that label in
   // the labels table in datastore.
   public static void addProductToLabels(DatastoreService datastore, String productId, List<String> labels) {
