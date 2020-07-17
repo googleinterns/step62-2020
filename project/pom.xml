@@ -64,6 +64,19 @@
       <artifactId>appengine-gcs-client</artifactId>
       <version>0.8</version>
     </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>3.3.3</version>
+    </dependency>
     
   </dependencies>
 
@@ -77,7 +90,7 @@
         <version>2.2.0</version>
         <configuration>
           <!-- TODO: set project ID. -->
-          <deploy.projectId>neelgandhi-step-2020</deploy.projectId>
+          <deploy.projectId>mrjwash-step-2020</deploy.projectId>
           <deploy.version>1</deploy.version>
         </configuration>
       </plugin>
