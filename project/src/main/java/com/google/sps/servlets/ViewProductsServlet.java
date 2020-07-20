@@ -17,12 +17,20 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 
+import com.google.appengine.api.blobstore.BlobInfo;
+import com.google.appengine.api.blobstore.BlobInfoFactory;
+import com.google.appengine.api.blobstore.BlobKey;
+import com.google.appengine.api.blobstore.BlobstoreService;
+import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+import com.google.appengine.api.blobstore.FileInfo;
+
 import com.google.sps.data.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Map;
 
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -31,6 +39,7 @@ import com.google.appengine.api.users.UserServiceFactory;
 public class ViewProductsServlet extends HttpServlet {
 
   protected DatastoreService datastore;
+  protected BlobstoreService blobstore;
   protected Gson gson;
   protected UserService userService;
 
@@ -38,6 +47,7 @@ public class ViewProductsServlet extends HttpServlet {
     super();
     datastore = DatastoreServiceFactory.getDatastoreService();
     userService = UserServiceFactory.getUserService();
+    blobstore = BlobstoreServiceFactory.getBlobstoreService();
     gson = new Gson();
   }
 

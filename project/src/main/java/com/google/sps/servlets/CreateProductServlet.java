@@ -98,7 +98,12 @@ public class CreateProductServlet extends HttpServlet {
     List<String> labels = new ArrayList<>(Arrays.asList(request.getParameterValues("labels")));
     labels.add(productDisplayName);
     labels.add(productSetDisplayName);
-    labels.add(productCategory); // TODO: remove the '-v1' or '-v2' at the end of the category string
+    String[] pieces = productCategory.split("-");
+    labels.add(pieces[0]); 
+    Business business = ServletLibrary.retrieveBusinessInfo(datastore, businessId);
+    if (business != null) {
+      labels.add(business.getBusinessDisplayName());
+    }
     // Remove potential duplicates, ignoring case, but preserving it when 
     // returning the new list. We set labels to the new list that was generated.
     Set<String> seen = new HashSet<>();
