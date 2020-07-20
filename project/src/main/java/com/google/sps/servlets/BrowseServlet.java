@@ -97,7 +97,9 @@ public class BrowseServlet extends HttpServlet {
     boolean userUploadedImage = Boolean.parseBoolean(request.getParameter("userUploadedImage"));
 
     String queryString = "/browse.html?";
-
+    
+    // Checks if the user sent a text search or a image search or both. Adds
+    // query properties appropriately.
     if (userUploadedImage) {
       Map<String, List<FileInfo>> files = blobstore.getFileInfos(request);
       String gcsUrl = CloudStorageLibrary.getGcsFilePath(files);
@@ -110,8 +112,6 @@ public class BrowseServlet extends HttpServlet {
       queryString = queryString + "textSearch=" + textSearch;
     }
   
-    
-
     response.sendRedirect(queryString);
   }
 }

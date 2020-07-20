@@ -86,15 +86,24 @@ public class ViewProductsServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String textSearch = request.getParameter("textSearch");
-    // TODO: Check for uploaded files. As part of the querystring, we should 
-    // get the blobKey.
+    boolean userUploadedImage = Boolean.parseBoolean(request.getParameter("userUploadedImage"));
+
     String queryString = "/viewProducts.html?";
 
-    // TODO: check the textString
-    if (!textSearch.isEmpty()) {
+    // Checks if the user sent a text search or a image search or both. Adds
+    // query properties appropriately.
+    if (userUploadedImage) {
+      Map<String, List<FileInfo>> files = blobstore.getFileInfos(request);
+      String gcsUrl = CloudStorageLibrary.getGcsFilePath(files);
+      BlobKey blobKey = blobstore.createGsBlobKey(gcsUrl);
+      queryString = queryString + "blobKey=" + blobKey.getKeyString();
+      if (!textSearch.isEmpty()) {
+        queryString = queryString + "&textSearch=" + textSearch;
+      }
+    } else if (!textSearch.isEmpty()) {
       queryString = queryString + "textSearch=" + textSearch;
     }
-
+  
     response.sendRedirect(queryString);
   }
 }

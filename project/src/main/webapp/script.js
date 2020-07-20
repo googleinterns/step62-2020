@@ -447,6 +447,7 @@ function browseProducts() {
   });
 }
 
+// Fill out the businesses dropdown menu with info from datastore.
 function retrieveBusinesses() {
   fetch("/createBusinessAccount").then(response => response.json()).then(names => {
     const dropdownList = document.getElementById("businessId");
