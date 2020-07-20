@@ -368,6 +368,7 @@ function setupImageUpload(urlPath) {
       searchForm.action = url;
       searchForm.enctype = "multipart/form-data";
       spinnerImage.style.display = "none";
+      imageButton.required = true;
       imageButton.style.display = "block";
     });
 }
@@ -377,14 +378,12 @@ function toggleImageUpload(urlPath) {
   const imageButton = document.getElementById("imageUpload");
   const searchForm = document.getElementById("searchForm");
   if (imageButton.style.display === "block") {
+    searchForm.action = urlPath;
+    searchForm.enctype = "application/x-www-form-urlencoded";
+    imageButton.required = false;
     imageButton.style.display = "none";
   } else {
-    const actionUrl = new URL(searchForm.action);
-    if (actionUrl.pathname === "/"+urlPath) {
-      setupImageUpload(urlPath);
-    } else {
-      imageButton.style.display = "block";
-    }
+    setupImageUpload(urlPath);
   }
 }
 
@@ -463,11 +462,14 @@ function retrieveBusinesses() {
 function setBrowseInputs() {
   const params = getUrlParams();
   const textSearch = params["textSearch"];
+  const blobKey = params["blobKey"];
   if (textSearch != null) {
     document.getElementById("textSearch").value = textSearch;
   }
-
-  // TODO: if user had uploaded an image, display it here.
+  if (blobKey != null) {
+    document.getElementById("uploadedImage").src = "/serveBlobstoreImage?blobKey=" + blobKey;
+    document.getElementById("uploadedImageBox").style.display = "block";
+  }
 }
 
 function refreshBrowsePage() {

@@ -42,7 +42,8 @@ public class BlobstoreUrlSearchServlet extends HttpServlet {
     String bucketName = "neelgandhi-step-2020-test-bucket"; // Use when deploying to neelgandhi.
     UploadOptions bucket = UploadOptions.Builder.withGoogleStorageBucketName(bucketName);
 
-    String urlPath = "/" + request.getParameter("urlPath");
+    String urlPath = "/" + request.getParameter("urlPath") + 
+                     "?userUploadedImage=true";
     String uploadUrl = blobstoreService.createUploadUrl(urlPath, bucket);
 
     response.setContentType("text/html");

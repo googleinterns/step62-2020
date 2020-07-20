@@ -3,10 +3,7 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Date;
-import java.awt.Color;
+import java.util.Map;
 import com.google.sps.data.*;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -17,6 +14,13 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.FetchOptions;
+
+import com.google.appengine.api.blobstore.BlobInfo;
+import com.google.appengine.api.blobstore.BlobInfoFactory;
+import com.google.appengine.api.blobstore.BlobKey;
+import com.google.appengine.api.blobstore.BlobstoreService;
+import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+import com.google.appengine.api.blobstore.FileInfo;
 
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
@@ -34,18 +38,20 @@ public class BrowseServlet extends HttpServlet {
 
   protected Gson gson;
   protected DatastoreService datastore;
+  protected BlobstoreService blobstore;
   protected UserService userService;
 
   public BrowseServlet() {
     super();
     gson = new Gson();
     datastore = DatastoreServiceFactory.getDatastoreService();
+    blobstore = BlobstoreServiceFactory.getBlobstoreService();
     userService = UserServiceFactory.getUserService();
   }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // TODO: text based search.
+    // TODO: text based search and product search.
 
     // Retrieve parameters from the request
     String productSetDisplayName = request.getParameter("productSetDisplayName");
@@ -88,14 +94,23 @@ public class BrowseServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String textSearch = request.getParameter("textSearch");
-    // TODO: Check for uploaded files. As part of the querystring, we should 
-    // get the blobKey.
+    boolean userUploadedImage = Boolean.parseBoolean(request.getParameter("userUploadedImage"));
+
     String queryString = "/browse.html?";
 
-    // TODO: check the textString
-    if (!textSearch.isEmpty()) {
+    if (userUploadedImage) {
+      Map<String, List<FileInfo>> files = blobstore.getFileInfos(request);
+      String gcsUrl = CloudStorageLibrary.getGcsFilePath(files);
+      BlobKey blobKey = blobstore.createGsBlobKey(gcsUrl);
+      queryString = queryString + "blobKey=" + blobKey.getKeyString();
+      if (!textSearch.isEmpty()) {
+        queryString = queryString + "&textSearch=" + textSearch;
+      }
+    } else if (!textSearch.isEmpty()) {
       queryString = queryString + "textSearch=" + textSearch;
     }
+  
+    
 
     response.sendRedirect(queryString);
   }

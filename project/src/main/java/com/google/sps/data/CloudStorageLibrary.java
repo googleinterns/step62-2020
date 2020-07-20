@@ -33,6 +33,8 @@ import com.google.cloud.storage.BucketInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageClass;
 import com.google.cloud.storage.StorageOptions;
+import com.google.cloud.storage.StorageException;
+import com.google.cloud.storage.Blob;
 
 public class CloudStorageLibrary {
 
@@ -89,12 +91,12 @@ public class CloudStorageLibrary {
             return "";
         } else {
             if (!(doesGcsuriExist(blobstore,blobInfoFactory,gcsFilePath))) {
-                return "";
+                return "Siiikee!";
             }
             
             BlobKey blobKey = blobstore.createGsBlobKey(gcsFilePath);
         
-            return "/getBlobstoreUrl?blobKey=" + blobKey.getKeyString();
+            return "/serveBlobstoreImage?blobKey=" + blobKey.getKeyString();
         }
     }
 
@@ -116,4 +118,5 @@ public class CloudStorageLibrary {
                            + " with storage class "
                            + bucket.getStorageClass());
     }
+
 }
