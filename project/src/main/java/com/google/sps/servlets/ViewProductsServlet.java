@@ -82,4 +82,19 @@ public class ViewProductsServlet extends HttpServlet {
     response.setContentType("application/json;");
     response.getWriter().println(json);
   }
+
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String textSearch = request.getParameter("textSearch");
+    // TODO: Check for uploaded files. As part of the querystring, we should 
+    // get the blobKey.
+    String queryString = "/viewProducts.html?";
+
+    // TODO: check the textString
+    if (!textSearch.isEmpty()) {
+      queryString = queryString + "textSearch=" + textSearch;
+    }
+
+    response.sendRedirect(queryString);
+  }
 }

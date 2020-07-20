@@ -88,7 +88,6 @@ public class BrowseServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String textSearch = request.getParameter("textSearch");
-    if (textSearch == null) throw new IOException("why is this null!!!!");
     // TODO: Check for uploaded files. As part of the querystring, we should 
     // get the blobKey.
     String queryString = "/browse.html?";

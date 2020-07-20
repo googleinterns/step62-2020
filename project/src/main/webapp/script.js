@@ -194,6 +194,7 @@ function retrieveProducts() {
 
 function refreshViewProductsPage() {
   retrieveProductSetDisplayNames();
+  setBrowseInputs();
   retrieveProducts();
 }
 
@@ -354,13 +355,36 @@ function viewProduct() {
   });
 }
 
-// Toggles between shoing and hiding the option to search by image.
-function toggleImageUpload() {
+// Gets a blobstore url.
+function setupImageUpload(urlPath) {
+  console.log("Setting up upload url.")
+  const searchForm = document.getElementById("searchForm");
+  const spinnerImage = document.getElementById("spinnerImage");
   const imageButton = document.getElementById("imageUpload");
+  spinnerImage.style.display = "block";
+  fetch("/getBlobstoreUrlSearch?urlPath=" + urlPath)
+    .then(response => response.text())
+    .then(url => {
+      searchForm.action = url;
+      searchForm.enctype = "multipart/form-data";
+      spinnerImage.style.display = "none";
+      imageButton.style.display = "block";
+    });
+}
+
+// Toggles between showing and hiding the option to search by image.
+function toggleImageUpload(urlPath) {
+  const imageButton = document.getElementById("imageUpload");
+  const searchForm = document.getElementById("searchForm");
   if (imageButton.style.display === "block") {
     imageButton.style.display = "none";
   } else {
-    imageButton.style.display = "block";
+    const actionUrl = new URL(searchForm.action);
+    if (actionUrl.pathname === "/"+urlPath) {
+      setupImageUpload(urlPath);
+    } else {
+      imageButton.style.display = "block";
+    }
   }
 }
 

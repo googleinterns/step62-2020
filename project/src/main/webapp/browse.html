@@ -50,9 +50,11 @@
                   <img class="searchIcon" src="/images/search.png" height="15px">
                   <input class="searchbar" type="text" title="Search" id="textSearch" 
                         name="textSearch" autocomplete="off">
-                  <a href="javascript:void(0);" onclick="toggleImageUpload()">
+                  <a href="javascript:void(0);" onclick="toggleImageUpload('browse')">
                     <img class="cameraIcon" src="/images/google-camera.svg" height="20px">
                   </a>
+                  <div class="mdl-spinner mdl-js-spinner is-active hiddenButton" 
+                       id="spinnerImage"></div>
                   <input class="hiddenButton" type="file" name="imageUpload" 
                         id="imageUpload" accept="image/*">
                 </div>
