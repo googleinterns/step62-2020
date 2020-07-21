@@ -34,11 +34,12 @@ import com.google.cloud.storage.StorageOptions;
 import com.google.cloud.storage.Blob;
 
 public class CloudStorageLibrary {
+    private static final String BUCKET_NAME = "cloudberry-step-2020-test-bucket";
 
     //Function to determine if the gcs file path is valid
     public static Boolean doesGcsuriExist(Storage storage, String gcsFilePath) {
-        String fileName = gcsFilePath.replaceFirst("/gs/cloudberry-step-2020-test-bucket/", "");
-        Blob blob = storage.get("cloudberry-step-2020-test-bucket", fileName);
+        String fileName = gcsFilePath.replaceFirst(("/gs/" + BUCKET_NAME + "/"), "");
+        Blob blob = storage.get(BUCKET_NAME, fileName);
 
         return (blob != null);
     }
