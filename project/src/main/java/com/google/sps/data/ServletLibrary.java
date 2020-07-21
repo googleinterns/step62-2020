@@ -751,4 +751,65 @@ public class ServletLibrary {
                              productDescription,
                              cloudVisionAnnotation);
   }
+
+  public static SearchInfo retrieveSearchInfo(DatastoreService datastore, String searchId) {
+    if (datastore == null || searchId == null) {
+      System.err.println("RetrieveSearchInfo: At least one of the inputs was null!");
+      return null;
+    }
+    Filter filter = new FilterPredicate("searchId", FilterOperator.EQUAL, searchId);
+    Query query = new Query("SearchInfo").setFilter(filter);
+    PreparedQuery pq = datastore.prepare(query);
+    Entity entity = pq.asSingleEntity();
+
+    // Return null if the object doesn't exist in the database.
+    if (entity == null) return null;
+
+    Object _textSearch = entity.getProperty("textSearch");
+    Object _gcsUrl = entity.getProperty("gcsUrl");
+    Object _imageUrl = entity.getProperty("imageUrl");
+    Object _userId = entity.getProperty("userId");
+    String textSearch;
+    String gcsUrl;
+    String imageUrl;
+    String userId;
+
+    if (_gcsUrl == null) {
+      gcsUrl = null;
+    } else if (_gcsUrl instanceof String) {
+      gcsUrl = _gcsUrl.toString();
+    } else {
+      System.err.println("GcsUrl property is of an incorrect type.");
+      return null;
+    }
+
+    if (_imageUrl == null) {
+      imageUrl = null;
+    } else if (_imageUrl instanceof String) {
+      imageUrl = _imageUrl.toString();
+    } else {
+      System.err.println("ImageUrl property is of an incorrect type.");
+      return null;
+    }
+
+    if (_textSearch == null) {
+      textSearch = null;
+    } else if (_textSearch instanceof String) {
+      textSearch = _textSearch.toString();
+    } else {
+      System.err.println("TextSearch property is of an incorrect type.");
+      return null;
+    }
+
+    if (_userId == null) {
+      userId = null;
+    } else if (_userId instanceof String) {
+      userId = _userId.toString();
+    } else {
+      System.err.println("UserId property is of an incorrect type.");
+      return null;
+    }
+    
+    return new SearchInfo(searchId, textSearch, gcsUrl, imageUrl, userId);
+  }
 }

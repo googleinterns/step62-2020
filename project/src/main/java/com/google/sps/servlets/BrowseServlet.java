@@ -96,22 +96,36 @@ public class BrowseServlet extends HttpServlet {
     String textSearch = request.getParameter("textSearch");
     boolean userUploadedImage = Boolean.parseBoolean(request.getParameter("userUploadedImage"));
 
-    String queryString = "/browse.html?";
+    // Creates a new SearchIno object, which will be stored in datastore.
+    String searchId = ServletLibrary.generateUUID();
+    Entity searchInfo = new Entity("SearchInfo", searchId);
+    searchInfo.setProperty("searchId", searchId);
+    searchInfo.setProperty("timestamp", System.currentTimeMillis());
+    if (userService.isUserLoggedIn()) {
+      searchInfo.setProperty("userId", userService.getCurrentUser().getUserId());
+      // TODO: add it to user search history in database
+    } else {
+      searchInfo.setProperty("userId", null);
+    }
     
     // Checks if the user sent a text search or a image search or both. Adds
     // query properties appropriately.
+    searchInfo.setProperty("gcsUrl", null);
+    searchInfo.setProperty("imageUrl", null);
+    searchInfo.setProperty("textSearch", null);
     if (userUploadedImage) {
       Map<String, List<FileInfo>> files = blobstore.getFileInfos(request);
       String gcsUrl = CloudStorageLibrary.getGcsFilePath(files);
       BlobKey blobKey = blobstore.createGsBlobKey(gcsUrl);
-      queryString = queryString + "blobKey=" + blobKey.getKeyString();
-      if (!textSearch.isEmpty()) {
-        queryString = queryString + "&textSearch=" + textSearch;
-      }
-    } else if (!textSearch.isEmpty()) {
-      queryString = queryString + "textSearch=" + textSearch;
+      String imageUrl = "/serveBlobstoreImage?blobKey=" + blobKey.getKeyString();
+      searchInfo.setProperty("gcsUrl", gcsUrl);
+      searchInfo.setProperty("imageUrl", imageUrl);
+    } 
+    if (!textSearch.isEmpty()) {
+      searchInfo.setProperty("textSearch", textSearch);
     }
+    datastore.put(searchInfo);
   
-    response.sendRedirect(queryString);
+    response.sendRedirect("/browse.html?searchId="+searchId);
   }
 }

@@ -134,7 +134,8 @@ function truncateString(str, length) {
     return str;
   }
 };
-              
+
+// TODO: add text and image search as an option here.
 // Display cards containing the products.
 function retrieveProducts() {
   const searchResults = document.getElementById("searchResults");
@@ -357,7 +358,7 @@ function viewProduct() {
 
 // Gets a blobstore url.
 function setupImageUpload(urlPath) {
-  console.log("Setting up upload url.")
+  console.log("Setting up upload url.");
   const searchForm = document.getElementById("searchForm");
   const spinnerImage = document.getElementById("spinnerImage");
   const imageButton = document.getElementById("imageUpload");
@@ -462,14 +463,16 @@ function retrieveBusinesses() {
 
 function setBrowseInputs() {
   const params = getUrlParams();
-  const textSearch = params["textSearch"];
-  const blobKey = params["blobKey"];
-  if (textSearch != null) {
-    document.getElementById("textSearch").value = textSearch;
-  }
-  if (blobKey != null) {
-    document.getElementById("uploadedImage").src = "/serveBlobstoreImage?blobKey=" + blobKey;
-    document.getElementById("uploadedImageBox").style.display = "block";
+  const searchId = params["searchId"];
+  if (searchId != null) {
+    fetch("/searchInfo?searchId="+searchId).then(response => response.json())
+    .then(searchInfo => {
+      document.getElementById("textSearch").value = searchInfo.textSearch;
+      if (searchInfo.imageUrl != null) {
+        document.getElementById("uploadedImage").src = searchInfo.imageUrl;
+        document.getElementById("uploadedImageBox").style.display = "block";
+      }
+    });
   }
 }
 
