@@ -84,7 +84,7 @@ public final class UploadedFileUrlTest {
     @Test
     public void uploadingNonExistentGcsFileName() {
         String actual = CloudStorageLibrary.getUploadedFileUrl(MOCK_BLOBSTORE, MOCK_BLOBINFO_FACTORY, INVALID_GCS_FILE_NAME);
-        String expected = "Siiikee!";
+        String expected = "";
 
         Assert.assertEquals(expected, actual);
     }

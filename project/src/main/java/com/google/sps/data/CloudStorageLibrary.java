@@ -91,7 +91,7 @@ public class CloudStorageLibrary {
             return "";
         } else {
             if (!(doesGcsuriExist(blobstore,blobInfoFactory,gcsFilePath))) {
-                return "Siiikee!";
+                return "";
             }
             
             BlobKey blobKey = blobstore.createGsBlobKey(gcsFilePath);
