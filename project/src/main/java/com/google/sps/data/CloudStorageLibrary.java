@@ -2,8 +2,6 @@ package com.google.sps.data;
 
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
-import com.google.appengine.api.blobstore.BlobInfo;
-import com.google.appengine.api.blobstore.BlobInfoFactory;
 import com.google.appengine.api.blobstore.BlobKey;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
@@ -33,21 +31,27 @@ import com.google.cloud.storage.BucketInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageClass;
 import com.google.cloud.storage.StorageOptions;
+import com.google.cloud.storage.Blob;
 
 public class CloudStorageLibrary {
 
     //Function to determine if the gcs file path is valid
-    public static Boolean doesGcsuriExist(BlobstoreService blobstore, BlobInfoFactory blobInfoFactory,
-                                           String gcsFilePath) {
-        BlobKey blobKey = blobstore.createGsBlobKey(gcsFilePath);
-        BlobInfo blobInfo = blobInfoFactory.loadBlobInfo(blobKey);
+    public static Boolean doesGcsuriExist(Storage storage, String gcsFilePath) {
+        String fileName = gcsFilePath.replaceFirst("/gs/cloudberry-step-2020-test-bucket/", "");
+        Blob blob = storage.get("cloudberry-step-2020-test-bucket", fileName);
 
-        return (blobInfo != null);
+        return (blob != null);
     }
 
-    /*Function to get the gcsuri from an uploaded file. We use a map because 
+    /*Function to get the gcsuri from an uploaded file.
       getFileInfos() returns a map of the files that have been uploaded.*/
-    public static String getGcsFilePath(Map<String, List<FileInfo>> files) {
+    public static String getGcsFilePath(HttpServletRequest request, BlobstoreService blobstore) {
+        if (request == null || blobstore == null) {
+            return "";
+        }
+
+        Map<String, List<FileInfo>> files = blobstore.getFileInfos(request);
+
         //We only need the first element of the map because we upload one image at a time
         //TODO(mrjwash): When we switch to multiple I have to parse for the newest upload using getCreation();
         for (Map.Entry<String, List<FileInfo>> fileMap : files.entrySet()) { 
@@ -63,14 +67,13 @@ public class CloudStorageLibrary {
     }
 
     //Gets a url to directly serve the image
-    public static String getServingFileUrl(BlobstoreService blobstore, BlobInfoFactory blobInfoFactory, 
-                                           String gcsFilePath) {
-        if (blobstore == null || blobInfoFactory == null || gcsFilePath == null) {
+    public static String getServingFileUrl(Storage storage, String gcsFilePath) {
+        if (storage == null || gcsFilePath == null) {
             return "";
         } else if (gcsFilePath.isEmpty()) {
             return "";
         } else {
-            if (!(doesGcsuriExist(blobstore, blobInfoFactory, gcsFilePath))) {
+            if (!(doesGcsuriExist(storage, gcsFilePath))) {
                 return "";
             }
 
@@ -81,14 +84,13 @@ public class CloudStorageLibrary {
     }
 
     //Function that gets the upload Url for a given gcsuri
-    public static String getUploadedFileUrl(BlobstoreService blobstore, BlobInfoFactory blobInfoFactory,
-                                            String gcsFilePath) {
-        if (blobstore == null || blobInfoFactory == null || gcsFilePath == null) {
+    public static String getUploadedFileUrl(BlobstoreService blobstore, Storage storage, String gcsFilePath) {
+        if (blobstore == null || storage == null || gcsFilePath == null) {
             return "";
         } else if (gcsFilePath.isEmpty()) {
             return "";
         } else {
-            if (!(doesGcsuriExist(blobstore,blobInfoFactory,gcsFilePath))) {
+            if (!(doesGcsuriExist(storage, gcsFilePath))) {
                 return "";
             }
             

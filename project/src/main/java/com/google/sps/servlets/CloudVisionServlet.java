@@ -47,6 +47,9 @@ import com.google.cloud.vision.v1.WebDetection.WebPage;
 import com.google.protobuf.ByteString;
 import java.io.ByteArrayOutputStream;
 
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
+
 import java.util.Random;
 import java.math.BigDecimal; 
 
@@ -60,6 +63,7 @@ public class CloudVisionServlet extends HttpServlet {
   protected List<Feature> allFeatures;
   protected DatastoreService datastore;
   protected UserService userService;
+  protected Storage storage;
 
   public CloudVisionServlet() {
     super();
@@ -68,6 +72,7 @@ public class CloudVisionServlet extends HttpServlet {
     imagesService = ImagesServiceFactory.getImagesService();
     datastore = DatastoreServiceFactory.getDatastoreService();
     userService = UserServiceFactory.getUserService();
+    storage = StorageOptions.getDefaultInstance().getService();
     Feature labelDetection = Feature.newBuilder().setType(Feature.Type.LABEL_DETECTION).build();
     Feature logoDetection = Feature.newBuilder().setType(Feature.Type.LOGO_DETECTION).build();
     Feature textDetection = Feature.newBuilder().setType(Feature.Type.TEXT_DETECTION).build();
@@ -108,7 +113,7 @@ public class CloudVisionServlet extends HttpServlet {
     // Get the URL of the image that the user uploaded.
     String gcsUrl = CloudStorageLibrary.getGcsFilePath(request, blobstore);
     BlobKey blobKey = blobstore.createGsBlobKey(gcsUrl);
-    String imageUrl = CloudStorageLibrary.getUploadedFileUrl(blobstore, gcsUrl);
+    String imageUrl = CloudStorageLibrary.getUploadedFileUrl(blobstore, storage, gcsUrl);
 
     // Use blobKey to send a request to the cloud vision api. We are guaranteed 
     // that the client uploaded an image.

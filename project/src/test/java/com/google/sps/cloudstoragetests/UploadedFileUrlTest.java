@@ -13,6 +13,9 @@ import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.blobstore.BlobInfo;
 import com.google.appengine.api.blobstore.BlobInfoFactory;
 import com.google.appengine.api.blobstore.BlobKey;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
+import com.google.cloud.storage.Blob;
 import com.google.sps.data.CloudStorageLibrary;
 import static org.mockito.Mockito.*;
 
@@ -20,43 +23,42 @@ import static org.mockito.Mockito.*;
 public final class UploadedFileUrlTest {
     private static BlobstoreService MOCK_BLOBSTORE = mock(BlobstoreService.class);
     private static BlobKey MOCK_BLOBKEY = mock(BlobKey.class);
-    private static BlobInfoFactory MOCK_BLOBINFO_FACTORY = mock(BlobInfoFactory.class);
-    private static BlobInfo MOCK_BLOBINFO = mock(BlobInfo.class);
+    private static Storage MOCK_STORAGE = mock(Storage.class);
+    private static Blob MOCK_BLOB = mock(Blob.class);
 
-    private static BlobKey INVALID_MOCK_BLOBKEY = mock(BlobKey.class);
-    private static BlobInfo INVALID_MOCK_BLOBINFO = mock(BlobInfo.class);
+    private static final String GCSURI = "/gs/cloudberry-step-2020-test-bucket/myFile";
+    private static final String FILE_NAME = "myFile";
+    private static final String BUCKET_NAME = "cloudberry-step-2020-test-bucket";
 
-    private final String GCS_FILE_NAME = "/gs/myBucket/myFile";
-
-    private static final String INVALID_GCS_FILE_NAME = "/gs/notValid/aFile";
+    private static final String INVALID_GCSURI = "/gs/cloudberry-step-2020-test-bucket/invalidFile";
+    private static final String INVALID_FILE_NAME = "invalidFile";
 
     private String BLOBKEY = "";
 
     @Before
     public void setUp() {
-        when(MOCK_BLOBSTORE.createGsBlobKey(GCS_FILE_NAME)).thenReturn(MOCK_BLOBKEY);
+        when(MOCK_BLOBSTORE.createGsBlobKey(GCSURI)).thenReturn(MOCK_BLOBKEY);
         when(MOCK_BLOBKEY.getKeyString()).thenReturn("123456789");
-        when(MOCK_BLOBINFO_FACTORY.loadBlobInfo(MOCK_BLOBKEY)).thenReturn(MOCK_BLOBINFO);
 
-        when(MOCK_BLOBSTORE.createGsBlobKey(INVALID_GCS_FILE_NAME)).thenReturn(INVALID_MOCK_BLOBKEY);
-        when(MOCK_BLOBINFO_FACTORY.loadBlobInfo(INVALID_MOCK_BLOBKEY)).thenReturn(null);
+        when(MOCK_STORAGE.get(BUCKET_NAME, FILE_NAME)).thenReturn(MOCK_BLOB);
+        when(MOCK_STORAGE.get(BUCKET_NAME, INVALID_FILE_NAME)).thenReturn(null);
 
-        BLOBKEY = MOCK_BLOBSTORE.createGsBlobKey(GCS_FILE_NAME).getKeyString();
+        BLOBKEY = MOCK_BLOBSTORE.createGsBlobKey(GCSURI).getKeyString();
     }
     
     //Test to show what happens when you pass in a null blobstore
     @Test
     public void uploadedNullBlobstore() {
-        String actual = CloudStorageLibrary.getUploadedFileUrl(null, MOCK_BLOBINFO_FACTORY, GCS_FILE_NAME);
+        String actual = CloudStorageLibrary.getUploadedFileUrl(null, MOCK_STORAGE, GCSURI);
         String expected = "";
 
         Assert.assertEquals(expected, actual);
     }
 
-    //Test to show what happens when you pass in a null blobInfoFactory
+    //Test to show what happens when you pass in a null storage
     @Test
-    public void uploadedNullBlobInfoFactory() {
-        String actual = CloudStorageLibrary.getUploadedFileUrl(MOCK_BLOBSTORE, null, GCS_FILE_NAME);
+    public void uploadedNullStorage() {
+        String actual = CloudStorageLibrary.getUploadedFileUrl(MOCK_BLOBSTORE, null, GCSURI);
         String expected = "";
 
         Assert.assertEquals(expected, actual);
@@ -65,7 +67,7 @@ public final class UploadedFileUrlTest {
     //Test to show what happens when you pass in a null gcsuri
     @Test
     public void uploadedNullGcsFileName() {
-        String actual = CloudStorageLibrary.getUploadedFileUrl(MOCK_BLOBSTORE, MOCK_BLOBINFO_FACTORY, null);
+        String actual = CloudStorageLibrary.getUploadedFileUrl(MOCK_BLOBSTORE, MOCK_STORAGE, null);
         String expected = "";
 
         Assert.assertEquals(expected, actual);
@@ -74,7 +76,7 @@ public final class UploadedFileUrlTest {
     //Test to show what happens when you pass in an empty string
     @Test
     public void uploadedEmptyGcsFileName() {
-        String actual = CloudStorageLibrary.getUploadedFileUrl(MOCK_BLOBSTORE, MOCK_BLOBINFO_FACTORY, "");
+        String actual = CloudStorageLibrary.getUploadedFileUrl(MOCK_BLOBSTORE, MOCK_STORAGE, "");
         String expected = "";
 
         Assert.assertEquals(expected, actual);
@@ -83,7 +85,7 @@ public final class UploadedFileUrlTest {
     //Function to test what happens when you pass in a string that doesn't exist
     @Test
     public void uploadingNonExistentGcsFileName() {
-        String actual = CloudStorageLibrary.getUploadedFileUrl(MOCK_BLOBSTORE, MOCK_BLOBINFO_FACTORY, INVALID_GCS_FILE_NAME);
+        String actual = CloudStorageLibrary.getUploadedFileUrl(MOCK_BLOBSTORE, MOCK_STORAGE, INVALID_GCSURI);
         String expected = "";
 
         Assert.assertEquals(expected, actual);
@@ -92,7 +94,7 @@ public final class UploadedFileUrlTest {
     //Test to show that the function works properly
     @Test
     public void uploadedGcsFileNameisSet() {
-        String actual = CloudStorageLibrary.getUploadedFileUrl(MOCK_BLOBSTORE, MOCK_BLOBINFO_FACTORY, GCS_FILE_NAME);
+        String actual = CloudStorageLibrary.getUploadedFileUrl(MOCK_BLOBSTORE, MOCK_STORAGE, GCSURI);
         String expected = "/getBlobstoreUrl?blobKey=" + BLOBKEY;
 
         Assert.assertEquals(expected, actual);
