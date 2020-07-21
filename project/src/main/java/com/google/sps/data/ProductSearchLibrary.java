@@ -3,7 +3,11 @@ package com.google.sps.data;
 import com.google.api.gax.longrunning.OperationFuture;
 import com.google.cloud.vision.v1.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Arrays;
+
+
  
 import java.io.IOException;
 
@@ -22,24 +26,13 @@ public class ProductSearchLibrary{
         String formattedParent = ProductSearchClient.formatLocationName(projectId, computeRegion);
         // List all the product sets available in the region.
         for (ProductSet productSet : client.listProductSets(formattedParent).iterateAll()) {
-        // Display the product set information
-        System.out.println(String.format("Product set name: %s", productSet.getName()));
-        System.out.println(
-            String.format(
-                "Product set id: %s",
-                productSet.getName().substring(productSet.getName().lastIndexOf('/') + 1)));
-        System.out.println(
-            String.format("Product set display name: %s", productSet.getDisplayName()));
-        System.out.println("Product set index time:");
-        System.out.println(String.format("\tseconds: %s", productSet.getIndexTime().getSeconds()));
-        System.out.println(String.format("\tnanos: %s", productSet.getIndexTime().getNanos()));
 
-        ProductSetItem productSetItem = new ProductSetItem(productSet.getName().substring(productSet.getName().lastIndexOf('/') + 1),
-                                    productSet.getDisplayName());
-        // The set id of a product set is the last directory of a file path and to get this file path
-        // the index of the last backslash symbol is determined and a substring from the index to the end of the file path is made
-        // to get the set id of a product set.
-        productSets.add(productSetItem);
+            ProductSetItem productSetItem = new ProductSetItem(productSet.getName().substring(productSet.getName().lastIndexOf('/') + 1),
+                                            productSet.getDisplayName());
+            // The set id of a product set is the last directory of a file path and to get this file path
+            // the index of the last backslash symbol is determined and a substring from the index to the end of the file path is made
+            // to get the set id of a product set.
+            productSets.add(productSetItem);
         }
       } catch(Exception e){
         System.err.println("Could not list product sets");
@@ -69,8 +62,6 @@ public class ProductSearchLibrary{
             .setProductSetId(productSetId)
             .build();
       ProductSet productSet = client.createProductSet(request);
-      // Display the product set information
-      System.out.println(String.format("Product set name: %s", productSet.getName()));
     } catch(Exception e){
         System.err.println("Could not create product set");
     }
@@ -81,8 +72,8 @@ public class ProductSearchLibrary{
     String productId,
     String referenceImageId,
     String gcsUri) throws IOException {
-    try (ProductSearchClient client = ProductSearchClient.create()) {
-
+    
+        ProductSearchClient client = ProductSearchClient.create();
         // Get the full path of the product.
         String formattedParent =
             ProductSearchClient.formatProductName(projectId, computeRegion, productId);
@@ -91,12 +82,7 @@ public class ProductSearchLibrary{
 
         ReferenceImage image =
             client.createReferenceImage(formattedParent, referenceImage, referenceImageId);
-        // Display the reference image information.
-        System.out.println(String.format("Reference image name: %s", image.getName()));
-        System.out.println(String.format("Reference image uri: %s", image.getUri()));
-    } catch(Exception e){
-        System.err.println("Could not create reference image");
-    }
+
   } 
 
   public static void addProductToProductSet(
@@ -139,44 +125,7 @@ public class ProductSearchLibrary{
         Product product = client.createProduct(formattedParent, myProduct, productId);
         // Display the product information
         System.out.println(String.format("Product name: %s", product.getName()));
-    // } catch(Exception e){
-    //     System.err.println("Could not create product");
     }
-  }
-
-  public static ArrayList<ProductItem> listProductsInProductSet(
-    String projectId, 
-    String computeRegion, 
-    String productSetId) throws IOException {
-    ArrayList<ProductItem> productItems = new ArrayList<>();
-    try (ProductSearchClient client = ProductSearchClient.create()) {
-
-        // Get the full path of the product set.
-        String formattedName =
-            ProductSearchClient.formatProductSetName(projectId, computeRegion, productSetId);
-        // List all the products available in the product set.
-        for (Product product : client.listProductsInProductSet(formattedName).iterateAll()) {
-        // Display the product information
-            System.out.println(String.format("Product name: %s", product.getName()));
-            System.out.println(
-                String.format(
-                    "Product id: %s",
-                    product.getName().substring(product.getName().lastIndexOf('/') + 1)));
-            System.out.println(String.format("Product display name: %s", product.getDisplayName()));
-            System.out.println(String.format("Product description: %s", product.getDescription()));
-            System.out.println(String.format("Product category: %s", product.getProductCategory()));
-            System.out.println("Product labels: ");
-            ProductItem productItem = new ProductItem(product.getName().substring(product.getName().lastIndexOf('/') + 1), product.getDisplayName(),
-                                        product.getProductCategory());
-            productItems.add(productItem);
-            for (Product.KeyValue element : product.getProductLabelsList()) {
-                System.out.println(String.format("%s: %s", element.getKey(), element.getValue()));
-            }
-        }
-    } catch(Exception e){
-        System.err.println("Could not list products");
-    }
-    return productItems;
   }
 
   public static void deleteProductSet(
@@ -250,4 +199,94 @@ public class ProductSearchLibrary{
     return products;
   }
 
+  public static ArrayList<ProductItem> listProductsInProductSet(
+    String projectId, 
+    String computeRegion, 
+    String productSetId) throws IOException {
+    ArrayList<ProductItem> productItems = new ArrayList<>();
+    try (ProductSearchClient client = ProductSearchClient.create()) {
+
+        // Get the full path of the product set.
+        String formattedName =
+            ProductSearchClient.formatProductSetName(projectId, computeRegion, productSetId);
+        // List all the products available in the product set.
+        for (Product product : client.listProductsInProductSet(formattedName).iterateAll()) {
+            ProductItem productItem = new ProductItem(product.getName().substring(product.getName().lastIndexOf('/') + 1), product.getDisplayName(),
+                                        product.getProductCategory());
+            productItems.add(productItem);
+            for (Product.KeyValue element : product.getProductLabelsList()) {
+                System.out.println(String.format("%s: %s", element.getKey(), element.getValue()));
+            }
+        }
+    } catch(Exception e){
+        System.err.println("Could not list products");
+    }
+    return productItems;
+  }
+   
+   public static ArrayList<String> listReferenceImagesOfProduct(
+    String productId) throws IOException {
+    ArrayList<String> referenceImages = new ArrayList<>();
+    try (ProductSearchClient client = ProductSearchClient.create()) {
+        // Get the full path of the product.
+        String formattedParent =
+            ProductSearchClient.formatProductName(projectId, computeRegion, productId);
+        for (ReferenceImage image : client.listReferenceImages(formattedParent).iterateAll()) {
+            referenceImages.add(image.getUri());
+        }
+    }
+    return referenceImages;
+  }
+
+  public static void getSimilarProductsGcs(
+    String productSetId,
+    String productCategory,
+    String gcsUri,
+    String filter)
+    throws Exception {
+    try (ImageAnnotatorClient queryImageClient = ImageAnnotatorClient.create()) {
+
+        // Get the full path of the product set.
+        String productSetPath = ProductSetName.of(projectId, computeRegion, productSetId).toString();
+
+        // Get the image from Google Cloud Storage
+        ImageSource source = ImageSource.newBuilder().setGcsImageUri(gcsUri).build();
+
+        // Create annotate image request along with product search feature.
+        Feature featuresElement = Feature.newBuilder().setType(Feature.Type.PRODUCT_SEARCH).build();
+        Image image = Image.newBuilder().setSource(source).build();
+        ImageContext imageContext =
+            ImageContext.newBuilder()
+                .setProductSearchParams(
+                    ProductSearchParams.newBuilder()
+                        .setProductSet(productSetPath)
+                        .addProductCategories(productCategory)
+                        .setFilter(filter))
+                .build();
+
+        AnnotateImageRequest annotateImageRequest =
+            AnnotateImageRequest.newBuilder()
+                .addFeatures(featuresElement)
+                .setImage(image)
+                .setImageContext(imageContext)
+                .build();
+        List<AnnotateImageRequest> requests = Arrays.asList(annotateImageRequest);
+
+        // Search products similar to the image.
+        BatchAnnotateImagesResponse response = queryImageClient.batchAnnotateImages(requests);
+
+        List<ProductSearchResults.Result> similarProducts =
+            response.getResponses(0).getProductSearchResults().getResultsList();
+        System.out.println("Similar Products: ");
+        for (ProductSearchResults.Result product : similarProducts) {
+            System.out.println(String.format("\nProduct name: %s", product.getProduct().getName()));
+            System.out.println(
+                String.format("Product display name: %s", product.getProduct().getDisplayName()));
+            System.out.println(
+                String.format("Product description: %s", product.getProduct().getDescription()));
+            System.out.println(String.format("Score(Confidence): %s", product.getScore()));
+            System.out.println(String.format("Image name: %s", product.getImage()));
+        }
+    }
+  }
 }

@@ -283,3 +283,35 @@ function createProductElement(product) {
 
   return productElement;
 }
+
+function loadReferenceImages(){
+
+  fetch("/view-reference-image").then(response => response.json()).then((referenceImages) => {
+
+    console.log(referenceImages);
+    const referenceImageElement = document.getElementById("reference-image-list");
+    referenceImageElement.innerHTML = "";
+    
+ 
+    referenceImages.forEach((referenceImage) => {  
+      referenceImageElement.appendChild(createProductElement(referenceImage));
+      referenceImageElement.appendChild(document.createElement("br"));
+    })
+  });
+}
+
+
+function createReferenceImageElement(referenceImage) {
+  const linebreak = document.createElement("br");
+
+  const referenceImageElement = document.createElement("li");
+  referenceImageElement.className = "referenceImage";
+
+  const titleElement = document.createElement("span");
+  titleElement.innerText = referenceImage;
+
+  referenceImageElement.appendChild(titleElement);
+  referenceImageElement.appendChild(linebreak);
+
+  return referenceImageElement;
+}

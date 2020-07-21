@@ -3,8 +3,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductLabel {
-	private String productLabel;
-    private List<String> productIds;
+  private String productLabel;
+  private List<String> productIds;
 
   public ProductLabel(String productLabel, List<String> productIds) {
     this.productLabel = productLabel;

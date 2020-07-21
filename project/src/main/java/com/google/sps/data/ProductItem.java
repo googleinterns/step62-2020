@@ -12,4 +12,16 @@ public class ProductItem{
         this.productName = productName;
         this.productCategory = productCategory;
     }
+
+    public String getProductId(){
+        return productId;
+    }
+
+    public String getProductName(){
+        return productName;
+    }
+
+    public String getProductCategory(){
+        return productCategory;
+    }
 }
