@@ -98,7 +98,7 @@ public class ViewProductsServlet extends HttpServlet {
     String textSearch = request.getParameter("textSearch");
     boolean userUploadedImage = Boolean.parseBoolean(request.getParameter("userUploadedImage"));
 
-    // Creates a new SearchIno object, which will be stored in datastore.
+    // Creates a new SearchInfo object, which will be stored in datastore.
     String searchId = ServletLibrary.generateUUID();
     Entity searchInfo = new Entity("SearchInfo", searchId);
     searchInfo.setProperty("searchId", searchId);
