@@ -134,7 +134,8 @@ function truncateString(str, length) {
     return str;
   }
 };
-              
+
+// TODO: add text and image search as an option here.
 // Display cards containing the products.
 function retrieveProducts() {
   const searchResults = document.getElementById("searchResults");
@@ -157,7 +158,7 @@ function retrieveProducts() {
       return;
     }
     products.forEach(product => {
-      const cardHtml = `<div class="product-card mdl-card mdl-shadow--4dp">
+      const cardHtml = `<div class="product-card mdl-card mdl-shadow--2dp">
                           <div class="mdl-card__title" style="background-image: 
                             linear-gradient(to bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,1)), 
                             url('${product.imageUrls[0]}');">
@@ -194,6 +195,7 @@ function retrieveProducts() {
 
 function refreshViewProductsPage() {
   retrieveProductSetDisplayNames();
+  setBrowseInputs();
   retrieveProducts();
 }
 
@@ -353,3 +355,132 @@ function viewProduct() {
     document.getElementById("productContent").classList.remove("hidden");
   });
 }
+
+// Gets a blobstore url.
+function setupImageUpload(urlPath) {
+  console.log("Setting up upload url.");
+  const searchForm = document.getElementById("searchForm");
+  const spinnerImage = document.getElementById("spinnerImage");
+  const imageButton = document.getElementById("imageUpload");
+  spinnerImage.style.display = "block";
+  fetch("/getBlobstoreUrlSearch?urlPath=" + urlPath)
+    .then(response => response.text())
+    .then(url => {
+      searchForm.action = url;
+      searchForm.enctype = "multipart/form-data";
+      spinnerImage.style.display = "none";
+      imageButton.required = true;
+      imageButton.style.display = "block";
+    });
+}
+
+// Toggles between showing and hiding the option to search by image.
+function toggleImageUpload(urlPath) {
+  const imageButton = document.getElementById("imageUpload");
+  const searchForm = document.getElementById("searchForm");
+  if (imageButton.style.display === "block") {
+    searchForm.action = urlPath;
+    searchForm.enctype = "application/x-www-form-urlencoded";
+    imageButton.required = false;
+    imageButton.style.display = "none";
+  } else {
+    setupImageUpload(urlPath);
+  }
+}
+
+// Validates the form to check there is a non empty input.
+function checkSearchForm() {
+  return document.getElementById("imageUpload").files.length > 0 ||
+         // Remove all white space to check if text input is non empty.
+         document.getElementById("textSearch").value.replace(/\s/g, '').length > 0;
+}
+
+
+// TODO: add textSearch as an option (eventually image search as well).
+// Display cards on the browse page. These cards don't have edit or delete
+// functionality.
+function browseProducts() {
+  const searchResults = document.getElementById("searchResults");
+  searchResults.innerHTML = "";
+  const spinner = document.getElementById("spinner");
+  spinner.classList.add("is-active");
+
+  let productSetDisplayName = document.getElementById("productSetDisplayName").value;
+  if (productSetDisplayName === "") productSetDisplayName = "none";
+  let businessId = document.getElementById("businessId").value;
+  const productCategory = document.getElementById("productCategory").value;
+  const sortOrder = document.getElementById("sortOrder").value;
+  let queryString = "/browse?productSetDisplayName=" + productSetDisplayName + 
+                    "&productCategory=" + productCategory + 
+                    "&sortOrder=" + sortOrder + 
+                    "&businessId=" + businessId;
+  fetch(queryString).then(response => response.json()).then(products => {
+    if (products == null || products.length == 0) {
+      searchResults.innerText = "No products here!";
+      spinner.classList.remove("is-active");
+      return;
+    }
+    products.forEach(product => {
+      const cardHtml = `<div class="product-card mdl-card mdl-shadow--2dp">
+                          <div class="mdl-card__title" style="background-image: 
+                            linear-gradient(to bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,1)), 
+                            url('${product.imageUrls[0]}');">
+                            <h2 class="mdl-card__title-text">
+                              ${product.productDisplayName}
+                            </h2>
+                          </div>
+                          <div class="mdl-card__supporting-text">
+                            ${'$' + product.price.toFixed(2) + ' - ' + truncateString(product.productDescription, 80)}
+                          </div>
+                          <div class="mdl-card__actions mdl-card--border">
+                            <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
+                               href="/product.html?productId=${product.productId}">
+                              View
+                            </a>
+                          </div>
+                        </div>`;
+      const card = document.createElement("div");
+      card.classList.add("grid-item");
+      card.innerHTML = cardHtml;
+      searchResults.appendChild(card);
+    });
+    spinner.classList.remove("is-active");
+  });
+}
+
+// Fill out the businesses dropdown menu with info from datastore.
+function retrieveBusinesses() {
+  fetch("/createBusinessAccount").then(response => response.json()).then(names => {
+    const dropdownList = document.getElementById("businessId");
+    names.forEach(name => {
+      let newOption = document.createElement("option");
+      newOption.value = name.businessId;
+      newOption.innerText = name.businessDisplayName;
+      dropdownList.appendChild(newOption);
+    });
+  });
+}
+
+function setBrowseInputs() {
+  const params = getUrlParams();
+  const searchId = params["searchId"];
+  if (searchId != null) {
+    fetch("/searchInfo?searchId="+searchId).then(response => response.json())
+    .then(searchInfo => {
+      document.getElementById("textSearch").value = searchInfo.textSearch;
+      if (searchInfo.imageUrl != null) {
+        document.getElementById("uploadedImage").src = searchInfo.imageUrl;
+        document.getElementById("uploadedImageBox").style.display = "block";
+      }
+    });
+  }
+}
+
+function refreshBrowsePage() {
+  retrieveProductSetDisplayNames();
+  retrieveBusinesses();
+  setBrowseInputs();
+  browseProducts();
+}
+
+

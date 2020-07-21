@@ -93,7 +93,7 @@ public final class UploadedFileUrlTest {
     @Test
     public void uploadedGcsFileNameisSet() {
         String actual = CloudStorageLibrary.getUploadedFileUrl(MOCK_BLOBSTORE, MOCK_BLOBINFO_FACTORY, GCS_FILE_NAME);
-        String expected = "/getBlobstoreUrl?blobKey=" + BLOBKEY;
+        String expected = "/serveBlobstoreImage?blobKey=" + BLOBKEY;
 
         Assert.assertEquals(expected, actual);
     }

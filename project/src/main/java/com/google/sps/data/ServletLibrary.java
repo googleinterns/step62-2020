@@ -31,7 +31,7 @@ public class ServletLibrary {
   // If there is no product set, returns null. 
   public static ProductSetEntity retrieveProductSetInfo(DatastoreService datastore, String inputQuery, boolean inputIsDisplayName) {
     if (datastore == null) {
-      System.err.println("Datastore is null!");
+      System.err.println("RetrieveProductSetInfo: Datastore is null!");
       return null;
     }
     Filter filter = new FilterPredicate("productSetId", FilterOperator.EQUAL, inputQuery);
@@ -67,11 +67,11 @@ public class ServletLibrary {
   // If the account is not in datastore, returns null.
   public static Account retrieveAccountInfo(DatastoreService datastore, UserService userService, String userId) {
     if (datastore == null) {
-      System.err.println("Datastore is null!");
+      System.err.println("RetrieveAccountInfo: Datastore is null!");
       return null;
     }
     if (userService == null) {
-      System.err.println("UserService is null!");
+      System.err.println("RetrieveAccountInfo: UserService is null!");
       return null;
     }
     Filter filter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);
@@ -136,7 +136,7 @@ public class ServletLibrary {
   // Returns a list of product set objects, taken from datastore.
   public static List<ProductSetEntity> listAllProductSets(DatastoreService datastore) {
     if (datastore == null) {
-      System.err.println("Datastore is null!");
+      System.err.println("ListAllProductSets: Datastore is null!");
       return null;
     }
     Query query = new Query("ProductSet").addSort("productSetDisplayName", SortDirection.ASCENDING);
@@ -169,7 +169,7 @@ public class ServletLibrary {
   // datastore.
   public static Business retrieveBusinessInfo(DatastoreService datastore, String businessId) {
     if (datastore == null) {
-      System.err.println("Datastore is null!");
+      System.err.println("RetrieveBusinessInfo: Datastore is null!");
       return null;
     }
 
@@ -230,11 +230,75 @@ public class ServletLibrary {
                         tempVisionAnnotation);
   }
 
+  // Lists all businesses stored in the database.
+  public static List<Business> listAllBusinesses(DatastoreService datastore) {
+    if (datastore == null) {
+      System.err.println("ListAllBusinesses: datastore is null!");
+    }
+    Query query = new Query("Business").addSort("businessDisplayName", SortDirection.ASCENDING);
+    PreparedQuery pq = datastore.prepare(query);
+    List<Business> results = new ArrayList<>();
+    for (Entity entity : pq.asIterable()) {
+      // Formatting entity into the business class. Checking if the types are valid.
+      Object _businessId = entity.getProperty("businessId");
+      Object _businessDisplayName = entity.getProperty("businessDisplayName");
+      Object _street = entity.getProperty("street");
+      Object _city = entity.getProperty("city");
+      Object _state = entity.getProperty("state");
+      Object _zipCode = entity.getProperty("zipCode");
+      Object _annotationObject = entity.getProperty("tempVisionAnnotation");
+      String businessId;
+      String businessDisplayName;
+      String street;
+      String city;
+      String state;
+      String zipCode;
+      Text annotationObject;
+      if ((_businessId instanceof String) &&
+          (_businessDisplayName instanceof String) &&
+          (_street instanceof String) &&
+          (_city instanceof String) &&
+          (_state instanceof String) &&
+          (_zipCode instanceof String) &&
+          (_annotationObject instanceof Text)) {
+        businessId = _businessId.toString();
+        businessDisplayName = _businessDisplayName.toString();
+        street = _street.toString();
+        city = _city.toString();
+        state = _state.toString();
+        zipCode = _zipCode.toString();
+        annotationObject = (Text) _annotationObject;
+      } else {
+        System.err.println("Entity properties are of an incorrect type.");
+        return null;
+      }
+      @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
+        List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
+      if (productIds == null) productIds = new ArrayList<String>();
+
+      String tempVisionAnnotation = null;
+      if (annotationObject != null) {
+        tempVisionAnnotation = annotationObject.getValue();
+      }
+
+      results.add(new Business(businessId,
+                               businessDisplayName,
+                               street,
+                               city,
+                               state,
+                               zipCode,
+                               productIds,
+                               tempVisionAnnotation));
+    }
+
+    return results;
+  }
+
   // For every label that a product has, we assign the product to that label in
   // the labels table in datastore.
   public static void addProductToLabels(DatastoreService datastore, String productId, List<String> labels) {
     if (datastore == null || productId == null || labels == null) {
-      System.err.println("At least one of the inputs was null!");
+      System.err.println("AddProductToLabels: At least one of the inputs was null!");
       return;
     }
     for (String label : labels) {
@@ -266,7 +330,7 @@ public class ServletLibrary {
                                              String productId, 
                                              List<String> labels) {
     if (datastore == null || productId == null || labels == null) {
-      System.err.println("At least one of the inputs was null!");
+      System.err.println("DeleteProductFromLabels: At least one of the inputs was null!");
       return;
     }                                          
     for (String label : labels) {
@@ -286,13 +350,13 @@ public class ServletLibrary {
     }
   }
 
-  //Update product labels for an existing product.
+  // Update product labels for an existing product.
   public static void updateProductLabels(DatastoreService datastore, 
                                          String productId,
                                          List<String> oldLabels,
                                          List<String> labels) {
     if (datastore == null || productId == null || labels == null || oldLabels == null) {
-      System.err.println("At least one of the inputs was null!");
+      System.err.println("UpdateProductLabels: At least one of the inputs was null!");
       return;
     }
     // Check what needs to be deleted and added.
@@ -315,7 +379,7 @@ public class ServletLibrary {
   // Add product to the specified product set.
   public static void addProductToProductSet(DatastoreService datastore, String productId, String productSetId) {
     if (datastore == null || productId == null || productSetId == null) {
-      System.err.println("At least one of the inputs was null!");
+      System.err.println("AddProductToProductSet: At least one of the inputs was null!");
       return;
     }
     Filter filter = new FilterPredicate("productSetId", FilterOperator.EQUAL, productSetId);
@@ -337,7 +401,7 @@ public class ServletLibrary {
   // Delete product from the specifiec set.
   public static void deleteProductFromProductSet(DatastoreService datastore, String productId, String productSetId) {
     if (datastore == null || productId == null || productSetId == null) {
-      System.err.println("At least one of the inputs was null!");
+      System.err.println("DeleteProductFromProductSet: At least one of the inputs was null!");
       return;
     }
     Filter filter = new FilterPredicate("productSetId", FilterOperator.EQUAL, productSetId);
@@ -359,7 +423,7 @@ public class ServletLibrary {
                                        String oldProductSetId,
                                        String productSetId) {
     if (datastore == null || productId == null || productSetId == null || oldProductSetId == null) {
-      System.err.println("At least one of the inputs was null!");
+      System.err.println("UpdateProductSets: At least one of the inputs was null!");
       return;
     }
     if (oldProductSetId.equals(productSetId)) return;
@@ -370,7 +434,7 @@ public class ServletLibrary {
   // Add product to the specified product category.
   public static void addProductToProductCategory(DatastoreService datastore, String productId, String productCategory) {
     if (datastore == null || productId == null || productCategory == null) {
-      System.err.println("At least one of the inputs was null!");
+      System.err.println("AddProductToProductCategory: At least one of the inputs was null!");
       return;
     }
     Filter filter = new FilterPredicate("productCategory", FilterOperator.EQUAL, productCategory);
@@ -401,7 +465,7 @@ public class ServletLibrary {
                                                       String productId, 
                                                       String productCategory) {
     if (datastore == null || productId == null || productCategory == null) {
-      System.err.println("At least one of the inputs was null!");
+      System.err.println("DeleteProductFromProductCategory: At least one of the inputs was null!");
       return;
     }                                                  
     Filter filter = new FilterPredicate("productCategory", FilterOperator.EQUAL, productCategory);
@@ -425,7 +489,7 @@ public class ServletLibrary {
                                        String productCategory) {
     if (datastore == null || productId == null || productCategory == null || 
         oldProductCategory == null) {
-      System.err.println("At least one of the inputs was null!");
+      System.err.println("UpdateProductCategories: At least one of the inputs was null!");
       return;
     }
     if (oldProductCategory.equals(productCategory)) return;
@@ -436,7 +500,7 @@ public class ServletLibrary {
   // Add product to the list of products offerec by the business.
   public static void addProductToBusiness(DatastoreService datastore, String productId, String businessId) {
     if (datastore == null || productId == null || businessId == null) {
-      System.err.println("At least one of the inputs was null!");
+      System.err.println("AddProductToBusiness: At least one of the inputs was null!");
       return;
     }
     Filter filter = new FilterPredicate("businessId", FilterOperator.EQUAL, businessId);
@@ -458,7 +522,7 @@ public class ServletLibrary {
   // Delete a given product from the business.
   public static void deleteProductFromBusiness(DatastoreService datastore, String productId, String businessId) {
     if (datastore == null || productId == null || businessId == null) {
-      System.err.println("At least one of the inputs was null!");
+      System.err.println("DeleteProductFromBusiness: At least one of the inputs was null!");
       return;
     }
     Filter filter = new FilterPredicate("businessId", FilterOperator.EQUAL, businessId);
@@ -484,7 +548,7 @@ public class ServletLibrary {
                                                  String sortOrder,
                                                  String textQuery) {
     if (datastore == null) {
-      System.err.println("Datastore was null!");
+      System.err.println("FindProducts: Datastore was null!");
       return null;
     }
     // Set the filters.
@@ -511,10 +575,10 @@ public class ServletLibrary {
     // Set the sort direction.
     String sortCategory = null;
     SortDirection sortDirection = null;
-    if (sortOrder.equals("alphabetical_descending")) {
+    if (sortOrder.equals("name_descending")) {
       sortCategory = "productDisplayName";
       sortDirection = SortDirection.DESCENDING;
-    } else if (sortOrder.equals("alphabetical_ascending")) {
+    } else if (sortOrder.equals("name_ascending")) {
       sortCategory = "productDisplayName";
       sortDirection = SortDirection.ASCENDING;
     } else if (sortOrder.equals("price_descending")) {
@@ -612,7 +676,7 @@ public class ServletLibrary {
   // Retrieves product information based on the product id. 
   public static ProductEntity retrieveProductInfo(DatastoreService datastore, String productId) {
     if (datastore == null || productId == null) {
-      System.err.println("At least one of the inputs was null!");
+      System.err.println("RetrieveProductInfo: At least one of the inputs was null!");
       return null;
     }
     // Retrieving from datastore.
@@ -686,5 +750,66 @@ public class ServletLibrary {
                              labels,
                              productDescription,
                              cloudVisionAnnotation);
+  }
+
+  public static SearchInfo retrieveSearchInfo(DatastoreService datastore, String searchId) {
+    if (datastore == null || searchId == null) {
+      System.err.println("RetrieveSearchInfo: At least one of the inputs was null!");
+      return null;
+    }
+    Filter filter = new FilterPredicate("searchId", FilterOperator.EQUAL, searchId);
+    Query query = new Query("SearchInfo").setFilter(filter);
+    PreparedQuery pq = datastore.prepare(query);
+    Entity entity = pq.asSingleEntity();
+
+    // Return null if the object doesn't exist in the database.
+    if (entity == null) return null;
+
+    Object _textSearch = entity.getProperty("textSearch");
+    Object _gcsUrl = entity.getProperty("gcsUrl");
+    Object _imageUrl = entity.getProperty("imageUrl");
+    Object _userId = entity.getProperty("userId");
+    String textSearch;
+    String gcsUrl;
+    String imageUrl;
+    String userId;
+
+    if (_gcsUrl == null) {
+      gcsUrl = null;
+    } else if (_gcsUrl instanceof String) {
+      gcsUrl = _gcsUrl.toString();
+    } else {
+      System.err.println("GcsUrl property is of an incorrect type.");
+      return null;
+    }
+
+    if (_imageUrl == null) {
+      imageUrl = null;
+    } else if (_imageUrl instanceof String) {
+      imageUrl = _imageUrl.toString();
+    } else {
+      System.err.println("ImageUrl property is of an incorrect type.");
+      return null;
+    }
+
+    if (_textSearch == null) {
+      textSearch = null;
+    } else if (_textSearch instanceof String) {
+      textSearch = _textSearch.toString();
+    } else {
+      System.err.println("TextSearch property is of an incorrect type.");
+      return null;
+    }
+
+    if (_userId == null) {
+      userId = null;
+    } else if (_userId instanceof String) {
+      userId = _userId.toString();
+    } else {
+      System.err.println("UserId property is of an incorrect type.");
+      return null;
+    }
+    
+    return new SearchInfo(searchId, textSearch, gcsUrl, imageUrl, userId);
   }
 }
