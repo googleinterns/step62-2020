@@ -13,10 +13,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import javax.servlet.http.HttpServletRequest;
+import com.google.appengine.api.blobstore.BlobstoreService;
+import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.sps.data.CloudStorageLibrary;
+import static org.mockito.Mockito.*;
 
 @RunWith(JUnit4.class)
 public final class GcsFilePathTest {
+    private static BlobstoreService MOCK_BLOBSTORE = mock(BlobstoreService.class);
+    private static HttpServletRequest MOCK_REQUEST = mock(HttpServletRequest.class);
+    
+    private static HttpServletRequest MOCK_REQUEST_NO_FILES = mock(HttpServletRequest.class);
+
     //Empty Map of files
     private static final Map<String, List<FileInfo>> NO_FILES = Collections.emptyMap();
 
@@ -54,12 +63,33 @@ public final class GcsFilePathTest {
 
         FILES.put("List1", FILE_LIST1);
         FILES.put("List2", FILE_LIST2);
+
+        when(MOCK_BLOBSTORE.getFileInfos(MOCK_REQUEST)).thenReturn(FILES);
+        when(MOCK_BLOBSTORE.getFileInfos(MOCK_REQUEST_NO_FILES)).thenReturn(NO_FILES);
+    }
+
+    //Test what happens when you pass in a null request
+    @Test
+    public void getGcsFilePathNullRequest() {
+        String actual = CloudStorageLibrary.getGcsFilePath(null, MOCK_BLOBSTORE);
+        String expected = "";
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    //Test what happens when you pass in a null blobstore
+    @Test
+    public void getGcsFilePathNullBlobstore() {
+        String actual = CloudStorageLibrary.getGcsFilePath(MOCK_REQUEST, null);
+        String expected = "";
+
+        Assert.assertEquals(expected, actual);
     }
     
     //Test what happens when you pass in an empty Map
     @Test
     public void emptyMapForGetGcsFilePath() {
-        String actual = CloudStorageLibrary.getGcsFilePath(NO_FILES);
+        String actual = CloudStorageLibrary.getGcsFilePath(MOCK_REQUEST_NO_FILES, MOCK_BLOBSTORE);
         String expected = "";
 
         Assert.assertEquals(expected, actual);
@@ -68,7 +98,7 @@ public final class GcsFilePathTest {
     //Test what happens when you pass in a map that contains files
     @Test
     public void getGcsFilePathIsSet() {
-        String actual = CloudStorageLibrary.getGcsFilePath(FILES);
+        String actual = CloudStorageLibrary.getGcsFilePath(MOCK_REQUEST, MOCK_BLOBSTORE);
         String expected = "/gs/myBucket/file1";
 
         Assert.assertEquals(expected, actual);
