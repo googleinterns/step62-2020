@@ -27,11 +27,12 @@ public class ProductSearchLibrary{
         // List all the product sets available in the region.
         for (ProductSet productSet : client.listProductSets(formattedParent).iterateAll()) {
 
-            createProductSetItemAndAddToList(productSet.getName().substring(productSet.getName().lastIndexOf('/') + 1),
-                                            productSet.getDisplayName(), productSets);
             // The set id of a product set is the last directory of a file path and to get this file path
             // the index of the last backslash symbol is determined and a substring from the index to the end of the file path is made
             // to get the set id of a product set.
+            createProductSetItemAndAddToList(productSet.getName().substring(productSet.getName().lastIndexOf('/') + 1),
+                                            productSet.getDisplayName(), productSets);
+            
             
         }
       } 
@@ -163,6 +164,10 @@ public class ProductSearchLibrary{
 
         // List all the products available in the region.
         for (Product product : client.listProducts(formattedParent).iterateAll()) {
+
+            // The set id of a product set is the last directory of a file path and to get this file path
+            // the index of the last backslash symbol is determined and a substring from the index to the end of the file path is made
+            // to get the set id of a product set.
             createProductItemAndAddToList(product.getName().substring(product.getName().lastIndexOf('/') + 1), product.getDisplayName(),
                                         product.getProductCategory(), products);
         }
@@ -182,6 +187,7 @@ public class ProductSearchLibrary{
             ProductSearchClient.formatProductSetName(projectId, computeRegion, productSetId);
         // List all the products available in the product set.
         for (Product product : client.listProductsInProductSet(formattedName).iterateAll()) {
+
             createProductItemAndAddToList(product.getName().substring(product.getName().lastIndexOf('/') + 1), product.getDisplayName(),
                                         product.getProductCategory(), productItems);
         }
@@ -243,10 +249,12 @@ public class ProductSearchLibrary{
         // Search products similar to the image.
         BatchAnnotateImagesResponse response = queryImageClient.batchAnnotateImages(requests);
 
+
+        // The first index of the responses is called to determine 
+        // the products that are similar to the uploaded image
         List<ProductSearchResults.Result> similarProducts =
             response.getResponses(0).getProductSearchResults().getResultsList();
-            // The first index of the responses is called to determine 
-            // the products that are similar to the uploaded image
+            
             
         for (ProductSearchResults.Result product : similarProducts) {
             productIds.add(product.getProduct().getName());
