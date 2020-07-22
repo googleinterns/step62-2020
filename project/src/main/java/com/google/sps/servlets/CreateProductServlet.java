@@ -143,7 +143,7 @@ public class CreateProductServlet extends HttpServlet {
     
   }
 
-  public void createAndAddToProductSearch(String productId, String productSetId, String productDisplayName, String productCategory, HttpServletRequest request) throws IOException{ 
+  private void createAndAddToProductSearch(String productId, String productSetId, String productDisplayName, String productCategory, HttpServletRequest request) throws IOException{ 
     // Functions to create product and add to a product set in the product search database
     ProductSearchLibrary.createProduct(productId, productDisplayName, productCategory);
 
@@ -160,13 +160,15 @@ public class CreateProductServlet extends HttpServlet {
     
   }
 
-  public String changeGcsFormat(String gcsUri){
+  private String changeGcsFormat(String gcsUri){
     
     String newGcsFormat = "gs://";
     
     String[] gcsArray = gcsUri.split("/");
 
     newGcsFormat += gcsArray[2] + "/" + gcsArray[3];
+    // The last and the penultimate indexes of the split gcsUri give the strings required to reformat the 
+    // gcsuri to a valid parameter for the createReferenceImage method.
 
     return newGcsFormat;
   }

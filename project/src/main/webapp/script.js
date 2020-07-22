@@ -294,7 +294,7 @@ function loadReferenceImages(){
     
  
     referenceImages.forEach((referenceImage) => {  
-      referenceImageElement.appendChild(createProductElement(referenceImage));
+      referenceImageElement.appendChild(createReferenceImageElement(referenceImage));
       referenceImageElement.appendChild(document.createElement("br"));
     })
   });

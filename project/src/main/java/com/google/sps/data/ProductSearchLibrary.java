@@ -27,16 +27,14 @@ public class ProductSearchLibrary{
         // List all the product sets available in the region.
         for (ProductSet productSet : client.listProductSets(formattedParent).iterateAll()) {
 
-            ProductSetItem productSetItem = new ProductSetItem(productSet.getName().substring(productSet.getName().lastIndexOf('/') + 1),
-                                            productSet.getDisplayName());
+            createProductSetItemAndAddToList(productSet.getName().substring(productSet.getName().lastIndexOf('/') + 1),
+                                            productSet.getDisplayName(), productSets);
             // The set id of a product set is the last directory of a file path and to get this file path
             // the index of the last backslash symbol is determined and a substring from the index to the end of the file path is made
             // to get the set id of a product set.
-            productSets.add(productSetItem);
+            
         }
-      } catch(Exception e){
-        System.err.println("Could not list product sets");
-    }
+      } 
 
     return productSets;
   }
@@ -62,8 +60,6 @@ public class ProductSearchLibrary{
             .setProductSetId(productSetId)
             .build();
       ProductSet productSet = client.createProductSet(request);
-    } catch(Exception e){
-        System.err.println("Could not create product set");
     }
     return newProductSet;
   }
@@ -99,10 +95,6 @@ public class ProductSearchLibrary{
 
         // Add the product to the product set.
         client.addProductToProductSet(formattedName, productPath);
-
-        System.out.println(String.format("Product added to product set."));
-    } catch(Exception e){
-        System.err.println("Could not add product to product set");
     }
   }
 
@@ -123,8 +115,6 @@ public class ProductSearchLibrary{
                 .setProductCategory(productCategory)
                 .build();
         Product product = client.createProduct(formattedParent, myProduct, productId);
-        // Display the product information
-        System.out.println(String.format("Product name: %s", product.getName()));
     }
   }
 
@@ -140,9 +130,6 @@ public class ProductSearchLibrary{
             ProductSearchClient.formatProductSetName(projectId, computeRegion, productSetId);
         // Delete the product set.
         client.deleteProductSet(formattedName);
-        System.out.println(String.format("Product set deleted"));
-    }  catch(Exception e){
-        System.err.println("Could not delete product set");
     }
   }
 
@@ -164,11 +151,7 @@ public class ProductSearchLibrary{
 
         // Remove the product from the product set.
         client.removeProductFromProductSet(formattedParent, formattedName);
-
-        System.out.println(String.format("Product removed from product set."));
-    } catch(Exception e){
-        System.err.println("Could not remove product");
-    }
+    } 
   }
 
   public static ArrayList<ProductItem> listProducts() throws IOException {
@@ -180,20 +163,8 @@ public class ProductSearchLibrary{
 
         // List all the products available in the region.
         for (Product product : client.listProducts(formattedParent).iterateAll()) {
-        // Display the product information
-        System.out.println(String.format("\nProduct name: %s", product.getName()));
-        System.out.println(
-            String.format(
-                "Product id: %s",
-                product.getName().substring(product.getName().lastIndexOf('/') + 1)));
-        System.out.println(String.format("Product display name: %s", product.getDisplayName()));
-        System.out.println(String.format("Product category: %s", product.getProductCategory()));
-        System.out.println("Product labels:");
-        System.out.println(
-            String.format("Product labels: %s", product.getProductLabelsList().toString()));
-
-        ProductItem productItem = new ProductItem(product.getName().substring(product.getName().lastIndexOf('/') + 1), product.getDisplayName(), product.getProductCategory());
-        products.add(productItem);
+            createProductItemAndAddToList(product.getName().substring(product.getName().lastIndexOf('/') + 1), product.getDisplayName(),
+                                        product.getProductCategory(), products);
         }
     }
     return products;
@@ -211,15 +182,9 @@ public class ProductSearchLibrary{
             ProductSearchClient.formatProductSetName(projectId, computeRegion, productSetId);
         // List all the products available in the product set.
         for (Product product : client.listProductsInProductSet(formattedName).iterateAll()) {
-            ProductItem productItem = new ProductItem(product.getName().substring(product.getName().lastIndexOf('/') + 1), product.getDisplayName(),
-                                        product.getProductCategory());
-            productItems.add(productItem);
-            for (Product.KeyValue element : product.getProductLabelsList()) {
-                System.out.println(String.format("%s: %s", element.getKey(), element.getValue()));
-            }
+            createProductItemAndAddToList(product.getName().substring(product.getName().lastIndexOf('/') + 1), product.getDisplayName(),
+                                        product.getProductCategory(), productItems);
         }
-    } catch(Exception e){
-        System.err.println("Could not list products");
     }
     return productItems;
   }
@@ -238,13 +203,16 @@ public class ProductSearchLibrary{
     return referenceImages;
   }
 
-  public static void getSimilarProductsGcs(
+  public static ArrayList<String> getSimilarProductsGcs(
     String productSetId,
     String productCategory,
     String gcsUri,
     String filter)
     throws Exception {
+    
+    ArrayList<String> productIds = new ArrayList<>();
     try (ImageAnnotatorClient queryImageClient = ImageAnnotatorClient.create()) {
+        
 
         // Get the full path of the product set.
         String productSetPath = ProductSetName.of(projectId, computeRegion, productSetId).toString();
@@ -277,16 +245,25 @@ public class ProductSearchLibrary{
 
         List<ProductSearchResults.Result> similarProducts =
             response.getResponses(0).getProductSearchResults().getResultsList();
-        System.out.println("Similar Products: ");
+            // The first index of the responses is called to determine 
+            // the products that are similar to the uploaded image
+            
         for (ProductSearchResults.Result product : similarProducts) {
-            System.out.println(String.format("\nProduct name: %s", product.getProduct().getName()));
-            System.out.println(
-                String.format("Product display name: %s", product.getProduct().getDisplayName()));
-            System.out.println(
-                String.format("Product description: %s", product.getProduct().getDescription()));
-            System.out.println(String.format("Score(Confidence): %s", product.getScore()));
-            System.out.println(String.format("Image name: %s", product.getImage()));
+            productIds.add(product.getProduct().getName());
         }
     }
+    return productIds;
   }
+
+  private static void createProductItemAndAddToList(String productId, String productDisplayName, String productCategory, ArrayList<ProductItem> productList){
+      ProductItem product = new ProductItem(productId, productDisplayName, productCategory);
+
+      productList.add(product);
+    }
+
+  private static void createProductSetItemAndAddToList(String productSetId, String productSetDisplayName, ArrayList<ProductSetItem> productSetList){
+      ProductSetItem productSet = new ProductSetItem(productSetId, productSetDisplayName);
+
+      productSetList.add(productSet);
+    }
 }
