@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 //Product Search Library
-import com.google.sps.data.ServletsLibrary;
+import com.google.sps.data.ProductSearchLibrary;
 
 import com.google.gson.Gson;
 
@@ -89,6 +89,7 @@ public class CreateProductServlet extends HttpServlet {
     // the initial image that was uploaded.
     List<String> gcsUrls = new ArrayList<>();
     gcsUrls.add(request.getParameter("mainGcsUrl"));
+    
     List<String> imageUrls = new ArrayList<>();
     imageUrls.add(request.getParameter("mainImageUrl"));
 
@@ -143,15 +144,44 @@ public class CreateProductServlet extends HttpServlet {
     product.setProperty("cloudVisionAnnotation", new Text(cloudVisionAnnotation));
     datastore.put(product);
 
+    createAndAddToProductSearch(productId, productSetId, productDisplayName, productCategory, request);
+
+    // Add product to relevant tables in datastore, only if it is a new product.
     if (isNewProduct) {
       response.sendRedirect("/businessAccount.html");
     } else {
       response.sendRedirect("/viewProducts.html");
-    }
+    }  
+    
+  }
 
-//TODO:Phillips Product Search functions 
-//     ServletsLibrary.createProduct(projectId, computeRegion, productId, productDisplayName, productCategory);
-//     ServletsLibrary.addProductToProductSet(projectId, computeRegion, productId, setId);
+  private void createAndAddToProductSearch(String productId, String productSetId, String productDisplayName, String productCategory, HttpServletRequest request) throws IOException{ 
+    // Functions to create product and add to a product set in the product search database
+    ProductSearchLibrary.createProduct(productId, productDisplayName, productCategory);
 
+    ProductSearchLibrary.addProductToProductSet(productId, productSetId);
+
+    //Create reference image for a product to facilitate the searching for a product by image
+    //image gcsuri used for reference image id
+    String gcsUri = request.getParameter("mainGcsUrl");
+    String objectName = gcsUri.substring(gcsUri.lastIndexOf('/') + 1);
+
+    gcsUri = changeGcsFormat(gcsUri);
+    
+    ProductSearchLibrary.createReferenceImage(productId, objectName, gcsUri);
+    
+  }
+
+  private String changeGcsFormat(String gcsUri){
+    
+    String newGcsFormat = "gs://";
+    
+    String[] gcsArray = gcsUri.split("/");
+
+    newGcsFormat += gcsArray[2] + "/" + gcsArray[3];
+    // The last and the penultimate indexes of the split gcsUri give the strings required to reformat the 
+    // gcsuri to a valid parameter for the createReferenceImage method.
+
+    return newGcsFormat;
   }
 }
