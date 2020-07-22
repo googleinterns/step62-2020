@@ -58,6 +58,7 @@ public class BrowseServlet extends HttpServlet {
     String productCategory = request.getParameter("productCategory");
     String businessId = request.getParameter("businessId");
     String sortOrder = request.getParameter("sortOrder");
+    String searchId = request.getParameter("searchId");
 
     // Set parameters to apprpriate defaults, if necessary.
     if (businessId.equals("none")) {
@@ -83,7 +84,7 @@ public class BrowseServlet extends HttpServlet {
                                   productSetId, 
                                   productCategory, 
                                   sortOrder, 
-                                  null); // textQuery
+                                  searchId);
     String json = gson.toJson(products);
 
     // Send the response.

@@ -151,6 +151,12 @@ function retrieveProducts() {
                     "&productCategory=" + productCategory + 
                     "&sortOrder=" + sortOrder + 
                     "&businessId=getFromDatabase";
+
+  // Check if there is a search query, and add to the query string.
+  const params = getUrlParams();
+  const searchId = params["searchId"];
+  if (searchId != null) queryString = queryString + "&searchId=" + searchId;
+
   fetch(queryString).then(response => response.json()).then(products => {
     if (products == null || products.length == 0) {
       searchResults.innerText = "No products here!";
@@ -418,6 +424,12 @@ function browseProducts() {
                     "&productCategory=" + productCategory + 
                     "&sortOrder=" + sortOrder + 
                     "&businessId=" + businessId;
+
+  // Check if there is a search query, and add to the query string.
+  const params = getUrlParams();
+  const searchId = params["searchId"];
+  if (searchId != null) queryString = queryString + "&searchId=" + searchId;
+
   fetch(queryString).then(response => response.json()).then(products => {
     if (products == null || products.length == 0) {
       searchResults.innerText = "No products here!";
