@@ -54,7 +54,6 @@ public class CloudStorageLibrary {
         Map<String, List<FileInfo>> files = blobstore.getFileInfos(request);
 
         //We only need the first element of the map because we upload one image at a time
-        //TODO(mrjwash): When we switch to multiple I have to parse for the newest upload using getCreation();
         for (Map.Entry<String, List<FileInfo>> fileMap : files.entrySet()) { 
             try {
                 //getGsObjectName() actually returns the gcsuri for a file
@@ -65,6 +64,21 @@ public class CloudStorageLibrary {
             }
         }
         return "";
+    }
+
+    //Function gets all the files for when the user uploads multiple files
+    public static ArrayList<String> getMultipleGcsFilePath(HttpServletRequest request, BlobstoreService blobstore) {
+        Map<String, List<FileInfo>> files = blobstore.getFileInfos(request);
+        List<FileInfo> fileList = new ArrayList<FileInfo>();
+        ArrayList<String> gcsuris = new ArrayList<>();
+
+        for (Map.Entry<String, List<FileInfo>> fileMap : files.entrySet()) { 
+            fileList = fileMap.getValue();
+            for(FileInfo file : fileList) {
+                gcsuris.add(file.getGsObjectName());
+            }
+        }
+        return gcsuris;
     }
 
     //Gets a url to directly serve the image
