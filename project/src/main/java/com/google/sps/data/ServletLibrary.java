@@ -769,10 +769,12 @@ public class ServletLibrary {
     Object _gcsUrl = entity.getProperty("gcsUrl");
     Object _imageUrl = entity.getProperty("imageUrl");
     Object _userId = entity.getProperty("userId");
+    Object _productCategory = entity.getProperty("productCategory");
     String textSearch;
     String gcsUrl;
     String imageUrl;
     String userId;
+    String productCategory;
 
     if (_gcsUrl == null) {
       gcsUrl = null;
@@ -809,7 +811,17 @@ public class ServletLibrary {
       System.err.println("UserId property is of an incorrect type.");
       return null;
     }
+
+    if (_productCategory == null) {
+      productCategory = null;
+    } else if (_productCategory instanceof String) {
+      productCategory = _productCategory.toString();
+    } else {
+      System.err.println("ProductCategory property is of an incorrect type.");
+      return null;
+    }
     
-    return new SearchInfo(searchId, textSearch, gcsUrl, imageUrl, userId);
+    return new SearchInfo(searchId, textSearch, gcsUrl, imageUrl, userId, 
+                          productCategory);
   }
 }

@@ -113,6 +113,7 @@ public class BrowseServlet extends HttpServlet {
     searchInfo.setProperty("gcsUrl", null);
     searchInfo.setProperty("imageUrl", null);
     searchInfo.setProperty("textSearch", null);
+    searchInfo.setProperty("productCategory", null);    
     if (userUploadedImage) {
       Map<String, List<FileInfo>> files = blobstore.getFileInfos(request);
       String gcsUrl = CloudStorageLibrary.getGcsFilePath(files);
@@ -120,6 +121,8 @@ public class BrowseServlet extends HttpServlet {
       String imageUrl = "/serveBlobstoreImage?blobKey=" + blobKey.getKeyString();
       searchInfo.setProperty("gcsUrl", gcsUrl);
       searchInfo.setProperty("imageUrl", imageUrl);
+      searchInfo.setProperty("productCategory", 
+        request.getParameter("productCategorySearch"));
     } 
     if (!textSearch.isEmpty()) {
       searchInfo.setProperty("textSearch", textSearch);
