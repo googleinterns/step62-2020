@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
   </head>
-  <body onload="refreshViewProductsPage()">
+  <body onload="refreshBrowsePage()">
     <!-- Always shows a header, even in smaller screens. -->
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
       <header class="mdl-layout__header">
@@ -39,19 +39,18 @@
       <main class="mdl-layout__content">
         <div class="page-content">
           <!-- Your content goes here -->
-          <h1 style="margin-left:30px">Your Products</h1>
           <div class="browseGrid">
-            <div style="margin-top:0" class="browseGridElement">
+            <div class="browseGridElement">
               <img src="/images/cloudberry_icon.png" height="50px">
             </div>
-            <div style="margin-top:0" class="browseGridElement">
-              <form id="searchForm" method="POST" action="/viewProducts"
+            <div class="browseGridElement">
+              <form id="searchForm" method="POST" action="/browse"
                     onsubmit="return checkSearchForm()">
                 <div class="browseBar">
                   <img class="searchIcon" src="/images/search.png" height="15px">
                   <input class="searchbar" type="text" title="Search" id="textSearch" 
                         name="textSearch" autocomplete="off">
-                  <a href="javascript:void(0);" onclick="toggleImageUpload('viewProducts')">
+                  <a href="javascript:void(0);" onclick="toggleImageUpload('browse')">
                     <img class="cameraIcon" src="/images/google-camera.svg" height="20px">
                   </a>
                   <div class="mdl-spinner mdl-js-spinner is-active hiddenButton" 
@@ -61,8 +60,14 @@
                 </div>
               </form>
               <div class="browseFilter">
+                <label for="businessId">Business:</label>
+                <select name="businessId" id="businessId" onchange="browseProducts()">
+                  <option value="none" selected></option>
+                </select>
+              </div> 
+              <div class="browseFilter">
                 <label for="productCategory">Product Category:</label>
-                <select name="productCategory" id="productCategory" onchange="retrieveProducts()">
+                <select name="productCategory" id="productCategory" onchange="browseProducts()">
                   <option value="none" selected></option>
                   <option value="homegoods-v2">Home Goods</option>
                   <option value="apparel-v2">Apparel</option>
@@ -74,12 +79,12 @@
               <div class="browseFilter">
               <label for="productSetDisplayName">Product Set:</label>
               <input list="productSetList" name="productSetDisplayName" id="productSetDisplayName"
-                    autocomplete="off" onchange="retrieveProducts()">
+                    autocomplete="off" onchange="browseProducts()">
               <datalist id="productSetList"></datalist>
               </div>
               <div class="browseFilter">
               <label for="sortOrder">Sort By:</label>
-              <select name="sortOrder" id="sortOrder" onchange="retrieveProducts()">
+              <select name="sortOrder" id="sortOrder" onchange="browseProducts()">
                 <option value="none" selected></option>
                 <option value="price_ascending">price (low -> high)</option>
                 <option value="price_descending">price (high -> low)</option>

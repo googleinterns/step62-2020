@@ -50,4 +50,12 @@ public class ProductEntity {
   public String getBusinessId() {
     return businessId;
   }
+
+  public String getProductCategory() {
+    return productCategory;
+  }
+
+  public List<String> getLabels() {
+    return labels;
+  }
 }

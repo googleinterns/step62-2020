@@ -21,8 +21,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 
-import com.google.sps.data.ServletLibrary;
-import com.google.sps.data.ProductSetEntity;
+import com.google.sps.data.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -46,8 +45,6 @@ public class CreateProductServlet extends HttpServlet {
     gson = new Gson();
   }
 
-  // IMPORTANT TODO(neelgandhi): When changing the product category, product set, 
-  // or labels, make sure those respective tables are also modified.
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Retrieve required parameters for the product set.
@@ -78,6 +75,8 @@ public class CreateProductServlet extends HttpServlet {
     String productCategory = request.getParameter("productCategory");
     String businessId = userService.getCurrentUser().getUserId();
 
+    // TODO: add businessDisplayName as a searchable tag.
+
     float price;
     try {
       price = Float.parseFloat(request.getParameter("price"));
@@ -100,7 +99,12 @@ public class CreateProductServlet extends HttpServlet {
     List<String> labels = new ArrayList<>(Arrays.asList(request.getParameterValues("labels")));
     labels.add(productDisplayName);
     labels.add(productSetDisplayName);
-    labels.add(productCategory); // TODO: remove the '-v1' or '-v2' at the end of the category string
+    String[] pieces = productCategory.split("-");
+    labels.add(pieces[0]); 
+    Business business = ServletLibrary.retrieveBusinessInfo(datastore, businessId);
+    if (business != null) {
+      labels.add(business.getBusinessDisplayName());
+    }
     // Remove potential duplicates, ignoring case, but preserving it when 
     // returning the new list. We set labels to the new list that was generated.
     Set<String> seen = new HashSet<>();
@@ -111,6 +115,19 @@ public class CreateProductServlet extends HttpServlet {
       newLabels.add(label);
     }
     labels = newLabels;
+
+    // Add product to tables or update relevant tables in datastore.
+    if (isNewProduct) {
+      ServletLibrary.addProductToLabels(datastore, productId, labels);
+      ServletLibrary.addProductToProductSet(datastore, productId, productSetId);
+      ServletLibrary.addProductToProductCategory(datastore, productId, productCategory);
+      ServletLibrary.addProductToBusiness(datastore, productId, businessId);
+    } else {
+      ProductEntity oldProduct = ServletLibrary.retrieveProductInfo(datastore, productId);
+      ServletLibrary.updateProductLabels(datastore, productId, oldProduct.getLabels(), labels);
+      ServletLibrary.updateProductSets(datastore, productId, oldProduct.getProductSetId(), productSetId);
+      ServletLibrary.updateProductCategories(datastore, productId, oldProduct.getProductCategory(), productCategory);
+    }
 
     // Create a product set entity and store in datastore.
     Entity product = new Entity("Product", productId);
@@ -131,15 +148,10 @@ public class CreateProductServlet extends HttpServlet {
 
     // Add product to relevant tables in datastore, only if it is a new product.
     if (isNewProduct) {
-      ServletLibrary.addProductToLabels(datastore, productId, labels);
-      ServletLibrary.addProductToProductSet(datastore, productId, productSetId);
-      ServletLibrary.addProductToProductCategory(datastore, productId, productCategory);
-      ServletLibrary.addProductToBusiness(datastore, productId, businessId);
       response.sendRedirect("/businessAccount.html");
     } else {
       response.sendRedirect("/viewProducts.html");
-    }
-    
+    }  
     
   }
 

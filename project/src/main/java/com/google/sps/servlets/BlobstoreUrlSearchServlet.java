@@ -23,12 +23,12 @@ import com.google.appengine.api.blobstore.UploadOptions;
 import com.google.appengine.api.blobstore.FileInfo;
 
 
-@WebServlet("/getBlobstoreUrl")
-public class BlobstoreUrlServlet extends HttpServlet {
+@WebServlet("/getBlobstoreUrlSearch")
+public class BlobstoreUrlSearchServlet extends HttpServlet {
 
   protected BlobstoreService blobstoreService;
 
-  public BlobstoreUrlServlet() {
+  public BlobstoreUrlSearchServlet() {
     super();
     blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
   }
@@ -40,14 +40,10 @@ public class BlobstoreUrlServlet extends HttpServlet {
     
     // String bucketName = "cloudberry-step-2020-test-bucket"; // Use twhen deploying to cloudberry.
     String bucketName = "neelgandhi-step-2020-test-bucket"; // Use when deploying to neelgandhi.
-
     UploadOptions bucket = UploadOptions.Builder.withGoogleStorageBucketName(bucketName);
 
-    boolean isEditing = Boolean.parseBoolean(request.getParameter("edit"));
-    String urlPath = "/cloudVision";
-    if (isEditing) {
-      urlPath = urlPath + "?edit=true&editProductId=" + request.getParameter("editProductId");
-    }
+    String urlPath = "/" + request.getParameter("urlPath") + 
+                     "?userUploadedImage=true";
     String uploadUrl = blobstoreService.createUploadUrl(urlPath, bucket);
 
     response.setContentType("text/html");

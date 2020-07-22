@@ -29,6 +29,7 @@ import com.google.appengine.api.blobstore.BlobInfoFactory;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+import com.google.appengine.api.blobstore.FileInfo;
 import com.google.appengine.api.images.ImagesService;
 import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.appengine.api.images.ServingUrlOptions;
@@ -47,6 +48,9 @@ import com.google.cloud.vision.v1.WebDetection.WebPage;
 import com.google.protobuf.ByteString;
 import java.io.ByteArrayOutputStream;
 
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
+
 import java.util.Random;
 import java.math.BigDecimal; 
 
@@ -60,6 +64,7 @@ public class CloudVisionServlet extends HttpServlet {
   protected List<Feature> allFeatures;
   protected DatastoreService datastore;
   protected UserService userService;
+  protected Storage storage;
 
   public CloudVisionServlet() {
     super();
@@ -68,6 +73,7 @@ public class CloudVisionServlet extends HttpServlet {
     imagesService = ImagesServiceFactory.getImagesService();
     datastore = DatastoreServiceFactory.getDatastoreService();
     userService = UserServiceFactory.getUserService();
+    storage = StorageOptions.getDefaultInstance().getService();
     Feature labelDetection = Feature.newBuilder().setType(Feature.Type.LABEL_DETECTION).build();
     Feature logoDetection = Feature.newBuilder().setType(Feature.Type.LOGO_DETECTION).build();
     Feature textDetection = Feature.newBuilder().setType(Feature.Type.TEXT_DETECTION).build();
@@ -106,11 +112,14 @@ public class CloudVisionServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Get the URL of the image that the user uploaded.
-    String gcsUrl = CloudStorageLibrary.getGcsFilePath(request, blobstore);
+
+    Map<String, List<FileInfo>> files = blobstore.getFileInfos(request);
+    String gcsUrl = CloudStorageLibrary.getGcsFilePath(files);
+    // String gcsUrl = CloudStorageLibrary.getGcsFilePath(request, blobstore);
     BlobKey blobKey = blobstore.createGsBlobKey(gcsUrl);
-    String imageUrl = CloudStorageLibrary.getUploadedFileUrl(blobstore, gcsUrl);
-    // BlobKey blobKey = VisionLibrary.getBlobKey(blobstore, request, "imageURL");
-    // String imageURL = VisionLibrary.getUploadedFileUrl(imagesService, blobKey);
+
+    String imageUrl = CloudStorageLibrary.getUploadedFileUrl(blobstore, storage, gcsUrl);
+    //String imageUrl = "/serveBlobstoreImage?blobKey=" + blobKey.getKeyString();
 
     // Use blobKey to send a request to the cloud vision api. We are guaranteed 
     // that the client uploaded an image.
@@ -136,7 +145,12 @@ public class CloudVisionServlet extends HttpServlet {
     updatedBusiness.setProperty("tempVisionAnnotation", new Text(tempVisionAnnotation));
     datastore.put(updatedBusiness);
 
-    // Redirect to the create product form. 
-    response.sendRedirect("/createProduct.html");
+    // Redirect to the create product form or the edit product form.
+    boolean isEditing = Boolean.parseBoolean(request.getParameter("edit"));
+    if (isEditing) {
+      response.sendRedirect("/editProduct.html?refreshImage=true&productId="+request.getParameter("editProductId"));
+    } else {
+      response.sendRedirect("/createProduct.html");
+    }
   }
 }
