@@ -22,7 +22,7 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 public class TextSearchLibrary {
   public static List<ProductEntity> textSearch(DatastoreService datastore, List<ProductEntity> products, String keyword) {
     List<ProductLabel> productLabels = getLabels(datastore, products);
-    List<String> productIds = getValidProductIds(keywordm productLabels);
+    List<String> productIds = getValidProductIds(keyword, productLabels);
     List<ProductEntity> result = new ArrayList<>();
     for (String productId : productIds) {
       ProductEntity product = ServletLibrary.retrieveProductInfo(datastore, productId);
@@ -53,11 +53,11 @@ public class TextSearchLibrary {
 
     for(ProductLabel productLabel : productLabels){
       if(compareLabels(keyword, productLabel.getLabel()).equals("Exact match")){
-        exactMatch.addAll(productLabel.productIds());
+        exactMatch.addAll(productLabel.getProductIds());
       } else if(compareLabels(keyword, productLabel.getLabel()).equals("Close match")){
-        closeMatch.addAll(productLabel.productIds());
+        closeMatch.addAll(productLabel.getProductIds());
       } else if(compareLabels(keyword, productLabel.getLabel()).equals("Partial match")){
-        partialMatch.addAll(productLabel.productIds());
+        partialMatch.addAll(productLabel.getProductIds());
       }
     }
 

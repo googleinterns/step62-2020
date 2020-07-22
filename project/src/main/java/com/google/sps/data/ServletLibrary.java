@@ -545,8 +545,7 @@ public class ServletLibrary {
                                                  String businessId,
                                                  String productSetId,
                                                  String productCategory,
-                                                 String sortOrder,
-                                                 String searchId) {
+                                                 String sortOrder) {
     if (datastore == null) {
       System.err.println("FindProducts: Datastore was null!");
       return null;

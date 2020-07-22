@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 import com.google.sps.data.*;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -51,7 +53,7 @@ public class BrowseServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // TODO: text based search and product search.
+    // TODO: product search.
 
     // Retrieve parameters from the request
     String productSetDisplayName = request.getParameter("productSetDisplayName");
@@ -83,8 +85,31 @@ public class BrowseServlet extends HttpServlet {
                                   businessId,
                                   productSetId, 
                                   productCategory, 
-                                  sortOrder, 
-                                  searchId);
+                                  sortOrder);
+
+    if (searchId != null) {
+      SearchInfo searchInfo = ServletLibrary.retrieveSearchInfo(datastore, searchId);
+      // TODO: integrate once Phillips finishes product search.
+      // if (searchInfo.getGcsUrl() != null) {
+      //   List<ProductEntity> imageSearchProducts = 
+      //     ProductSearchLibrary.productSearch(searchInfo.getGcsUrl(), searchInfo.productCategory);
+      //   Set<ProductEntity> setProducts = new HashSet<>(products);
+      //   List<ProductEntity> newProducts = new ArrayList<>();
+      //   for (ProductEntity product : imageSearchProducts) {
+      //     if (setProducts.contains(product)) newProducts.add(product);
+      //   }
+      //   products = newProducts;
+      // }
+
+      // Text query if it is specified, will take in this list and output a new
+      // list that satisfies the query.
+      if (searchInfo.getTextSearch() != null) {
+        products = TextSearchLibrary.textSearch(datastore, products, 
+                                                searchInfo.getTextSearch());
+      }
+    }
+    
+    
     String json = gson.toJson(products);
 
     // Send the response.
