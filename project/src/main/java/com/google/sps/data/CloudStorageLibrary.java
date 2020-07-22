@@ -68,14 +68,34 @@ public class CloudStorageLibrary {
 
     //Function gets all the files for when the user uploads multiple files
     public static ArrayList<String> getMultipleGcsFilePath(HttpServletRequest request, BlobstoreService blobstore) {
+        //Check if request and blobstore are null
+        if (request == null || blobstore == null) {
+            return null;
+        }
+        
+        //Grab the files that were uploaded
         Map<String, List<FileInfo>> files = blobstore.getFileInfos(request);
+        
+        //Check to make sure if the map is empty
+        if (files.isEmpty()) {
+            return null;
+        }
+        
+        //This list will eventually hold all the fileInfos in the map
         List<FileInfo> fileList = new ArrayList<FileInfo>();
         ArrayList<String> gcsuris = new ArrayList<>();
 
-        for (Map.Entry<String, List<FileInfo>> fileMap : files.entrySet()) { 
+        for (Map.Entry<String, List<FileInfo>> fileMap : files.entrySet()) {
+            //Gets the list of fileInfos from the Map 
             fileList = fileMap.getValue();
             for(FileInfo file : fileList) {
-                gcsuris.add(file.getGsObjectName());
+                //Add the gcsuri to the list for each file
+                try {
+                    gcsuris.add(file.getGsObjectName());
+                } catch (Exception e) {
+                    System.out.println(e);
+                    return null;
+                }
             }
         }
         return gcsuris;
