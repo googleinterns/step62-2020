@@ -14,7 +14,7 @@
 }
 
 body {
-  background-color: #fafafa;
+  background-color: white;
 }
 
 .product-card.mdl-card {
@@ -43,11 +43,10 @@ body {
 
 /* Google style search bar */
 .bar{
-  margin: 0 auto;
+  margin: 30px auto;
   width:575px;
   border-radius:30px;
   border:1px solid #dcdcdc;
-  background-color: white;
 }
 .bar:hover{
   box-shadow: 1px 1px 8px 1px #dcdcdc;
@@ -59,14 +58,102 @@ body {
 .searchbar{
   height:45px;
   border:none;
-  width:500px;
+  width:470px;
   font-size:16px;
   outline: none;
   margin-left:10px;
+  margin-right:10px;
   
 }
 .searchIcon{
-  position: relative;
-  bottom: 2px;
   margin-left: 20px; 
+  margin-bottom: 2px;
 }
+.cameraIcon{
+  margin-bottom: 2px;
+}
+.centerImage {
+  display: block;
+  margin: auto;
+  margin-top: 150px;
+}
+
+
+/* Google style search buttons */
+.searchButtons{
+  display: block;
+  margin: 0 auto;
+  margin-bottom: 30px;
+  width: 340px;
+}
+.searchButton{
+  text-decoration: none;
+  background-color: #f5f5f5;
+  border:none;
+  color:#707070;
+  font-size:15px;
+  padding: 10px 20px;
+  margin:5px;
+  border-radius:4px;
+  outline:none;
+}
+.searchButton:hover{
+  border: 1px solid #c8c8c8;
+  padding: 9px 19px;
+  color:#808080;
+}
+.searchButton:focus{
+  border:1px solid #ffab40;
+  padding: 9px 19px;
+}
+
+/* Product search upload */
+.hiddenButton {
+  text-decoration: none;
+  margin-left: 20px;
+  margin-bottom: 15px;
+  display: none;
+}
+
+
+/* Browse page items*/
+.browseGrid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+}
+
+.browseGridElement {
+  margin-left: 30px;
+  margin-top: 30px;
+}
+
+.browseBar{
+  margin-bottom: 10px;
+  width:575px;
+  border-radius:30px;
+  border:1px solid #dcdcdc;
+}
+.browseBar:hover{
+  box-shadow: 1px 1px 8px 1px #dcdcdc;
+}
+.browseBar:focus-within{
+  box-shadow: 1px 1px 8px 1px #dcdcdc;
+  outline:none;
+}
+
+.browseFilter {
+  margin-bottom:10px;
+  border-radius:30px;
+  border:1px solid #dcdcdc;
+  display: inline-block;
+  padding: 10px 20px;
+}
+
+.browseFilter:hover{
+  box-shadow: 1px 1px 8px 1px #dcdcdc;
+}
+.browseFilter:focus-within{
+  box-shadow: 1px 1px 8px 1px #dcdcdc;
+  outline:none;
+}
+

@@ -1,21 +1,19 @@
 package com.google.sps.servlets;
-import java.io.IOException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.google.gson.Gson;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Arrays;
+import java.util.Map;
+import com.google.sps.data.*;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Text;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.FetchOptions;
 
 import com.google.appengine.api.blobstore.BlobInfo;
 import com.google.appengine.api.blobstore.BlobInfoFactory;
@@ -24,31 +22,31 @@ import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.blobstore.FileInfo;
 
-import com.google.sps.data.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Map;
+import java.io.IOException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
-@WebServlet("/viewProducts")
-public class ViewProductsServlet extends HttpServlet {
 
+
+@WebServlet("/browse")
+public class BrowseServlet extends HttpServlet {
+
+  protected Gson gson;
   protected DatastoreService datastore;
   protected BlobstoreService blobstore;
-  protected Gson gson;
   protected UserService userService;
 
-  public ViewProductsServlet() {
+  public BrowseServlet() {
     super();
-    datastore = DatastoreServiceFactory.getDatastoreService();
-    userService = UserServiceFactory.getUserService();
-    blobstore = BlobstoreServiceFactory.getBlobstoreService();
     gson = new Gson();
+    datastore = DatastoreServiceFactory.getDatastoreService();
+    blobstore = BlobstoreServiceFactory.getBlobstoreService();
+    userService = UserServiceFactory.getUserService();
   }
 
   @Override
@@ -62,8 +60,8 @@ public class ViewProductsServlet extends HttpServlet {
     String sortOrder = request.getParameter("sortOrder");
 
     // Set parameters to apprpriate defaults, if necessary.
-    if (businessId.equals("getFromDatabase")) {
-      businessId = userService.getCurrentUser().getUserId();
+    if (businessId.equals("none")) {
+      businessId = null;
     }
     if (productCategory.equals("none")) {
       productCategory = null;
@@ -105,6 +103,7 @@ public class ViewProductsServlet extends HttpServlet {
     searchInfo.setProperty("timestamp", System.currentTimeMillis());
     if (userService.isUserLoggedIn()) {
       searchInfo.setProperty("userId", userService.getCurrentUser().getUserId());
+      // TODO: add it to user search history in database
     } else {
       searchInfo.setProperty("userId", null);
     }
@@ -127,6 +126,6 @@ public class ViewProductsServlet extends HttpServlet {
     }
     datastore.put(searchInfo);
   
-    response.sendRedirect("/viewProducts.html?searchId="+searchId);
+    response.sendRedirect("/browse.html?searchId="+searchId);
   }
 }

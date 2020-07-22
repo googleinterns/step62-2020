@@ -29,6 +29,7 @@ import com.google.appengine.api.blobstore.BlobInfoFactory;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+import com.google.appengine.api.blobstore.FileInfo;
 import com.google.appengine.api.images.ImagesService;
 import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.appengine.api.images.ServingUrlOptions;
@@ -111,9 +112,14 @@ public class CloudVisionServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Get the URL of the image that the user uploaded.
-    String gcsUrl = CloudStorageLibrary.getGcsFilePath(request, blobstore);
+
+    Map<String, List<FileInfo>> files = blobstore.getFileInfos(request);
+    String gcsUrl = CloudStorageLibrary.getGcsFilePath(files);
+    // String gcsUrl = CloudStorageLibrary.getGcsFilePath(request, blobstore);
     BlobKey blobKey = blobstore.createGsBlobKey(gcsUrl);
+
     String imageUrl = CloudStorageLibrary.getUploadedFileUrl(blobstore, storage, gcsUrl);
+    //String imageUrl = "/serveBlobstoreImage?blobKey=" + blobKey.getKeyString();
 
     // Use blobKey to send a request to the cloud vision api. We are guaranteed 
     // that the client uploaded an image.

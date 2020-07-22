@@ -4,6 +4,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import com.google.gson.Gson;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -17,19 +18,40 @@ import com.google.sps.data.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.stream.Collectors;  
+import java.io.ByteArrayOutputStream;
+
 // The purpose of this servlet is to collect data from the business account creation 
 // form and add the information to the database. It is also used to update existing
 // information in the database.
 @WebServlet("/createBusinessAccount")
 public class CreateBusinessAccountServlet extends HttpServlet {
 
+  protected Gson gson;
   protected DatastoreService datastore;
   protected UserService userService;
 
   public CreateBusinessAccountServlet() {
     super();
+    gson = new Gson();
     datastore = DatastoreServiceFactory.getDatastoreService();
     userService = UserServiceFactory.getUserService();
+  }
+
+  @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    // Return all product set display names from the database.
+    List<Business> businesses = ServletLibrary.listAllBusinesses(datastore);
+    List<BusinessName> names = 
+      businesses.stream()
+                .map(elem -> new BusinessName(elem.getBusinessId(), elem.getBusinessDisplayName()))
+                .collect(Collectors.toList());
+
+    String json = gson.toJson(names);
+
+    // Send the JSON as the response.
+    response.setContentType("application/json;");
+    response.getWriter().println(json);
   }
 
   @Override

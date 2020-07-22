@@ -97,7 +97,7 @@ public class CloudStorageLibrary {
             
             BlobKey blobKey = blobstore.createGsBlobKey(gcsFilePath);
         
-            return "/getBlobstoreUrl?blobKey=" + blobKey.getKeyString();
+            return "/serveBlobstoreImage?blobKey=" + blobKey.getKeyString();
         }
     }
 
@@ -119,4 +119,5 @@ public class CloudStorageLibrary {
                            + " with storage class "
                            + bucket.getStorageClass());
     }
+
 }
