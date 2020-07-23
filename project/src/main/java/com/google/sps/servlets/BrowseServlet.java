@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 import com.google.sps.data.*;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -51,13 +53,14 @@ public class BrowseServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // TODO: text based search and product search.
+    // TODO: product search.
 
     // Retrieve parameters from the request
     String productSetDisplayName = request.getParameter("productSetDisplayName");
     String productCategory = request.getParameter("productCategory");
     String businessId = request.getParameter("businessId");
     String sortOrder = request.getParameter("sortOrder");
+    String searchId = request.getParameter("searchId");
 
     // Set parameters to apprpriate defaults, if necessary.
     if (businessId.equals("none")) {
@@ -82,8 +85,31 @@ public class BrowseServlet extends HttpServlet {
                                   businessId,
                                   productSetId, 
                                   productCategory, 
-                                  sortOrder, 
-                                  null); // textQuery
+                                  sortOrder);
+
+    if (searchId != null) {
+      SearchInfo searchInfo = ServletLibrary.retrieveSearchInfo(datastore, searchId);
+      // TODO: integrate once Phillips finishes product search.
+      // if (searchInfo.getGcsUrl() != null) {
+      //   List<ProductEntity> imageSearchProducts = 
+      //     ProductSearchLibrary.productSearch(searchInfo.getGcsUrl(), searchInfo.productCategory);
+      //   Set<ProductEntity> setProducts = new HashSet<>(products);
+      //   List<ProductEntity> newProducts = new ArrayList<>();
+      //   for (ProductEntity product : imageSearchProducts) {
+      //     if (setProducts.contains(product)) newProducts.add(product);
+      //   }
+      //   products = newProducts;
+      // }
+
+      // Text query if it is specified, will take in this list and output a new
+      // list that satisfies the query.
+      if (searchInfo.getTextSearch() != null) {
+        products = TextSearchLibrary.textSearch(datastore, products, 
+                                                searchInfo.getTextSearch());
+      }
+    }
+    
+    
     String json = gson.toJson(products);
 
     // Send the response.
@@ -113,14 +139,15 @@ public class BrowseServlet extends HttpServlet {
     searchInfo.setProperty("gcsUrl", null);
     searchInfo.setProperty("imageUrl", null);
     searchInfo.setProperty("textSearch", null);
+    searchInfo.setProperty("productCategory", null);    
     if (userUploadedImage) {
-      //Map<String, List<FileInfo>> files = blobstore.getFileInfos(request);
-      // String gcsUrl = CloudStorageLibrary.getGcsFilePath(files);
       String gcsUrl = CloudStorageLibrary.getGcsFilePath(request, blobstore);
       BlobKey blobKey = blobstore.createGsBlobKey(gcsUrl);
       String imageUrl = "/serveBlobstoreImage?blobKey=" + blobKey.getKeyString();
       searchInfo.setProperty("gcsUrl", gcsUrl);
       searchInfo.setProperty("imageUrl", imageUrl);
+      searchInfo.setProperty("productCategory", 
+        request.getParameter("productCategorySearch"));
     } 
     if (!textSearch.isEmpty()) {
       searchInfo.setProperty("textSearch", textSearch);

@@ -39,6 +39,20 @@ public class ProductEntity {
     this.cloudVisionAnnotation = cloudVisionAnnotation;
   }
 
+  // we only really care about the productId when comparing two given labels.
+  @Override
+  public int hashCode() {
+    return productId.hashCode();
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
+    ProductEntity other = (ProductEntity) obj;
+    return (productId.equals(other.getProductId()));
+  }
+
   public String getProductId() {
     return productId;
   }

@@ -8,14 +8,16 @@ public class SearchInfo {
   private String gcsUrl;
   private String imageUrl;
   private String userId;
+  private String productCategory;
 
   public SearchInfo(String searchId, String textSearch, String gcsUrl, 
-                    String imageUrl, String userId) {
+                    String imageUrl, String userId, String productCategory) {
     this.searchId = searchId;
     this.textSearch = textSearch;
     this.gcsUrl = gcsUrl;
     this.imageUrl = imageUrl;
     this.userId = userId;
+    this.productCategory = productCategory;
   }
 
   public String getSearchId() {
@@ -36,6 +38,10 @@ public class SearchInfo {
 
   public String getUserId() {
     return userId;
+  }
+
+  public String getProductCategory() {
+    return productCategory;
   }
 
 }
