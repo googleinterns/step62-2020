@@ -115,7 +115,6 @@ public class ViewProductsServlet extends HttpServlet {
     searchInfo.setProperty("imageUrl", null);
     searchInfo.setProperty("textSearch", null);
     if (userUploadedImage) {
-    //   Map<String, List<FileInfo>> files = blobstore.getFileInfos(request);
       String gcsUrl = CloudStorageLibrary.getGcsFilePath(request, blobstore);
       BlobKey blobKey = blobstore.createGsBlobKey(gcsUrl);
       String imageUrl = "/serveBlobstoreImage?blobKey=" + blobKey.getKeyString();

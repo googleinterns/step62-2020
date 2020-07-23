@@ -115,7 +115,6 @@ public class CloudVisionServlet extends HttpServlet {
 
     Map<String, List<FileInfo>> files = blobstore.getFileInfos(request);
     String gcsUrl = CloudStorageLibrary.getGcsFilePath(request, blobstore);
-    // String gcsUrl = CloudStorageLibrary.getGcsFilePath(request, blobstore);
     BlobKey blobKey = blobstore.createGsBlobKey(gcsUrl);
 
     // String imageUrl = CloudStorageLibrary.getUploadedFileUrl(blobstore, storage, gcsUrl);

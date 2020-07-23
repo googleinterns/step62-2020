@@ -144,7 +144,20 @@ public class CreateProductServlet extends HttpServlet {
     product.setProperty("cloudVisionAnnotation", new Text(cloudVisionAnnotation));
     datastore.put(product);
 
-    createAndAddToProductSearch(productId, productSetId, productDisplayName, productCategory, gcsUrls);
+    if(isNewProduct == true){
+        createAndAddToProductSearch(productId, productSetId, productDisplayName, productCategory, gcsUrls);
+    } else{
+        if(!gcsUrls.contains(request.getParameter("mainGcsUrl"))){
+            String gcsUri = request.getParameter("mainGcsUrl");
+            
+            String objectName = gcsUri.substring(gcsUri.lastIndexOf('/') + 1);
+        
+            gcsUri = changeGcsFormat(gcsUri);
+    
+            ProductSearchLibrary.createReferenceImage(productId, objectName, gcsUri);
+        }
+    }
+    
 
     // Add product to relevant tables in datastore, only if it is a new product.
     if (isNewProduct) {
