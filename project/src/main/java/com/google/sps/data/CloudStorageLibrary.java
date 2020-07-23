@@ -53,6 +53,10 @@ public class CloudStorageLibrary {
 
         Map<String, List<FileInfo>> files = blobstore.getFileInfos(request);
 
+        if (files.isEmpty()) {
+            return "";
+        }
+
         //We only need the first element of the map because we upload one image at a time
         for (Map.Entry<String, List<FileInfo>> fileMap : files.entrySet()) { 
             try {
