@@ -54,8 +54,11 @@ public class CloudStorageLibrary {
 
         Map<String, List<FileInfo>> files = blobstore.getFileInfos(request);
 
+        if (files.isEmpty()) {
+            return "";
+        }
+
         //We only need the first element of the map because we upload one image at a time
-        //TODO(mrjwash): When we switch to multiple I have to parse for the newest upload using getCreation();
         for (Map.Entry<String, List<FileInfo>> fileMap : files.entrySet()) { 
             try {
                 //getGsObjectName() actually returns the gcsuri for a file
@@ -66,6 +69,41 @@ public class CloudStorageLibrary {
             }
         }
         return "";
+    }
+
+    //Function gets all the files for when the user uploads multiple files
+    public static ArrayList<String> getMultipleGcsFilePath(HttpServletRequest request, BlobstoreService blobstore) {
+        //Check if request and blobstore are null
+        if (request == null || blobstore == null) {
+            return null;
+        }
+        
+        //Grab the files that were uploaded
+        Map<String, List<FileInfo>> files = blobstore.getFileInfos(request);
+        
+        //Check to make sure if the map is empty
+        if (files.isEmpty()) {
+            return null;
+        }
+        
+        //This list will eventually hold all the fileInfos in the map
+        List<FileInfo> fileList = new ArrayList<FileInfo>();
+        ArrayList<String> gcsuris = new ArrayList<>();
+
+        for (Map.Entry<String, List<FileInfo>> fileMap : files.entrySet()) {
+            //Gets the list of fileInfos from the Map 
+            fileList = fileMap.getValue();
+            for(FileInfo file : fileList) {
+                //Add the gcsuri to the list for each file
+                try {
+                    gcsuris.add(file.getGsObjectName());
+                } catch (Exception e) {
+                    System.out.println(e);
+                    return null;
+                }
+            }
+        }
+        return gcsuris;
     }
 
     //Gets a url to directly serve the image
