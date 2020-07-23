@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -45,47 +46,50 @@ public class TextSearchLibrary {
     return result;
   }
 
+  enum Match {
+    EXACT, CLOSE, PARTIAL, NONE;
+  }
+
   public static List<String> getValidProductIds(String keyword, List<ProductLabel> productLabels) {
-    List<String> ids = new ArrayList<>();
+    Set<String> ids = new LinkedHashSet<>();
     List<String> exactMatch = new ArrayList<>();
     List<String> closeMatch = new ArrayList<>();
     List<String> partialMatch = new ArrayList<>();
 
     for(ProductLabel productLabel : productLabels){
-      if(compareLabels(keyword, productLabel.getLabel()).equals("Exact match")){
-        exactMatch.addAll(productLabel.getProductIds());
-      } else if(compareLabels(keyword, productLabel.getLabel()).equals("Close match")){
-        closeMatch.addAll(productLabel.getProductIds());
-      } else if(compareLabels(keyword, productLabel.getLabel()).equals("Partial match")){
-        partialMatch.addAll(productLabel.getProductIds());
+      switch (compareLabels(keyword, productLabel.getLabel())) {
+        case EXACT:
+          exactMatch.addAll(productLabel.getProductIds());
+          break;
+        case CLOSE:
+          closeMatch.addAll(productLabel.getProductIds());
+          break;
+        case PARTIAL:
+          partialMatch.addAll(productLabel.getProductIds());
+          break;
+        default:
+          break;
       }
     }
 
     ids.addAll(exactMatch);
     ids.addAll(closeMatch);
     ids.addAll(partialMatch);
-
-    // Need to remove all duplicates but preserve order.
-    Set<String> seen = new HashSet<>();
     List<String> result = new ArrayList<>();
-    for (String id : ids) {
-      if (seen.contains(id)) continue;
-      seen.add(id);
-      result.add(id);
-    }
+    result.addAll(ids);
     return result;
   }
  
-  public static String compareLabels(String keyword, String labelName){
+  public static Match compareLabels(String keyword, String labelName){
     keyword = keyword.toLowerCase();
     labelName = labelName.toLowerCase();
 
     if (keyword.equals(labelName)) {
-        return "Exact match";
+        return Match.EXACT;
     }
 
     if (labelName.contains(keyword)) {
-        return "Partial match";
+        return Match.PARTIAL;
     }
 
     if (keyword.contains(" ")) {
@@ -93,13 +97,13 @@ public class TextSearchLibrary {
 
       for(int i = 0; i < keywords.length; i++){
         if(keywords[i].equals(labelName)){
-          return "Close match";
+          return Match.CLOSE;
         }
         if(labelName.contains(keywords[i])){
-          return "Partial match";
+          return Match.PARTIAL;
         }
       }
     }
-    return "No match";
+    return Match.NONE;
   }
 }
