@@ -848,4 +848,20 @@ public class ServletLibrary {
     return new ProductLabel(productLabel, productIds);
 
   }
+
+  public static void addSearchInfoToSearchHistory(DatastoreService datastore, String userId, String searchId) {
+    Filter filter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);
+    Query query = new Query("Account").setFilter(filter);
+    PreparedQuery pq = datastore.prepare(query);
+    Entity entity = pq.asSingleEntity();
+
+    if (entity != null) {
+      @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
+        List<String> searchHistory = (ArrayList<String>) entity.getProperty("searchHistory"); 
+      if (searchHistory == null) searchHistory = new ArrayList<String>();
+      searchHistory.add(searchId);
+      entity.setProperty("searchHistory", searchHistory);
+      datastore.put(entity);
+    }
+  }
 }

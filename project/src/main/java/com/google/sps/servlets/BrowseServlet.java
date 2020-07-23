@@ -91,8 +91,9 @@ public class BrowseServlet extends HttpServlet {
       SearchInfo searchInfo = ServletLibrary.retrieveSearchInfo(datastore, searchId);
       // TODO: integrate once Phillips finishes product search.
       // if (searchInfo.getGcsUrl() != null) {
+      //   List <String> productSearchIds = ProductSearchLibrary.productSearch(searchInfo.getGcsUrl(), searchInfo.productCategory);
       //   List<ProductEntity> imageSearchProducts = 
-      //     ProductSearchLibrary.productSearch(searchInfo.getGcsUrl(), searchInfo.productCategory);
+      //     ServletLibrary.retri
       //   Set<ProductEntity> setProducts = new HashSet<>(products);
       //   List<ProductEntity> newProducts = new ArrayList<>();
       //   for (ProductEntity product : imageSearchProducts) {
@@ -129,7 +130,8 @@ public class BrowseServlet extends HttpServlet {
     searchInfo.setProperty("timestamp", System.currentTimeMillis());
     if (userService.isUserLoggedIn()) {
       searchInfo.setProperty("userId", userService.getCurrentUser().getUserId());
-      // TODO: add it to user search history in database
+      ServletLibrary.addSearchInfoToSearchHistory(datastore, 
+        userService.getCurrentUser().getUserId(), searchId);
     } else {
       searchInfo.setProperty("userId", null);
     }

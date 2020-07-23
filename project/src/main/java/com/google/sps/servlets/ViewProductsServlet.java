@@ -128,7 +128,6 @@ public class ViewProductsServlet extends HttpServlet {
     searchInfo.setProperty("timestamp", System.currentTimeMillis());
     if (userService.isUserLoggedIn()) {
       searchInfo.setProperty("userId", userService.getCurrentUser().getUserId());
-      // TODO: add it to user search history in database
     } else {
       searchInfo.setProperty("userId", null);
     }
