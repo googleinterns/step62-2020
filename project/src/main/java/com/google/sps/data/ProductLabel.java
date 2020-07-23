@@ -11,7 +11,7 @@ public class ProductLabel {
     this.productIds = productIds;
   }
 
-  public String getProductLabel() {
+  public String getLabel() {
     return productLabel;
   }
 

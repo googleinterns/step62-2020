@@ -35,6 +35,7 @@ import com.google.cloud.storage.Blob;
 
 public class CloudStorageLibrary {
     private static final String BUCKET_NAME = "cloudberry-step-2020-test-bucket";
+    // private static final String BUCKET_NAME = "neelgandhi-step-2020-test-bucket";
 
     //Function to determine if the gcs file path is valid
     public static Boolean doesGcsuriExist(Storage storage, String gcsFilePath) {
