@@ -113,8 +113,6 @@ public class CloudVisionServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Get the URL of the image that the user uploaded.
 
-    Map<String, List<FileInfo>> files = blobstore.getFileInfos(request);
-    //String gcsUrl = CloudStorageLibrary.getGcsFilePath(files);
     String gcsUrl = CloudStorageLibrary.getGcsFilePath(request, blobstore);
     BlobKey blobKey = blobstore.createGsBlobKey(gcsUrl);
 
