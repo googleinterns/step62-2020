@@ -12,7 +12,7 @@ import java.io.IOException;
 import com.google.gson.Gson;
 import com.google.sps.data.ProductSetItem;
 
-import com.google.sps.data.ServletsLibrary;
+import com.google.sps.data.ProductSearchLibrary;
  
  
  
@@ -26,7 +26,7 @@ public class GetProductSetsServlet extends HttpServlet {
     String projectId = "cloudberry-step-2020";
     String computeRegion = "us-east1";
     
-    ArrayList<ProductSetItem> productSets = ServletsLibrary.listProductSets(projectId, computeRegion);
+    ArrayList<ProductSetItem> productSets = ProductSearchLibrary.listProductSets(projectId, computeRegion);
     response.setContentType("application/json;");
     response.getWriter().println(gson.toJson(productSets));
   }

@@ -311,6 +311,70 @@ function refreshProductInfoPage() {
 }
 
 
+function loadProduct() {
+
+  fetch("/product-list").then(response => response.json()).then((products) => {
+
+    const productListElement = document.getElementById("product-list");
+    productListElement.innerHTML = "";
+    
+ 
+    products.forEach((product) => {  
+      productListElement.appendChild(createProductElement(product));
+      productListElement.appendChild(document.createElement("br"));
+    })
+  });
+}
+
+
+function createProductElement(product) {
+  const linebreak = document.createElement("br");
+
+  const productElement = document.createElement("li");
+  productElement.className = "product";
+
+  const titleElement = document.createElement("span");
+  titleElement.innerText = product.productName+": "+product.productId;
+
+  productElement.appendChild(titleElement);
+  productElement.appendChild(linebreak);
+
+  return productElement;
+}
+
+function loadReferenceImages(){
+
+  fetch("/view-reference-image").then(response => response.json()).then((referenceImages) => {
+
+    console.log(referenceImages);
+    const referenceImageElement = document.getElementById("reference-image-list");
+    referenceImageElement.innerHTML = "";
+    
+ 
+    referenceImages.forEach((referenceImage) => {  
+      referenceImageElement.appendChild(createReferenceImageElement(referenceImage));
+      referenceImageElement.appendChild(document.createElement("br"));
+    })
+  });
+}
+
+
+function createReferenceImageElement(referenceImage) {
+  const linebreak = document.createElement("br");
+
+  const referenceImageElement = document.createElement("li");
+  referenceImageElement.className = "referenceImage";
+
+  const titleElement = document.createElement("span");
+  titleElement.innerText = referenceImage;
+
+  referenceImageElement.appendChild(titleElement);
+  referenceImageElement.appendChild(linebreak);
+
+  return referenceImageElement;
+}
+=======
+
 function deleteProduct() {
   const params = getUrlParams();
   const productId = params["productId"];
@@ -500,5 +564,3 @@ function refreshBrowsePage() {
   setBrowseInputs();
   browseProducts();
 }
-
-

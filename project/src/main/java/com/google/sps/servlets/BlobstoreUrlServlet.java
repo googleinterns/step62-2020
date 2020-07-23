@@ -40,6 +40,7 @@ public class BlobstoreUrlServlet extends HttpServlet {
     
     // String bucketName = "cloudberry-step-2020-test-bucket"; // Use twhen deploying to cloudberry.
     String bucketName = "neelgandhi-step-2020-test-bucket"; // Use when deploying to neelgandhi.
+
     UploadOptions bucket = UploadOptions.Builder.withGoogleStorageBucketName(bucketName);
 
     boolean isEditing = Boolean.parseBoolean(request.getParameter("edit"));
