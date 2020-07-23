@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -46,7 +47,7 @@ public class TextSearchLibrary {
     return result;
   }
 
-  enum Match {
+  public enum Match {
     EXACT, CLOSE, PARTIAL, NONE;
   }
 
@@ -84,26 +85,42 @@ public class TextSearchLibrary {
     keyword = keyword.toLowerCase();
     labelName = labelName.toLowerCase();
 
-    if (keyword.equals(labelName)) {
-        return Match.EXACT;
+    if (keyword.equals(labelName)) return Match.EXACT;
+
+    boolean labelHasSpace = labelName.contains(" ");
+    boolean keywordHasSpace = keyword.contains(" ");
+    String[] labelPieces = null;
+    String[] keywords = null;
+    if (labelHasSpace) {
+      labelPieces = labelName.split(" ");
+    } 
+    if (keywordHasSpace) {
+      keywords = keyword.split(" ");
     }
 
-    if (labelName.contains(keyword)) {
-        return Match.PARTIAL;
-    }
-
-    if (keyword.contains(" ")) {
-      String[] keywords = keyword.split(" ");
-
-      for(int i = 0; i < keywords.length; i++){
-        if(keywords[i].equals(labelName)){
-          return Match.CLOSE;
-        }
-        if(labelName.contains(keywords[i])){
-          return Match.PARTIAL;
-        }
+    if (labelHasSpace && keywordHasSpace) {
+      Set<String> labelSet = new HashSet<>(Arrays.asList(labelPieces));
+      Set<String> keywordSet = new HashSet<>(Arrays.asList(keywords));
+      labelSet.retainAll(keywordSet); // Set intersection
+      if (!labelSet.isEmpty()) return Match.CLOSE;
+    } 
+    
+    if (labelHasSpace) {
+      for(int i = 0; i < labelPieces.length; i++) {
+        if (labelPieces[i].equals(keyword)) return Match.CLOSE;
+        if (labelPieces[i].contains(keyword)) return Match.PARTIAL;
       }
     }
+
+    if (keywordHasSpace) {
+      for(int i = 0; i < keywords.length; i++){
+        if (labelName.equals(keywords[i])) return Match.CLOSE;
+        if (labelName.contains(keywords[i])) return Match.PARTIAL;
+      }
+    } 
+    
+    if (labelName.contains(keyword)) return Match.PARTIAL;
+
     return Match.NONE;
   }
 }
