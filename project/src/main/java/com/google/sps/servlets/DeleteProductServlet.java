@@ -54,6 +54,9 @@ public class DeleteProductServlet extends HttpServlet {
     PreparedQuery pq = datastore.prepare(new Query("Product").setFilter(filter));
     Entity entity = pq.asSingleEntity();
     datastore.delete(entity.getKey()); // Delete from the product table
+
+    //Delete from product search Api
+    ProductSearchLibrary.deleteProduct(productId);
     
     response.sendRedirect("viewProducts.html");
   }

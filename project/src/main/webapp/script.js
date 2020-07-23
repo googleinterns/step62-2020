@@ -367,7 +367,38 @@ function createReferenceImageElement(referenceImage) {
 
   return referenceImageElement;
 }
-=======
+
+function loadProductSet(){
+
+  fetch("/product-set-list").then(response => response.json()).then((productSets) => {
+
+    console.log(productSets);
+    const productSetElement = document.getElementById("product-set-list");
+    productSetElement.innerHTML = "";
+    
+ 
+    productSets.forEach((productSet) => {  
+      productSetElement.appendChild(createProductSetElement(productSet));
+      productSetElement.appendChild(document.createElement("br"));
+    })
+  });
+}
+
+
+function createProductSetElement(productSet) {
+  const linebreak = document.createElement("br");
+
+  const productSetElement = document.createElement("li");
+  productSetElement.className = "ProductSet";
+
+  const titleElement = document.createElement("span");
+  titleElement.innerText = productSet.setName;
+
+  productSetElement.appendChild(titleElement);
+  productSetElement.appendChild(linebreak);
+
+  return productSetElement;
+}
 
 function deleteProduct() {
   const params = getUrlParams();

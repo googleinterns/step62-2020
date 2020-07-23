@@ -91,7 +91,7 @@
         <configuration>
 
           <!-- TODO: set project ID to cloudberry-step-2020. -->
-          <deploy.projectId>neelgandhi-step-2020</deploy.projectId>
+          <deploy.projectId>cloudberry-step-2020</deploy.projectId>
 
           <deploy.version>1</deploy.version>
         </configuration>
