@@ -144,9 +144,9 @@ public class CreateProductServlet extends HttpServlet {
     product.setProperty("cloudVisionAnnotation", new Text(cloudVisionAnnotation));
     datastore.put(product);
 
-    // createAndAddToProductSearch(productId, productSetId, productDisplayName, productCategory, request);
+    createAndAddToProductSearch(productId, productSetId, productDisplayName, productCategory, request);
 
-    // Add product to relevant tables in datastore, only if it is a new product.
+    // Redirect to the appropriate page.
     if (isNewProduct) {
       response.sendRedirect("/businessAccount.html");
     } else {
