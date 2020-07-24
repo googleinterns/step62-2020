@@ -274,4 +274,18 @@ public class ProductSearchLibrary{
 
       productSetList.add(productSet);
     }
+
+    public static void deleteProduct(String productId)
+    throws IOException {
+        try (ProductSearchClient client = ProductSearchClient.create()) {
+
+            // Get the full path of the product.
+            String formattedName =
+                ProductSearchClient.formatProductName(projectId, computeRegion, productId);
+
+            // Delete a product.
+            client.deleteProduct(formattedName);
+            System.out.println("Product deleted.");
+        }
+    }
 }

@@ -72,6 +72,7 @@ public class CloudVisionServlet extends HttpServlet {
     imagesService = ImagesServiceFactory.getImagesService();
     datastore = DatastoreServiceFactory.getDatastoreService();
     userService = UserServiceFactory.getUserService();
+    
     Feature labelDetection = Feature.newBuilder().setType(Feature.Type.LABEL_DETECTION).build();
     Feature logoDetection = Feature.newBuilder().setType(Feature.Type.LOGO_DETECTION).build();
     Feature textDetection = Feature.newBuilder().setType(Feature.Type.TEXT_DETECTION).build();
