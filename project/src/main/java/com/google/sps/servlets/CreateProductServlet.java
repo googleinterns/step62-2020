@@ -159,7 +159,7 @@ public class CreateProductServlet extends HttpServlet {
     }
     
 
-    // Add product to relevant tables in datastore, only if it is a new product.
+    // Redirect to the appropriate page.
     if (isNewProduct) {
       response.sendRedirect("/businessAccount.html");
     } else {

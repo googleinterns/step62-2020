@@ -93,15 +93,15 @@ public class ViewProductsServlet extends HttpServlet {
       ArrayList<String> similarProductIds = ProductSearchLibrary.getSimilarProductsGcs("cloudberryAllProducts", 
                                             searchInfo.getProductCategory(), searchInfo.getGcsUrl(), "");
       // TODO: integrate once Phillips finishes product search.
-      //   if (searchInfo.getGcsUrl() != null) {
-      //     List<ProductEntity> imageSearchProducts = 
-      //       ProductSearchLibrary.productSearch(searchInfo.getGcsUrl(), searchInfo.productCategory);
-      //     Set<ProductEntity> setProducts = new HashSet<>(products);
-      //     List<ProductEntity> newProducts = new ArrayList<>();
-      //     for (ProductEntity product : imageSearchProducts) {
-      //       if (setProducts.contains(product)) newProducts.add(product);
-      //     }
-      //     products = newProducts;
+      // if (searchInfo.getGcsUrl() != null) {
+      //   List <String> productSearchIds = ProductSearchLibrary.productSearch(searchInfo.getGcsUrl(), searchInfo.productCategory);
+      //   List<ProductEntity> imageSearchProducts = new ArrayList<>();
+      //   productSearchIds.forEach(productId->imageSearchProducts.add(ServletLibrary.retrieveProductInfo(datastore, productId));
+      //   Set<ProductEntity> setProducts = new HashSet<>(products);
+      //   List<ProductEntity> newProducts = new ArrayList<>();
+      //   for (ProductEntity product : imageSearchProducts) {
+      //     if (setProducts.contains(product)) newProducts.add(product);
+
       //   }
 
       // Text query if it is specified, will take in this list and output a new
@@ -131,7 +131,6 @@ public class ViewProductsServlet extends HttpServlet {
     searchInfo.setProperty("timestamp", System.currentTimeMillis());
     if (userService.isUserLoggedIn()) {
       searchInfo.setProperty("userId", userService.getCurrentUser().getUserId());
-      // TODO: add it to user search history in database
     } else {
       searchInfo.setProperty("userId", null);
     }

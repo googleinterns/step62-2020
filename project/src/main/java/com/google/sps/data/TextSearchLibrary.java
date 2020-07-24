@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -46,8 +47,15 @@ public class TextSearchLibrary {
     return result;
   }
 
-  enum Match {
-    EXACT, CLOSE, PARTIAL, NONE;
+  // Meaning of the types of matches:
+  // EXACT: the label and string query are identical
+  // CLOSE: if the label and string query are made up of several words, and at
+  //        at least one of them matches exactly.
+  // PARTIAL: if the keyword (or any words that make up the seach query) is a substring of a label.
+  // WEAK: if the label (or any words that make up the label) is a substring of the keyword.
+  // NONE: no match at all.
+  public enum Match {
+    EXACT, CLOSE, PARTIAL, WEAK, NONE;
   }
 
   public static List<String> getValidProductIds(String keyword, List<ProductLabel> productLabels) {
@@ -55,6 +63,7 @@ public class TextSearchLibrary {
     List<String> exactMatch = new ArrayList<>();
     List<String> closeMatch = new ArrayList<>();
     List<String> partialMatch = new ArrayList<>();
+    List<String> weakMatch = new ArrayList<>();
 
     for(ProductLabel productLabel : productLabels){
       switch (compareLabels(keyword, productLabel.getLabel())) {
@@ -67,6 +76,9 @@ public class TextSearchLibrary {
         case PARTIAL:
           partialMatch.addAll(productLabel.getProductIds());
           break;
+        case WEAK:
+          weakMatch.addAll(productLabel.getProductIds());
+          break;
         default:
           break;
       }
@@ -75,6 +87,7 @@ public class TextSearchLibrary {
     ids.addAll(exactMatch);
     ids.addAll(closeMatch);
     ids.addAll(partialMatch);
+    ids.addAll(weakMatch);
     List<String> result = new ArrayList<>();
     result.addAll(ids);
     return result;
@@ -84,26 +97,52 @@ public class TextSearchLibrary {
     keyword = keyword.toLowerCase();
     labelName = labelName.toLowerCase();
 
-    if (keyword.equals(labelName)) {
-        return Match.EXACT;
+    if (keyword.equals(labelName)) return Match.EXACT;
+
+    boolean labelHasSpace = labelName.contains(" ");
+    boolean keywordHasSpace = keyword.contains(" ");
+    String[] labelPieces = null;
+    String[] keywords = null;
+    if (labelHasSpace) {
+      labelPieces = labelName.split(" ");
+    } 
+    if (keywordHasSpace) {
+      keywords = keyword.split(" ");
     }
 
-    if (labelName.contains(keyword)) {
-        return Match.PARTIAL;
-    }
-
-    if (keyword.contains(" ")) {
-      String[] keywords = keyword.split(" ");
-
-      for(int i = 0; i < keywords.length; i++){
-        if(keywords[i].equals(labelName)){
-          return Match.CLOSE;
-        }
-        if(labelName.contains(keywords[i])){
-          return Match.PARTIAL;
-        }
+    // If both the keyword and label are made up of multiple words (ex: "blue shoe")
+    // We check if any of the words match.
+    if (labelHasSpace && keywordHasSpace) {
+      Set<String> labelSet = new HashSet<>(Arrays.asList(labelPieces));
+      Set<String> keywordSet = new HashSet<>(Arrays.asList(keywords));
+      labelSet.retainAll(keywordSet); // Set intersection
+      if (!labelSet.isEmpty()) return Match.CLOSE;
+    } 
+    
+    // If the keyword is a single word and the label is made up of multiple words,
+    // we check the keyword to each of the words that make up the label.
+    if (labelHasSpace) {
+      for(int i = 0; i < labelPieces.length; i++) {
+        if (labelPieces[i].equals(keyword)) return Match.CLOSE;
+        if (labelPieces[i].contains(keyword)) return Match.PARTIAL;
+        if (keyword.contains(labelPieces[i])) return Match.WEAK;
       }
     }
+
+    // If the keyword (or text query) is made up of multiple words and the label
+    // is a single word, we check each word with the label.
+    if (keywordHasSpace) {
+      for(int i = 0; i < keywords.length; i++){
+        if (labelName.equals(keywords[i])) return Match.CLOSE;
+        if (labelName.contains(keywords[i])) return Match.PARTIAL;
+        if (keywords[i].contains(labelName)) return Match.WEAK;
+      }
+    } 
+    
+    // If both the label and keywords are single words, we simply compare them.
+    if (labelName.contains(keyword)) return Match.PARTIAL;
+    if (keyword.contains(labelName)) return Match.WEAK;
+
     return Match.NONE;
   }
 }
