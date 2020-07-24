@@ -14,7 +14,6 @@ import static org.mockito.Mockito.*;
 @RunWith(JUnit4.class)
 public final class TextSearchTest {
     
-
     // Setup
     @Before
     public void setUp() {
@@ -95,9 +94,9 @@ public final class TextSearchTest {
 
     // No match, even if label is a substring of the search
     @Test
-    public void noMatchLabelIsSubstring() {
+    public void weakMatchLabelIsSubstring() {
       Match actual = TextSearchLibrary.compareLabels("hellothere!", "hello");
-      Match expected = Match.NONE;
+      Match expected = Match.WEAK;
 
       Assert.assertEquals(expected, actual);
     }

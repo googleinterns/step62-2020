@@ -48,7 +48,7 @@ public class TextSearchLibrary {
   }
 
   public enum Match {
-    EXACT, CLOSE, PARTIAL, NONE;
+    EXACT, CLOSE, PARTIAL, WEAK, NONE;
   }
 
   public static List<String> getValidProductIds(String keyword, List<ProductLabel> productLabels) {
@@ -56,6 +56,7 @@ public class TextSearchLibrary {
     List<String> exactMatch = new ArrayList<>();
     List<String> closeMatch = new ArrayList<>();
     List<String> partialMatch = new ArrayList<>();
+    List<String> weakMatch = new ArrayList<>();
 
     for(ProductLabel productLabel : productLabels){
       switch (compareLabels(keyword, productLabel.getLabel())) {
@@ -68,6 +69,9 @@ public class TextSearchLibrary {
         case PARTIAL:
           partialMatch.addAll(productLabel.getProductIds());
           break;
+        case WEAK:
+          weakMatch.addAll(productLabel.getProductIds());
+          break;
         default:
           break;
       }
@@ -76,6 +80,7 @@ public class TextSearchLibrary {
     ids.addAll(exactMatch);
     ids.addAll(closeMatch);
     ids.addAll(partialMatch);
+    ids.addAll(weakMatch);
     List<String> result = new ArrayList<>();
     result.addAll(ids);
     return result;
@@ -109,6 +114,7 @@ public class TextSearchLibrary {
       for(int i = 0; i < labelPieces.length; i++) {
         if (labelPieces[i].equals(keyword)) return Match.CLOSE;
         if (labelPieces[i].contains(keyword)) return Match.PARTIAL;
+        if (keyword.contains(labelPieces[i])) return Match.WEAK;
       }
     }
 
@@ -116,10 +122,12 @@ public class TextSearchLibrary {
       for(int i = 0; i < keywords.length; i++){
         if (labelName.equals(keywords[i])) return Match.CLOSE;
         if (labelName.contains(keywords[i])) return Match.PARTIAL;
+        if (keywords[i].contains(labelName)) return Match.WEAK;
       }
     } 
     
     if (labelName.contains(keyword)) return Match.PARTIAL;
+    if (keyword.contains(labelName)) return Match.WEAK;
 
     return Match.NONE;
   }
