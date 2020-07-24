@@ -92,8 +92,8 @@ public class BrowseServlet extends HttpServlet {
       // TODO: integrate once Phillips finishes product search.
       // if (searchInfo.getGcsUrl() != null) {
       //   List <String> productSearchIds = ProductSearchLibrary.productSearch(searchInfo.getGcsUrl(), searchInfo.productCategory);
-      //   List<ProductEntity> imageSearchProducts = 
-      //     ServletLibrary.retri
+      //   List<ProductEntity> imageSearchProducts = new ArrayList<>();
+      //   productSearchIds.forEach(productId->imageSearchProducts.add(ServletLibrary.retrieveProductInfo(datastore, productId));
       //   Set<ProductEntity> setProducts = new HashSet<>(products);
       //   List<ProductEntity> newProducts = new ArrayList<>();
       //   for (ProductEntity product : imageSearchProducts) {
