@@ -545,8 +545,7 @@ public class ServletLibrary {
                                                  String businessId,
                                                  String productSetId,
                                                  String productCategory,
-                                                 String sortOrder,
-                                                 String textQuery) {
+                                                 String sortOrder) {
     if (datastore == null) {
       System.err.println("FindProducts: Datastore was null!");
       return null;
@@ -769,10 +768,12 @@ public class ServletLibrary {
     Object _gcsUrl = entity.getProperty("gcsUrl");
     Object _imageUrl = entity.getProperty("imageUrl");
     Object _userId = entity.getProperty("userId");
+    Object _productCategory = entity.getProperty("productCategory");
     String textSearch;
     String gcsUrl;
     String imageUrl;
     String userId;
+    String productCategory;
 
     if (_gcsUrl == null) {
       gcsUrl = null;
@@ -809,7 +810,42 @@ public class ServletLibrary {
       System.err.println("UserId property is of an incorrect type.");
       return null;
     }
+
+    if (_productCategory == null) {
+      productCategory = null;
+    } else if (_productCategory instanceof String) {
+      productCategory = _productCategory.toString();
+    } else {
+      System.err.println("ProductCategory property is of an incorrect type.");
+      return null;
+    }
     
-    return new SearchInfo(searchId, textSearch, gcsUrl, imageUrl, userId);
+    return new SearchInfo(searchId, textSearch, gcsUrl, imageUrl, userId, 
+                          productCategory);
+  }
+
+  public static ProductLabel retrieveProductLabelInfo(DatastoreService datastore, String label) {
+    Filter filter = new FilterPredicate("label", FilterOperator.EQUAL, label.toLowerCase());
+    Query query = new Query("ProductLabel").setFilter(filter);
+    PreparedQuery pq = datastore.prepare(query);
+    Entity entity = pq.asSingleEntity();
+
+    if (entity == null) return null;
+
+    Object _productLabel = entity.getProperty("label");
+    String productLabel;
+    if (_productLabel instanceof String) {
+      productLabel = _productLabel.toString();
+    } else {
+      System.err.println("ProductLabel property is of an incorrect type.");
+      return null;
+    }
+
+    @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
+      List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
+    if (productIds == null) productIds = new ArrayList<String>();
+
+    return new ProductLabel(productLabel, productIds);
+
   }
 }

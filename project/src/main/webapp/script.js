@@ -151,6 +151,12 @@ function retrieveProducts() {
                     "&productCategory=" + productCategory + 
                     "&sortOrder=" + sortOrder + 
                     "&businessId=getFromDatabase";
+
+  // Check if there is a search query, and add to the query string.
+  const params = getUrlParams();
+  const searchId = params["searchId"];
+  if (searchId != null) queryString = queryString + "&searchId=" + searchId;
+
   fetch(queryString).then(response => response.json()).then(products => {
     if (products == null || products.length == 0) {
       searchResults.innerText = "No products here!";
@@ -457,6 +463,7 @@ function setupImageUpload(urlPath) {
   const searchForm = document.getElementById("searchForm");
   const spinnerImage = document.getElementById("spinnerImage");
   const imageButton = document.getElementById("imageUpload");
+  const productCategory = document.getElementById("productCategorySearch");
   spinnerImage.style.display = "block";
   fetch("/getBlobstoreUrlSearch?urlPath=" + urlPath)
     .then(response => response.text())
@@ -466,6 +473,7 @@ function setupImageUpload(urlPath) {
       spinnerImage.style.display = "none";
       imageButton.required = true;
       imageButton.style.display = "block";
+      productCategory.style.display = "block";
     });
 }
 
@@ -473,11 +481,13 @@ function setupImageUpload(urlPath) {
 function toggleImageUpload(urlPath) {
   const imageButton = document.getElementById("imageUpload");
   const searchForm = document.getElementById("searchForm");
+  const productCategory = document.getElementById("productCategorySearch");
   if (imageButton.style.display === "block") {
     searchForm.action = urlPath;
     searchForm.enctype = "application/x-www-form-urlencoded";
     imageButton.required = false;
     imageButton.style.display = "none";
+    productCategory.style.display = "none";
   } else {
     setupImageUpload(urlPath);
   }
@@ -509,6 +519,12 @@ function browseProducts() {
                     "&productCategory=" + productCategory + 
                     "&sortOrder=" + sortOrder + 
                     "&businessId=" + businessId;
+
+  // Check if there is a search query, and add to the query string.
+  const params = getUrlParams();
+  const searchId = params["searchId"];
+  if (searchId != null) queryString = queryString + "&searchId=" + searchId;
+
   fetch(queryString).then(response => response.json()).then(products => {
     if (products == null || products.length == 0) {
       searchResults.innerText = "No products here!";
@@ -562,7 +578,9 @@ function setBrowseInputs() {
   if (searchId != null) {
     fetch("/searchInfo?searchId="+searchId).then(response => response.json())
     .then(searchInfo => {
-      document.getElementById("textSearch").value = searchInfo.textSearch;
+      if (searchInfo.textSearch != null) {
+        document.getElementById("textSearch").value = searchInfo.textSearch;
+      }
       if (searchInfo.imageUrl != null) {
         document.getElementById("uploadedImage").src = searchInfo.imageUrl;
         document.getElementById("uploadedImageBox").style.display = "block";
