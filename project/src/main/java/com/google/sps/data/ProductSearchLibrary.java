@@ -214,7 +214,7 @@ public class ProductSearchLibrary{
     String productCategory,
     String gcsUri,
     String filter)
-    throws Exception {
+    throws IOException {
     
     ArrayList<String> productIds = new ArrayList<>();
     try (ImageAnnotatorClient queryImageClient = ImageAnnotatorClient.create()) {
@@ -257,7 +257,9 @@ public class ProductSearchLibrary{
             
             
         for (ProductSearchResults.Result product : similarProducts) {
-            productIds.add(product.getProduct().getName());
+            
+            String id = getProductId(product.getProduct().getName());
+            productIds.add(id);
         }
     }
     return productIds;
@@ -287,5 +289,15 @@ public class ProductSearchLibrary{
             client.deleteProduct(formattedName);
             System.out.println("Product deleted.");
         }
+    }
+
+    public static String getProductId(String productName){
+
+        String[] productNameSplit = productName.split("/");
+
+        int productNameArrayLength = productNameSplit.length;
+
+        return productNameSplit[productNameArrayLength - 1];
+
     }
 }

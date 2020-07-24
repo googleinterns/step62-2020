@@ -174,6 +174,8 @@ public class CreateProductServlet extends HttpServlet {
 
     ProductSearchLibrary.addProductToProductSet(productId, productSetId);
 
+    ProductSearchLibrary.addProductToProductSet(productId, "cloudberryAllProducts");
+
     //Create reference image for a product to facilitate the searching for a product by image
     //image gcsuri used for reference image id
     for(String gcsUri : gcsList){

@@ -89,17 +89,20 @@ public class ViewProductsServlet extends HttpServlet {
 
     if (searchId != null) {
       SearchInfo searchInfo = ServletLibrary.retrieveSearchInfo(datastore, searchId);
+
+      ArrayList<String> similarProductIds = ProductSearchLibrary.getSimilarProductsGcs("cloudberryAllProducts", 
+                                            searchInfo.getProductCategory(), searchInfo.getGcsUrl(), "");
       // TODO: integrate once Phillips finishes product search.
-      // if (searchInfo.getGcsUrl() != null) {
-      //   List<ProductEntity> imageSearchProducts = 
-      //     ProductSearchLibrary.productSearch(searchInfo.getGcsUrl(), searchInfo.productCategory);
-      //   Set<ProductEntity> setProducts = new HashSet<>(products);
-      //   List<ProductEntity> newProducts = new ArrayList<>();
-      //   for (ProductEntity product : imageSearchProducts) {
-      //     if (setProducts.contains(product)) newProducts.add(product);
+      //   if (searchInfo.getGcsUrl() != null) {
+      //     List<ProductEntity> imageSearchProducts = 
+      //       ProductSearchLibrary.productSearch(searchInfo.getGcsUrl(), searchInfo.productCategory);
+      //     Set<ProductEntity> setProducts = new HashSet<>(products);
+      //     List<ProductEntity> newProducts = new ArrayList<>();
+      //     for (ProductEntity product : imageSearchProducts) {
+      //       if (setProducts.contains(product)) newProducts.add(product);
+      //     }
+      //     products = newProducts;
       //   }
-      //   products = newProducts;
-      // }
 
       // Text query if it is specified, will take in this list and output a new
       // list that satisfies the query.

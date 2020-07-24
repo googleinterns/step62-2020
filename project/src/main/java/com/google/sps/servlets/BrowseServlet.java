@@ -89,6 +89,10 @@ public class BrowseServlet extends HttpServlet {
 
     if (searchId != null) {
       SearchInfo searchInfo = ServletLibrary.retrieveSearchInfo(datastore, searchId);
+
+      ArrayList<String> similarProductIds = ProductSearchLibrary.getSimilarProductsGcs("cloudberryAllProducts", 
+                                            searchInfo.getProductCategory(), searchInfo.getGcsUrl(), "");
+                                            
       // TODO: integrate once Phillips finishes product search.
       // if (searchInfo.getGcsUrl() != null) {
       //   List<ProductEntity> imageSearchProducts = 
