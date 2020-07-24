@@ -849,6 +849,8 @@ public class ServletLibrary {
 
   }
 
+  // SearchId corresponds to the id of the search object, which contains information 
+  // about the content of the search (Text search, image search, product category, etc.)
   public static void addSearchInfoToSearchHistory(DatastoreService datastore, String userId, String searchId) {
     Filter filter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);
     Query query = new Query("Account").setFilter(filter);

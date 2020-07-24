@@ -47,6 +47,13 @@ public class TextSearchLibrary {
     return result;
   }
 
+  // Meaning of the types of matches:
+  // EXACT: the label and string query are identical
+  // CLOSE: if the label and string query are made up of several words, and at
+  //        at least one of them matches exactly.
+  // PARTIAL: if the keyword (or any words that make up the seach query) is a substring of a label.
+  // WEAK: if the label (or any words that make up the label) is a substring of the keyword.
+  // NONE: no match at all.
   public enum Match {
     EXACT, CLOSE, PARTIAL, WEAK, NONE;
   }
@@ -103,6 +110,8 @@ public class TextSearchLibrary {
       keywords = keyword.split(" ");
     }
 
+    // If both the keyword and label are made up of multiple words (ex: "blue shoe")
+    // We check if any of the words match.
     if (labelHasSpace && keywordHasSpace) {
       Set<String> labelSet = new HashSet<>(Arrays.asList(labelPieces));
       Set<String> keywordSet = new HashSet<>(Arrays.asList(keywords));
@@ -110,6 +119,8 @@ public class TextSearchLibrary {
       if (!labelSet.isEmpty()) return Match.CLOSE;
     } 
     
+    // If the keyword is a single word and the label is made up of multiple words,
+    // we check the keyword to each of the words that make up the label.
     if (labelHasSpace) {
       for(int i = 0; i < labelPieces.length; i++) {
         if (labelPieces[i].equals(keyword)) return Match.CLOSE;
@@ -118,6 +129,8 @@ public class TextSearchLibrary {
       }
     }
 
+    // If the keyword (or text query) is made up of multiple words and the label
+    // is a single word, we check each word with the label.
     if (keywordHasSpace) {
       for(int i = 0; i < keywords.length; i++){
         if (labelName.equals(keywords[i])) return Match.CLOSE;
@@ -126,6 +139,7 @@ public class TextSearchLibrary {
       }
     } 
     
+    // If both the label and keywords are single words, we simply compare them.
     if (labelName.contains(keyword)) return Match.PARTIAL;
     if (keyword.contains(labelName)) return Match.WEAK;
 

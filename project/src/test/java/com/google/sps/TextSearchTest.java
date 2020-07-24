@@ -92,7 +92,7 @@ public final class TextSearchTest {
       Assert.assertEquals(expected, actual);
     }
 
-    // No match, even if label is a substring of the search
+    // Weak match, when the label is a substring of the search
     @Test
     public void weakMatchLabelIsSubstring() {
       Match actual = TextSearchLibrary.compareLabels("hellothere!", "hello");
