@@ -447,7 +447,8 @@ function viewProduct() {
     // Fill out the appropriate places on the form.
     document.getElementById("productPath").innerText = 
       business.businessDisplayName + " / " + 
-      product.productCategory + " / " + productSet.productSetDisplayName;
+      product.productCategory.split("-")[0] + " / " + 
+      productSet.productSetDisplayName;
     document.getElementById("productDisplayName").innerText = product.productDisplayName;
 
     // Add images to slideshow.
