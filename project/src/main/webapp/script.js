@@ -159,7 +159,7 @@ function retrieveProducts() {
 
   fetch(queryString).then(response => response.json()).then(products => {
     if (products == null || products.length == 0) {
-      searchResults.innerText = "No products here!";
+      searchResults.innerHTML = "<h4>No products here!</h4>";
       spinner.classList.remove("is-active");
       return;
     }
@@ -412,6 +412,29 @@ function deleteProduct() {
   document.getElementById("deleteProduct").href = "/deleteProduct?productId="+productId;
 }
 
+// Helper functions for the slideshow on the product page.
+function plusDivs(n) {
+  showDivs(slideIndex += n);
+}
+function currentDiv(n) {
+  showDivs(slideIndex = n);
+}
+function showDivs(n) {
+  var i;
+  var x = document.getElementsByClassName("mySlides");
+  var dots = document.getElementsByClassName("demo");
+  if (n > x.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = x.length}
+  for (i = 0; i < x.length; i++) {
+    x[i].style.display = "none";  
+  }
+  for (i = 0; i < dots.length; i++) {
+    dots[i].className = dots[i].className.replace(" w3-red", "");
+  }
+  x[slideIndex-1].style.display = "block";  
+  dots[slideIndex-1].className += " w3-red";
+}
+
 // Retrieve and display product on the view product page.
 function viewProduct() {
   const params = getUrlParams();
@@ -426,7 +449,28 @@ function viewProduct() {
       business.businessDisplayName + " / " + 
       product.productCategory + " / " + productSet.productSetDisplayName;
     document.getElementById("productDisplayName").innerText = product.productDisplayName;
-    document.getElementById("mainImage").src = product.imageUrls[0];
+
+    // Add images to slideshow.
+    const slideshowImages = document.getElementById("slideshowImages");
+    const slideshowPane = document.getElementById("slideshowPane");
+    let counter = 1;
+    product.imageUrls.forEach(imageUrl => {
+      const newImage = document.createElement("img");
+      newImage.classList.add("mySlides");
+      newImage.src = imageUrl;
+      newImage.style = "margin: 0 auto; height: 100%; max-width:700px;";
+      const newButton = document.createElement("button");
+      newButton.classList.add("w3-button");
+      newButton.classList.add("demo");
+      newButton.innerText = counter;
+      const inputCounter = counter;
+      newButton.onclick = function () {currentDiv(inputCounter);};
+      counter++;
+      slideshowImages.appendChild(newImage);
+      slideshowPane.appendChild(newButton);
+    });
+    showDivs(slideIndex);
+
     document.getElementById("price").innerText = "$" + product.price.toFixed(2);
     document.getElementById("productDescription").innerText = product.productDescription;
     const labels = document.getElementById("labels");
@@ -527,7 +571,7 @@ function browseProducts() {
 
   fetch(queryString).then(response => response.json()).then(products => {
     if (products == null || products.length == 0) {
-      searchResults.innerText = "No products here!";
+      searchResults.innerHTML = "<h4>No products here!</h4>";
       spinner.classList.remove("is-active");
       return;
     }
