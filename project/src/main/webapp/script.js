@@ -595,3 +595,26 @@ function refreshBrowsePage() {
   setBrowseInputs();
   browseProducts();
 }
+
+function updateCreateProductUrl() {
+  console.log("Setting up upload url.");
+  const images = document.getElementById("images");
+  const productForm = document.getElementById("productForm");
+  const spinner3 = document.getElementById("spinner3");
+  const path = new URL(productForm.action);
+  if (images.files.length > 0 && path.pathname === "/createProduct") {
+    spinner3.style.display = "block";
+    fetch("/getBlobstoreUrlSearch?urlPath=createProduct")
+      .then(response => response.text())
+      .then(url => {
+        productForm.action = url;
+        productForm.enctype = "multipart/form-data";
+        spinner3.style.display = "none";
+        images.required = true;
+      });
+  } else {
+    productForm.action = "/createProduct";
+    productForm.enctype = "application/x-www-form-urlencoded";
+    images.required = false;
+  }
+}

@@ -21,12 +21,20 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 
+import com.google.appengine.api.blobstore.BlobInfo;
+import com.google.appengine.api.blobstore.BlobInfoFactory;
+import com.google.appengine.api.blobstore.BlobKey;
+import com.google.appengine.api.blobstore.BlobstoreService;
+import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+import com.google.appengine.api.blobstore.FileInfo;
+
 import com.google.sps.data.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;  
 
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -37,12 +45,14 @@ public class CreateProductServlet extends HttpServlet {
   protected DatastoreService datastore;
   protected Gson gson;
   protected UserService userService;
+  protected BlobstoreService blobstore;
 
   public CreateProductServlet() {
     super();
     datastore = DatastoreServiceFactory.getDatastoreService();
     userService = UserServiceFactory.getUserService();
     gson = new Gson();
+    blobstore = BlobstoreServiceFactory.getBlobstoreService();
   }
 
   @Override
@@ -75,8 +85,6 @@ public class CreateProductServlet extends HttpServlet {
     String productCategory = request.getParameter("productCategory");
     String businessId = userService.getCurrentUser().getUserId();
 
-    // TODO: add businessDisplayName as a searchable tag.
-
     float price;
     try {
       price = Float.parseFloat(request.getParameter("price"));
@@ -85,13 +93,21 @@ public class CreateProductServlet extends HttpServlet {
       price = 0.0f;
     }
 
-    // TODO: support for adding multiple images. For now, we are only adding
-    // the initial image that was uploaded.
+    // Additional images are added here.
+    List<String> optionalGcsUrls = CloudStorageLibrary.getMultipleGcsFilePath(request, blobstore);
+    List<String> optionalImageUrls = 
+      optionalGcsUrls.stream()
+                     .map(gcsUrl -> "/serveBlobstoreImage?blobKey=" + 
+                                    blobstore.createGsBlobKey(gcsUrl).getKeyString())
+                     .collect(Collectors.toList());
+    
     List<String> gcsUrls = new ArrayList<>();
     gcsUrls.add(request.getParameter("mainGcsUrl"));
+    gcsUrls.addAll(optionalGcsUrls);
     
     List<String> imageUrls = new ArrayList<>();
     imageUrls.add(request.getParameter("mainImageUrl"));
+    imageUrls.addAll(optionalImageUrls);
 
     // Get annotation and labels.
     String cloudVisionAnnotation = request.getParameter("cloudVisionAnnotation");
@@ -144,19 +160,19 @@ public class CreateProductServlet extends HttpServlet {
     product.setProperty("cloudVisionAnnotation", new Text(cloudVisionAnnotation));
     datastore.put(product);
 
-    if(isNewProduct == true){
-        createAndAddToProductSearch(productId, productSetId, productDisplayName, productCategory, gcsUrls);
-    } else{
-        if(!gcsUrls.contains(request.getParameter("mainGcsUrl"))){
-            String gcsUri = request.getParameter("mainGcsUrl");
+    // if(isNewProduct == true){
+    //     createAndAddToProductSearch(productId, productSetId, productDisplayName, productCategory, gcsUrls);
+    // } else{
+    //     if(!gcsUrls.contains(request.getParameter("mainGcsUrl"))){
+    //         String gcsUri = request.getParameter("mainGcsUrl");
             
-            String objectName = gcsUri.substring(gcsUri.lastIndexOf('/') + 1);
+    //         String objectName = gcsUri.substring(gcsUri.lastIndexOf('/') + 1);
         
-            gcsUri = changeGcsFormat(gcsUri);
+    //         gcsUri = changeGcsFormat(gcsUri);
     
-            ProductSearchLibrary.createReferenceImage(productId, objectName, gcsUri);
-        }
-    }
+    //         ProductSearchLibrary.createReferenceImage(productId, objectName, gcsUri);
+    //     }
+    // }
     
 
     // Redirect to the appropriate page.
