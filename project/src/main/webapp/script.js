@@ -206,7 +206,8 @@ function retrieveProducts() {
       spinner.classList.remove("is-active");
       return;
     }
-    products.forEach(product => {
+    products.forEach(productWithAddress => {
+      const product = productWithAddress.product;
       const cardHtml = `<div class="product-card mdl-card mdl-shadow--2dp">
                           <div class="mdl-card__title" style="background-image: 
                             linear-gradient(to bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,1)), 
@@ -647,7 +648,6 @@ function checkSearchForm() {
 }
 
 
-// TODO: add textSearch as an option (eventually image search as well).
 // Display cards on the browse page. These cards don't have edit or delete
 // functionality.
 function browseProducts() {
@@ -677,7 +677,8 @@ function browseProducts() {
       spinner.classList.remove("is-active");
       return;
     }
-    products.forEach(product => {
+    products.forEach(productWithAddress => {
+      const product = productWithAddress.product;
       const cardHtml = `<div class="product-card mdl-card mdl-shadow--2dp">
                           <div class="mdl-card__title" style="background-image: 
                             linear-gradient(to bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,1)), 

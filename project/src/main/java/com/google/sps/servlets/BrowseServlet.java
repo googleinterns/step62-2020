@@ -110,8 +110,9 @@ public class BrowseServlet extends HttpServlet {
       }
     }
     
-    
-    String json = gson.toJson(products);
+    List<ProductWithAddress> productsWithAddress = 
+      ServletLibrary.convertToProductWithAddress(datastore, products);
+    String json = gson.toJson(productsWithAddress);
 
     // Send the response.
     response.setContentType("application/json;");

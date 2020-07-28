@@ -941,4 +941,50 @@ public class ServletLibrary {
     }
     return results;
   }
+
+  // Append the address of the product and return a new list with this 
+  // extra information.
+  public static List<ProductWithAddress> convertToProductWithAddress(
+    DatastoreService datastore, List<ProductEntity> products) {
+    List<ProductWithAddress> results = new ArrayList<>();
+    for (ProductEntity product : products) {
+      Filter filter = new FilterPredicate("businessId", FilterOperator.EQUAL, product.getBusinessId());
+      Query query = new Query("Business").setFilter(filter);
+      PreparedQuery pq = datastore.prepare(query);
+      Entity entity = pq.asSingleEntity();
+
+      if (entity == null) {
+        System.err.println("convertToProductWithAddress: Business is null!");
+        return null;
+      }
+
+      Object _street = entity.getProperty("street");
+      Object _city = entity.getProperty("city");
+      Object _state = entity.getProperty("state");
+      Object _zipCode = entity.getProperty("zipCode");
+      String street;
+      String city;
+      String state;
+      String zipCode;
+
+      if ((_street instanceof String) &&
+          (_city instanceof String) &&
+          (_state instanceof String) &&
+          (_zipCode instanceof String)) {
+        street = _street.toString();
+        city = _city.toString();
+        state = _state.toString();
+        zipCode = _zipCode.toString();
+      } else {
+        System.err.println("convertToProductWithAddress: Entity properties are of an incorrect type.");
+        return null;
+      }
+
+      results.add(new ProductWithAddress(product, 
+                  new Address(street, city, state, zipCode)));
+
+    }
+
+    return results;
+  }
 }
