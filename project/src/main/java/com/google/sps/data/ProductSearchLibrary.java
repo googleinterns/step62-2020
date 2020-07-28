@@ -300,9 +300,7 @@ public class ProductSearchLibrary{
 
       String[] productNameSplit = productName.split("/");
 
-      int productNameArrayLength = productNameSplit.length;
-
-      return productNameSplit[productNameArrayLength - 1];
+      return productNameSplit[productNameSplit.length - 1];
 
   }
 }
