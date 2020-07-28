@@ -866,4 +866,79 @@ public class ServletLibrary {
       datastore.put(entity);
     }
   }
+
+  // Retrieves most recent search history as a list.
+  public static List<SearchInfo> retrieveRecentSearchHistory(DatastoreService datastore, 
+                                                             String userId, 
+                                                             int numberToDisplay) {
+    Filter filter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);
+    Query query = new Query("SearchInfo")
+                        .setFilter(filter)
+                        .addSort("timestamp", SortDirection.DESCENDING);
+    PreparedQuery pq = datastore.prepare(query);
+    List<SearchInfo> results = new ArrayList<>();
+    int count = 1;
+    for (Entity entity : pq.asIterable()) {
+      if (count > numberToDisplay) break;
+      count++;
+      Object _searchId = entity.getProperty("searchId");
+      Object _textSearch = entity.getProperty("textSearch");
+      Object _gcsUrl = entity.getProperty("gcsUrl");
+      Object _imageUrl = entity.getProperty("imageUrl");
+      Object _userId = entity.getProperty("userId");
+      Object _productCategory = entity.getProperty("productCategory");
+      String searchId;
+      String textSearch;
+      String gcsUrl;
+      String imageUrl;
+      String productCategory;
+
+      if (_searchId instanceof String) {
+        searchId = _searchId.toString();
+      } else {
+        System.err.println("searchId property is of an incorrect type.");
+        return null;
+      }
+
+      if (_gcsUrl == null) {
+        gcsUrl = null;
+      } else if (_gcsUrl instanceof String) {
+        gcsUrl = _gcsUrl.toString();
+      } else {
+        System.err.println("GcsUrl property is of an incorrect type.");
+        return null;
+      }
+
+      if (_imageUrl == null) {
+        imageUrl = null;
+      } else if (_imageUrl instanceof String) {
+        imageUrl = _imageUrl.toString();
+      } else {
+        System.err.println("ImageUrl property is of an incorrect type.");
+        return null;
+      }
+
+      if (_textSearch == null) {
+        textSearch = null;
+      } else if (_textSearch instanceof String) {
+        textSearch = _textSearch.toString();
+      } else {
+        System.err.println("TextSearch property is of an incorrect type.");
+        return null;
+      }
+
+      if (_productCategory == null) {
+        productCategory = null;
+      } else if (_productCategory instanceof String) {
+        productCategory = _productCategory.toString();
+      } else {
+        System.err.println("ProductCategory property is of an incorrect type.");
+        return null;
+      }
+      
+      results.add(new SearchInfo(searchId, textSearch, gcsUrl, imageUrl, userId, 
+                                 productCategory));
+    }
+    return results;
+  }
 }

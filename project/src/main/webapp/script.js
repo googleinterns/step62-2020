@@ -32,6 +32,51 @@ function retrieveAccountInfo() {
     document.getElementById("state").value = account.state;
     document.getElementById("zipCode").value = account.zipCode;
     document.getElementById("userGreeting").innerText = "Hello, " + account.nickname;
+
+    retrieveSearchHistory();
+  });
+}
+
+// Add search history to a table on the account page.
+function retrieveSearchHistory() {
+  const tableBody = document.getElementById("searchTableBody");
+  fetch("/searchHistory").then(response => response.json()).then(searchHistory => {
+    searchHistory.forEach(searchInfo => {
+      const row = document.createElement("tr");
+      // Text Search
+      const textSearch = document.createElement("td");
+      textSearch.classList.add("mdl-data-table__cell--non-numeric");
+      textSearch.innerText = "-";
+      if (searchInfo.textSearch != null) {
+        textSearch.innerText = searchInfo.textSearch;
+      }
+      // Image Search
+      const imageCell = document.createElement("td");
+      imageCell.classList.add("mdl-data-table__cell--non-numeric");
+      if (searchInfo.imageUrl != null) {
+        const imageLink = document.createElement("a");
+        imageLink.href = searchInfo.imageUrl;
+        imageLink.target = "_blank"; // Open image in a new tab.
+        const image = document.createElement("img");
+        image.src = searchInfo.imageUrl;
+        image.style.maxHeight = "50px";
+        imageLink.appendChild(image);
+        imageCell.appendChild(imageLink);
+      } else {
+        imageCell.innerText = "-";
+      }
+      // View Search button
+      const buttonCell = document.createElement("td");
+      buttonCell.innerHTML = `<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
+                                href="/browse.html?searchId=${searchInfo.searchId}">
+                                Search
+                              </a>`
+
+      row.appendChild(textSearch);
+      row.appendChild(imageCell);
+      row.appendChild(buttonCell);
+      tableBody.appendChild(row);
+    });
   });
 }
 
@@ -719,3 +764,4 @@ function updateCreateProductUrl() {
     images.required = false;
   }
 }
+

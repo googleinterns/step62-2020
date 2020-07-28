@@ -202,3 +202,14 @@ indexes:
   properties:
   - name: productCategory
   - name: productSetId
+
+- kind: SearchInfo
+  properties:
+  - name: userId
+  - name: timestamp
+    direction: desc
+
+- kind: SearchInfo
+  properties:
+  - name: userId
+  - name: timestamp
