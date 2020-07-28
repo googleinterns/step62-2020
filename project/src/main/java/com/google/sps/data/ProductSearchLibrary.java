@@ -19,7 +19,7 @@ public class ProductSearchLibrary{
     public static ArrayList<ProductSetItem> listProductSets(String projectId,
      String computeRegion) throws IOException {
 
-      ArrayList<ProductSetItem> productSets = new ArrayList<>();
+        ArrayList<ProductSetItem> productSets = new ArrayList<>();
 
         ProductSearchClient client = ProductSearchClient.create();
         // A resource that represents Google Cloud Platform location.
@@ -211,8 +211,7 @@ public class ProductSearchLibrary{
     String gcsUri)
     throws IOException {
     
-    ArrayList<String> productIds = new ArrayList<>();
-    
+        ArrayList<String> productIds = new ArrayList<>();
     
         ImageAnnotatorClient queryImageClient = ImageAnnotatorClient.create(); 
 
