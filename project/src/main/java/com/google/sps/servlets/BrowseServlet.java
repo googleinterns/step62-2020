@@ -90,7 +90,7 @@ public class BrowseServlet extends HttpServlet {
     if (searchId != null) {
       SearchInfo searchInfo = ServletLibrary.retrieveSearchInfo(datastore, searchId);
                                             
-    //   TODO: integrate once Phillips finishes product search.
+      //   TODO: integrate once Phillips finishes product search.
       if (searchInfo.getGcsUrl() != null) {
         List <String> productSearchIds = ProductSearchLibrary.getSimilarProductsGcs("cloudberryAllProducts", 
                                             searchInfo.getProductCategory(), changeGcsFormat(searchInfo.getGcsUrl()));

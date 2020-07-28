@@ -179,33 +179,30 @@ public class ProductSearchLibrary{
     String projectId, 
     String computeRegion, 
     String productSetId) throws IOException {
-    ArrayList<ProductItem> productItems = new ArrayList<>();
-    try (ProductSearchClient client = ProductSearchClient.create()) {
+      ArrayList<ProductItem> productItems = new ArrayList<>();
+      ProductSearchClient client = ProductSearchClient.create();
 
-        // Get the full path of the product set.
-        String formattedName =
-            ProductSearchClient.formatProductSetName(projectId, computeRegion, productSetId);
-        // List all the products available in the product set.
-        for (Product product : client.listProductsInProductSet(formattedName).iterateAll()) {
-
-            createProductItemAndAddToList(product.getName().substring(product.getName().lastIndexOf('/') + 1), product.getDisplayName(),
-                                        product.getProductCategory(), productItems);
+      // Get the full path of the product set.
+      String formattedName =
+          ProductSearchClient.formatProductSetName(projectId, computeRegion, productSetId);
+      // List all the products available in the product set.
+      for (Product product : client.listProductsInProductSet(formattedName).iterateAll()) {
+          createProductItemAndAddToList(product.getName().substring(product.getName().lastIndexOf('/') + 1), product.getDisplayName(),
+                                      product.getProductCategory(), productItems);
         }
-    }
     return productItems;
   }
    
    public static ArrayList<String> listReferenceImagesOfProduct(
     String productId) throws IOException {
-    ArrayList<String> referenceImages = new ArrayList<>();
-    try (ProductSearchClient client = ProductSearchClient.create()) {
-        // Get the full path of the product.
-        String formattedParent =
-            ProductSearchClient.formatProductName(projectId, computeRegion, productId);
-        for (ReferenceImage image : client.listReferenceImages(formattedParent).iterateAll()) {
-            referenceImages.add(image.getUri());
-        }
-    }
+      ArrayList<String> referenceImages = new ArrayList<>();
+      ProductSearchClient client = ProductSearchClient.create();
+      // Get the full path of the product.
+      String formattedParent =
+          ProductSearchClient.formatProductName(projectId, computeRegion, productId);
+      for (ReferenceImage image : client.listReferenceImages(formattedParent).iterateAll()) {
+          referenceImages.add(image.getUri());
+      }
     return referenceImages;
   }
 
@@ -263,37 +260,18 @@ public class ProductSearchLibrary{
     return productIds;
   }
 
-  public static String getReferenceImage(
-    String productId, 
-    String referenceImageId)
-    throws IOException {
-
-    String imageUri = "";
-    try (ProductSearchClient client = ProductSearchClient.create()) {
-
-        // Get the full path of the reference image.
-        String formattedName =
-            ImageName.format(projectId, computeRegion, productId, referenceImageId);
-        // Get complete detail of the reference image.
-        ReferenceImage image = client.getReferenceImage(formattedName);
-        imageUri = image.getUri();
-    }
-
-    return imageUri;
-  }
-
   public static void deleteReferenceImage(
     String productId, 
     String referenceImageId)
     throws IOException {
-    try (ProductSearchClient client = ProductSearchClient.create()) {
+        
+      ProductSearchClient client = ProductSearchClient.create();
 
-        // Get the full path of the reference image.
-        String formattedName =
-            ImageName.format(projectId, computeRegion, productId, referenceImageId);
-        // Delete the reference image.
-        client.deleteReferenceImage(formattedName);
-    }
+      // Get the full path of the reference image.
+      String formattedName =
+                            ImageName.format(projectId, computeRegion, productId, referenceImageId);
+      // Delete the reference image.
+      client.deleteReferenceImage(formattedName);
   }
 
 
@@ -311,16 +289,14 @@ public class ProductSearchLibrary{
 
   public static void deleteProduct(String productId)
       throws IOException {
-      try (ProductSearchClient client = ProductSearchClient.create()) {
+      ProductSearchClient client = ProductSearchClient.create();
 
-         // Get the full path of the product.
-        String formattedName =
-            ProductSearchClient.formatProductName(projectId, computeRegion, productId);
+      // Get the full path of the product.
+      String formattedName =
+      ProductSearchClient.formatProductName(projectId, computeRegion, productId);
 
-        // Delete a product.
-        client.deleteProduct(formattedName);
-        System.out.println("Product deleted.");
-      }
+      // Delete a product.
+      client.deleteProduct(formattedName);
   }
 
   public static String getProductId(String productName){
