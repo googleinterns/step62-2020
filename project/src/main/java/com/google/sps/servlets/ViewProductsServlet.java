@@ -89,18 +89,22 @@ public class ViewProductsServlet extends HttpServlet {
 
     if (searchId != null) {
       SearchInfo searchInfo = ServletLibrary.retrieveSearchInfo(datastore, searchId);
-      // TODO: integrate once Phillips finishes product search.
-      // if (searchInfo.getGcsUrl() != null) {
-      //   List <String> productSearchIds = ProductSearchLibrary.productSearch(searchInfo.getGcsUrl(), searchInfo.productCategory);
-      //   List<ProductEntity> imageSearchProducts = new ArrayList<>();
-      //   productSearchIds.forEach(productId->imageSearchProducts.add(ServletLibrary.retrieveProductInfo(datastore, productId));
-      //   Set<ProductEntity> setProducts = new HashSet<>(products);
-      //   List<ProductEntity> newProducts = new ArrayList<>();
-      //   for (ProductEntity product : imageSearchProducts) {
-      //     if (setProducts.contains(product)) newProducts.add(product);
-      //   }
-      //   products = newProducts;
-      // }
+
+      if (searchInfo.getGcsUrl() != null) {
+        
+        String generalProductSetId = "cloudberryAllProducts";
+        List <String> productSearchIds = ProductSearchLibrary.getSimilarProductsGcs(generalProductSetId, 
+                                            searchInfo.getProductCategory(), searchInfo.getGcsUrl());
+        List<ProductEntity> imageSearchProducts = new ArrayList<>();
+        productSearchIds.forEach(productId->imageSearchProducts.add(ServletLibrary.retrieveProductInfo(datastore, productId)));
+
+        Set<ProductEntity> uniqueProducts = new HashSet<>(products);
+        List<ProductEntity> productsDisplayed = new ArrayList<>();
+        for (ProductEntity product : imageSearchProducts) {
+          if (uniqueProducts.contains(product)) productsDisplayed.add(product);
+        }
+        products = productsDisplayed;
+      }
 
       // Text query if it is specified, will take in this list and output a new
       // list that satisfies the query.

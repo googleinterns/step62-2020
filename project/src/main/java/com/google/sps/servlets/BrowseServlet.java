@@ -89,18 +89,21 @@ public class BrowseServlet extends HttpServlet {
 
     if (searchId != null) {
       SearchInfo searchInfo = ServletLibrary.retrieveSearchInfo(datastore, searchId);
-      // TODO: integrate once Phillips finishes product search.
-      // if (searchInfo.getGcsUrl() != null) {
-      //   List <String> productSearchIds = ProductSearchLibrary.productSearch(searchInfo.getGcsUrl(), searchInfo.productCategory);
-      //   List<ProductEntity> imageSearchProducts = new ArrayList<>();
-      //   productSearchIds.forEach(productId->imageSearchProducts.add(ServletLibrary.retrieveProductInfo(datastore, productId));
-      //   Set<ProductEntity> setProducts = new HashSet<>(products);
-      //   List<ProductEntity> newProducts = new ArrayList<>();
-      //   for (ProductEntity product : imageSearchProducts) {
-      //     if (setProducts.contains(product)) newProducts.add(product);
-      //   }
-      //   products = newProducts;
-      // }
+                                            
+      if (searchInfo.getGcsUrl() != null) {
+        String generalProductSetId = "cloudberryAllProducts";
+        List <String> productSearchIds = ProductSearchLibrary.getSimilarProductsGcs(generalProductSetId, 
+                                            searchInfo.getProductCategory(), searchInfo.getGcsUrl());
+        List<ProductEntity> imageSearchProducts = new ArrayList<>();
+        productSearchIds.forEach(productId->imageSearchProducts.add(ServletLibrary.retrieveProductInfo(datastore, productId)));
+
+        Set<ProductEntity> uniqueProducts = new HashSet<>(products);
+        List<ProductEntity> productsDisplayed = new ArrayList<>();
+        for (ProductEntity product : imageSearchProducts) {
+          if (uniqueProducts.contains(product)) productsDisplayed.add(product);
+        }
+        products = productsDisplayed;
+      }
 
       // Text query if it is specified, will take in this list and output a new
       // list that satisfies the query.
@@ -157,5 +160,18 @@ public class BrowseServlet extends HttpServlet {
     datastore.put(searchInfo);
   
     response.sendRedirect("/browse.html?searchId="+searchId);
+  }
+
+  private String changeGcsFormat(String gcsUri){
+    
+    String newGcsFormat = "gs://";
+    
+    String[] gcsArray = gcsUri.split("/");
+
+    newGcsFormat += gcsArray[2] + "/" + gcsArray[3];
+    // The last and the penultimate indexes of the split gcsUri give the strings required to reformat the 
+    // gcsuri to a valid parameter for the createReferenceImage method.
+
+    return newGcsFormat;
   }
 }

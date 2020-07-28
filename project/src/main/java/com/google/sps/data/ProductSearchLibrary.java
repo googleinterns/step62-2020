@@ -19,9 +19,9 @@ public class ProductSearchLibrary{
     public static ArrayList<ProductSetItem> listProductSets(String projectId,
      String computeRegion) throws IOException {
 
-      ArrayList<ProductSetItem> productSets = new ArrayList<>();
+        ArrayList<ProductSetItem> productSets = new ArrayList<>();
 
-      try (ProductSearchClient client = ProductSearchClient.create()) {
+        ProductSearchClient client = ProductSearchClient.create();
         // A resource that represents Google Cloud Platform location.
         String formattedParent = ProductSearchClient.formatLocationName(projectId, computeRegion);
         // List all the product sets available in the region.
@@ -34,9 +34,7 @@ public class ProductSearchLibrary{
                                             productSet.getDisplayName(), productSets);
             
             
-        }
-      } 
-
+        } 
     return productSets;
   }
 
@@ -46,7 +44,7 @@ public class ProductSearchLibrary{
     
     ProductSetItem newProductSet = new ProductSetItem(productSetId, productSetDisplayName);
 
-    try (ProductSearchClient client = ProductSearchClient.create()) {
+    ProductSearchClient client = ProductSearchClient.create();
       
       // A resource that represents Google Cloud Platform location.
       String formattedParent = ProductSearchClient.formatLocationName(projectId, computeRegion);
@@ -61,7 +59,6 @@ public class ProductSearchLibrary{
             .setProductSetId(productSetId)
             .build();
       ProductSet productSet = client.createProductSet(request);
-    }
     return newProductSet;
   }
 
@@ -85,7 +82,8 @@ public class ProductSearchLibrary{
   public static void addProductToProductSet(
     String productId, 
     String productSetId) throws IOException {
-    try (ProductSearchClient client = ProductSearchClient.create()) {
+        
+        ProductSearchClient client = ProductSearchClient.create();
 
         // Get the full path of the product set.
         String formattedName =
@@ -96,14 +94,14 @@ public class ProductSearchLibrary{
 
         // Add the product to the product set.
         client.addProductToProductSet(formattedName, productPath);
-    }
   }
 
   public static void createProduct(
     String productId,
     String productDisplayName,
     String productCategory) throws IOException {
-    try (ProductSearchClient client = ProductSearchClient.create()) {
+        
+        ProductSearchClient client = ProductSearchClient.create();
 
         // A resource that represents Google Cloud Platform location.
         String formattedParent = ProductSearchClient.formatLocationName(projectId, computeRegion);
@@ -116,7 +114,6 @@ public class ProductSearchLibrary{
                 .setProductCategory(productCategory)
                 .build();
         Product product = client.createProduct(formattedParent, myProduct, productId);
-    }
   }
 
   public static void deleteProductSet(
@@ -124,14 +121,14 @@ public class ProductSearchLibrary{
     String computeRegion, 
     String productSetId)
     throws IOException {
-    try (ProductSearchClient client = ProductSearchClient.create()) {
+        
+        ProductSearchClient client = ProductSearchClient.create();
 
         // Get the full path of the product set.
         String formattedName =
             ProductSearchClient.formatProductSetName(projectId, computeRegion, productSetId);
         // Delete the product set.
         client.deleteProductSet(formattedName);
-    }
   }
 
   public static void removeProductFromProductSet(
@@ -140,7 +137,8 @@ public class ProductSearchLibrary{
     String productId, 
     String productSetId)
     throws IOException {
-    try (ProductSearchClient client = ProductSearchClient.create()) {
+        
+        ProductSearchClient client = ProductSearchClient.create();
 
         // Get the full path of the product set.
         String formattedParent =
@@ -152,12 +150,12 @@ public class ProductSearchLibrary{
 
         // Remove the product from the product set.
         client.removeProductFromProductSet(formattedParent, formattedName);
-    } 
   }
 
   public static ArrayList<ProductItem> listProducts() throws IOException {
-    ArrayList<ProductItem> products = new ArrayList<>();
-    try (ProductSearchClient client = ProductSearchClient.create()) {
+        
+        ArrayList<ProductItem> products = new ArrayList<>();
+        ProductSearchClient client = ProductSearchClient.create();
 
         // A resource that represents Google Cloud Platform location.
         String formattedParent = ProductSearchClient.formatLocationName(projectId, computeRegion);
@@ -171,7 +169,6 @@ public class ProductSearchLibrary{
             createProductItemAndAddToList(product.getName().substring(product.getName().lastIndexOf('/') + 1), product.getDisplayName(),
                                         product.getProductCategory(), products);
         }
-    }
     return products;
   }
 
@@ -179,8 +176,9 @@ public class ProductSearchLibrary{
     String projectId, 
     String computeRegion, 
     String productSetId) throws IOException {
-    ArrayList<ProductItem> productItems = new ArrayList<>();
-    try (ProductSearchClient client = ProductSearchClient.create()) {
+        
+        ArrayList<ProductItem> productItems = new ArrayList<>();
+        ProductSearchClient client = ProductSearchClient.create();
 
         // Get the full path of the product set.
         String formattedName =
@@ -191,34 +189,31 @@ public class ProductSearchLibrary{
             createProductItemAndAddToList(product.getName().substring(product.getName().lastIndexOf('/') + 1), product.getDisplayName(),
                                         product.getProductCategory(), productItems);
         }
-    }
     return productItems;
   }
    
    public static ArrayList<String> listReferenceImagesOfProduct(
     String productId) throws IOException {
-    ArrayList<String> referenceImages = new ArrayList<>();
-    try (ProductSearchClient client = ProductSearchClient.create()) {
+        ArrayList<String> referenceImages = new ArrayList<>();
+        ProductSearchClient client = ProductSearchClient.create();
         // Get the full path of the product.
         String formattedParent =
             ProductSearchClient.formatProductName(projectId, computeRegion, productId);
         for (ReferenceImage image : client.listReferenceImages(formattedParent).iterateAll()) {
             referenceImages.add(image.getUri());
         }
-    }
     return referenceImages;
   }
 
   public static ArrayList<String> getSimilarProductsGcs(
     String productSetId,
     String productCategory,
-    String gcsUri,
-    String filter)
-    throws Exception {
+    String gcsUri)
+    throws IOException {
     
-    ArrayList<String> productIds = new ArrayList<>();
-    try (ImageAnnotatorClient queryImageClient = ImageAnnotatorClient.create()) {
-        
+        ArrayList<String> productIds = new ArrayList<>();
+    
+        ImageAnnotatorClient queryImageClient = ImageAnnotatorClient.create(); 
 
         // Get the full path of the product set.
         String productSetPath = ProductSetName.of(projectId, computeRegion, productSetId).toString();
@@ -234,8 +229,7 @@ public class ProductSearchLibrary{
                 .setProductSearchParams(
                     ProductSearchParams.newBuilder()
                         .setProductSet(productSetPath)
-                        .addProductCategories(productCategory)
-                        .setFilter(filter))
+                        .addProductCategories(productCategory))
                 .build();
 
         AnnotateImageRequest annotateImageRequest =
@@ -257,11 +251,26 @@ public class ProductSearchLibrary{
             
             
         for (ProductSearchResults.Result product : similarProducts) {
-            productIds.add(product.getProduct().getName());
+            
+            String id = getProductId(product.getProduct().getName());
+            productIds.add(id);
         }
-    }
     return productIds;
   }
+
+  public static void deleteReferenceImage(
+    String productId, 
+    String referenceImageId)
+    throws IOException {
+        ProductSearchClient client = ProductSearchClient.create();
+
+        // Get the full path of the reference image.
+        String formattedName =
+            ImageName.format(projectId, computeRegion, productId, referenceImageId);
+        // Delete the reference image.
+        client.deleteReferenceImage(formattedName);
+  }
+
 
   private static void createProductItemAndAddToList(String productId, String productDisplayName, String productCategory, ArrayList<ProductItem> productList){
       ProductItem product = new ProductItem(productId, productDisplayName, productCategory);
@@ -275,17 +284,23 @@ public class ProductSearchLibrary{
       productSetList.add(productSet);
     }
 
-    public static void deleteProduct(String productId)
-    throws IOException {
-        try (ProductSearchClient client = ProductSearchClient.create()) {
+  public static void deleteProduct(String productId)
+      throws IOException {
+        ProductSearchClient client = ProductSearchClient.create();
 
-            // Get the full path of the product.
-            String formattedName =
-                ProductSearchClient.formatProductName(projectId, computeRegion, productId);
+         // Get the full path of the product.
+        String formattedName =
+            ProductSearchClient.formatProductName(projectId, computeRegion, productId);
 
-            // Delete a product.
-            client.deleteProduct(formattedName);
-            System.out.println("Product deleted.");
-        }
-    }
+        // Delete a product.
+        client.deleteProduct(formattedName);
+  }
+
+  public static String getProductId(String productName){
+
+      String[] productNameSplit = productName.split("/");
+
+      return productNameSplit[productNameSplit.length - 1];
+
+  }
 }

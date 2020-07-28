@@ -122,12 +122,29 @@ public class CreateProductServlet extends HttpServlet {
       ServletLibrary.addProductToProductSet(datastore, productId, productSetId);
       ServletLibrary.addProductToProductCategory(datastore, productId, productCategory);
       ServletLibrary.addProductToBusiness(datastore, productId, businessId);
+      createAndAddToProductSearch(productId, productSetId, productDisplayName, productCategory, gcsUrls);
     } else {
       ProductEntity oldProduct = ServletLibrary.retrieveProductInfo(datastore, productId);
       ServletLibrary.updateProductLabels(datastore, productId, oldProduct.getLabels(), labels);
       ServletLibrary.updateProductSets(datastore, productId, oldProduct.getProductSetId(), productSetId);
       ServletLibrary.updateProductCategories(datastore, productId, oldProduct.getProductCategory(), productCategory);
-    }
+
+      // change a product's reference image only when the uploaded image is changed to avoid time consumption when editing only texts
+      List<String> oldProductGcsUrls = oldProduct.getGcsUrls();
+      for(String gcsUri : oldProductGcsUrls){
+        String objectName = gcsUri.substring(gcsUri.lastIndexOf('/') + 1);
+        
+        gcsUri = changeGcsFormat(gcsUri);
+        String newGcsUri = request.getParameter("mainGcsUrl");
+        String newObjectName = newGcsUri.substring(newGcsUri.lastIndexOf('/') + 1);
+        newGcsUri = changeGcsFormat(newGcsUri);
+
+        if(!gcsUri.equals(newGcsUri)){
+            ProductSearchLibrary.deleteReferenceImage(productId, objectName);
+            ProductSearchLibrary.createReferenceImage(productId, newObjectName, newGcsUri);
+        }
+      }
+    } 
 
     // Create a product set entity and store in datastore.
     Entity product = new Entity("Product", productId);
@@ -143,20 +160,6 @@ public class CreateProductServlet extends HttpServlet {
     product.setProperty("productDescription", productDescription);
     product.setProperty("cloudVisionAnnotation", new Text(cloudVisionAnnotation));
     datastore.put(product);
-
-    if(isNewProduct == true){
-        createAndAddToProductSearch(productId, productSetId, productDisplayName, productCategory, gcsUrls);
-    } else{
-        if(!gcsUrls.contains(request.getParameter("mainGcsUrl"))){
-            String gcsUri = request.getParameter("mainGcsUrl");
-            
-            String objectName = gcsUri.substring(gcsUri.lastIndexOf('/') + 1);
-        
-            gcsUri = changeGcsFormat(gcsUri);
-    
-            ProductSearchLibrary.createReferenceImage(productId, objectName, gcsUri);
-        }
-    }
     
 
     // Redirect to the appropriate page.
@@ -173,6 +176,8 @@ public class CreateProductServlet extends HttpServlet {
     ProductSearchLibrary.createProduct(productId, productDisplayName, productCategory);
 
     ProductSearchLibrary.addProductToProductSet(productId, productSetId);
+
+    ProductSearchLibrary.addProductToProductSet(productId, "cloudberryAllProducts");
 
     //Create reference image for a product to facilitate the searching for a product by image
     //image gcsuri used for reference image id
