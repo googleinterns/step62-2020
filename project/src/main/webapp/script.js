@@ -279,6 +279,7 @@ function retrieveProductInfo() {
     document.getElementById("productId").value = product.productId;
     document.getElementById("mainGcsUrl").value = product.gcsUrls[0];
     document.getElementById("mainImageUrl").value = product.imageUrls[0];
+    retrieveOptionalImages(product);
     document.getElementById("productDisplayName").value = product.productDisplayName;
     document.getElementById("productSetDisplayName").value = productSet.productSetDisplayName;
     document.getElementById("productCategory").value = product.productCategory;
@@ -304,12 +305,69 @@ function retrieveProductInfo() {
   });
 }
 
+// Retrieves and displays the optional images in a table.
+function retrieveOptionalImages(product) {
+  const imageUrls = product.imageUrls.slice(1);
+  const gcsUrls = product.gcsUrls.slice(1);
+  document.getElementById("optionalGcsUrls").value = JSON.stringify(gcsUrls);
+  document.getElementById("optionalImageUrls").value = JSON.stringify(imageUrls);
+  const tableBody = document.getElementById("imageTableBody");
+
+  // ImageUrls and GcsUrls are guaranteed to have the same length
+  var i;
+  for (i = 0; i < imageUrls.length; i++) {
+    const row = document.createElement("tr");
+    const imageCell = document.createElement("td");
+    const imageLink = document.createElement("a");
+    imageLink.href = imageUrls[i];
+    imageLink.target = "_blank"; // Open image in a new tab.
+    const image = document.createElement("img");
+    image.src = imageUrls[i];
+    image.style.maxHeight = "50px";
+    imageLink.appendChild(image);
+    imageCell.appendChild(imageLink);
+    const buttonCell = document.createElement("td");
+    const button = document.createElement("input");
+    button.type = "button"
+    button.setAttribute('onclick','deleteRow(this)');
+    button.value = "Delete";
+    buttonCell.appendChild(button);
+    const imageUrl = document.createElement("td");
+    imageUrl.innerText = imageUrls[i];
+    imageUrl.style.display = "none";
+    const gcsUrl = document.createElement("td");   
+    gcsUrl.innerText = gcsUrls[i];
+    gcsUrl.style.display = "none";
+    row.appendChild(imageCell);
+    row.appendChild(buttonCell);
+    row.appendChild(gcsUrl);
+    row.appendChild(imageUrl);
+    tableBody.appendChild(row);
+  }
+}
+
+function deleteRow(r) {
+  var i = r.parentNode.parentNode.rowIndex;
+  const table = document.getElementById("imageTable");
+  table.deleteRow(i);
+  // Loop through all the rows in the table and get the gcs and imageUrls.
+  var j;
+  const gcsUrls = [];
+  const imageUrls = [];
+  // First row ist just the headers of the columns, so we don't include that
+  for (j = 1; j < table.rows.length; j++) {
+    gcsUrls.push(table.rows[j].cells[2].innerText); // 2nd column corresponds to gcsUrl
+    imageUrls.push(table.rows[j].cells[3].innerText); // 3rd column corresponds to imageUrl
+  }
+  document.getElementById("optionalGcsUrls").value = JSON.stringify(gcsUrls);
+  document.getElementById("optionalImageUrls").value = JSON.stringify(imageUrls);
+}
+
 function refreshProductInfoPage() {
   getBlobstoreUrl(true); // True indicates we are editing the product.
   retrieveProductSetDisplayNames();
   retrieveProductInfo();
 }
-
 
 function loadProduct() {
 

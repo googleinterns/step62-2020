@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.sps.data.ProductSearchLibrary;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -93,20 +94,37 @@ public class CreateProductServlet extends HttpServlet {
       price = 0.0f;
     }
 
-    // Additional images are added here.
-    List<String> optionalGcsUrls = CloudStorageLibrary.getMultipleGcsFilePath(request, blobstore);
+    // Add gcs urls of reference images.
+    List<String> gcsUrls = new ArrayList<>();
+    gcsUrls.add(request.getParameter("mainGcsUrl"));
+    String jsonGcsUrls = request.getParameter("optionalGcsUrls");
+    if (jsonGcsUrls != null) {
+      List<String> keptGcsUrls = gson.fromJson(jsonGcsUrls, 
+        new TypeToken<ArrayList<String>>(){}.getType());
+      gcsUrls.addAll(keptGcsUrls);
+    }
+    List<String> optionalGcsUrls = new ArrayList<>();
+    try {
+      optionalGcsUrls = CloudStorageLibrary.getMultipleGcsFilePath(request, blobstore);
+    } catch (Exception e) {
+      // Do nothing here, since we already insantiated optionalGcsUrls
+    }
+    gcsUrls.addAll(optionalGcsUrls);
+    
+    // Add image urls of reference images.
+    List<String> imageUrls = new ArrayList<>();
+    imageUrls.add(request.getParameter("mainImageUrl"));
+    String jsonImageUrls = request.getParameter("optionalImageUrls");
+    if (jsonImageUrls != null) {
+      List<String> keptImageUrls = gson.fromJson(jsonImageUrls, 
+        new TypeToken<ArrayList<String>>(){}.getType());
+      imageUrls.addAll(keptImageUrls);
+    }
     List<String> optionalImageUrls = 
       optionalGcsUrls.stream()
                      .map(gcsUrl -> "/serveBlobstoreImage?blobKey=" + 
                                     blobstore.createGsBlobKey(gcsUrl).getKeyString())
                      .collect(Collectors.toList());
-    
-    List<String> gcsUrls = new ArrayList<>();
-    gcsUrls.add(request.getParameter("mainGcsUrl"));
-    gcsUrls.addAll(optionalGcsUrls);
-    
-    List<String> imageUrls = new ArrayList<>();
-    imageUrls.add(request.getParameter("mainImageUrl"));
     imageUrls.addAll(optionalImageUrls);
 
     // Get annotation and labels.
@@ -160,19 +178,19 @@ public class CreateProductServlet extends HttpServlet {
     product.setProperty("cloudVisionAnnotation", new Text(cloudVisionAnnotation));
     datastore.put(product);
 
-    // if(isNewProduct == true){
-    //     createAndAddToProductSearch(productId, productSetId, productDisplayName, productCategory, gcsUrls);
-    // } else{
-    //     if(!gcsUrls.contains(request.getParameter("mainGcsUrl"))){
-    //         String gcsUri = request.getParameter("mainGcsUrl");
+    if(isNewProduct == true){
+        createAndAddToProductSearch(productId, productSetId, productDisplayName, productCategory, gcsUrls);
+    } else{
+        if(!gcsUrls.contains(request.getParameter("mainGcsUrl"))){
+            String gcsUri = request.getParameter("mainGcsUrl");
             
-    //         String objectName = gcsUri.substring(gcsUri.lastIndexOf('/') + 1);
+            String objectName = gcsUri.substring(gcsUri.lastIndexOf('/') + 1);
         
-    //         gcsUri = changeGcsFormat(gcsUri);
+            gcsUri = changeGcsFormat(gcsUri);
     
-    //         ProductSearchLibrary.createReferenceImage(productId, objectName, gcsUri);
-    //     }
-    // }
+            ProductSearchLibrary.createReferenceImage(productId, objectName, gcsUri);
+        }
+    }
     
 
     // Redirect to the appropriate page.
