@@ -68,7 +68,6 @@ function getBlobstoreUrl(isEditing) {
 
 // Fetch the cloud vision image annotation to auto fill the create product form
 // with labels.
-// TODO: add a loading animation when retrieving the json.
 function retrieveProductFormInfo() {
   fetch("/cloudVision").then(response => response.json()).then(productInfo => {
     // Set up input image display box.
@@ -135,7 +134,6 @@ function truncateString(str, length) {
   }
 };
 
-// TODO: add text and image search as an option here.
 // Display cards containing the products.
 function retrieveProducts() {
   const searchResults = document.getElementById("searchResults");
@@ -479,17 +477,17 @@ function currentDiv(n) {
 }
 function showDivs(n) {
   var i;
-  var x = document.getElementsByClassName("mySlides");
+  var slides = document.getElementsByClassName("mySlides");
   var dots = document.getElementsByClassName("demo");
-  if (n > x.length) {slideIndex = 1}    
-  if (n < 1) {slideIndex = x.length}
-  for (i = 0; i < x.length; i++) {
-    x[i].style.display = "none";  
+  if (n > slides.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = slides.length}
+  for (i = 0; i < slides.length; i++) {
+    slides[i].style.display = "none";  
   }
   for (i = 0; i < dots.length; i++) {
     dots[i].className = dots[i].className.replace(" w3-red", "");
   }
-  x[slideIndex-1].style.display = "block";  
+  slides[slideIndex-1].style.display = "block";  
   dots[slideIndex-1].className += " w3-red";
 }
 
