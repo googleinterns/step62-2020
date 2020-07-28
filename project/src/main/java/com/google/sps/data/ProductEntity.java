@@ -72,4 +72,8 @@ public class ProductEntity {
   public List<String> getLabels() {
     return labels;
   }
+
+  public List<String> getGcsUrls(){
+      return gcsUrls;
+  }
 }

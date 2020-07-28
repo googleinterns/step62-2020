@@ -212,13 +212,13 @@ public class ProductSearchLibrary{
   public static ArrayList<String> getSimilarProductsGcs(
     String productSetId,
     String productCategory,
-    String gcsUri,
-    String filter)
+    String gcsUri)
     throws IOException {
     
     ArrayList<String> productIds = new ArrayList<>();
-    try (ImageAnnotatorClient queryImageClient = ImageAnnotatorClient.create()) {
-        
+    
+    
+        ImageAnnotatorClient queryImageClient = ImageAnnotatorClient.create(); 
 
         // Get the full path of the product set.
         String productSetPath = ProductSetName.of(projectId, computeRegion, productSetId).toString();
@@ -234,8 +234,7 @@ public class ProductSearchLibrary{
                 .setProductSearchParams(
                     ProductSearchParams.newBuilder()
                         .setProductSet(productSetPath)
-                        .addProductCategories(productCategory)
-                        .setFilter(filter))
+                        .addProductCategories(productCategory))
                 .build();
 
         AnnotateImageRequest annotateImageRequest =
@@ -261,9 +260,42 @@ public class ProductSearchLibrary{
             String id = getProductId(product.getProduct().getName());
             productIds.add(id);
         }
-    }
     return productIds;
   }
+
+  public static String getReferenceImage(
+    String productId, 
+    String referenceImageId)
+    throws IOException {
+
+    String imageUri = "";
+    try (ProductSearchClient client = ProductSearchClient.create()) {
+
+        // Get the full path of the reference image.
+        String formattedName =
+            ImageName.format(projectId, computeRegion, productId, referenceImageId);
+        // Get complete detail of the reference image.
+        ReferenceImage image = client.getReferenceImage(formattedName);
+        imageUri = image.getUri();
+    }
+
+    return imageUri;
+  }
+
+  public static void deleteReferenceImage(
+    String productId, 
+    String referenceImageId)
+    throws IOException {
+    try (ProductSearchClient client = ProductSearchClient.create()) {
+
+        // Get the full path of the reference image.
+        String formattedName =
+            ImageName.format(projectId, computeRegion, productId, referenceImageId);
+        // Delete the reference image.
+        client.deleteReferenceImage(formattedName);
+    }
+  }
+
 
   private static void createProductItemAndAddToList(String productId, String productDisplayName, String productCategory, ArrayList<ProductItem> productList){
       ProductItem product = new ProductItem(productId, productDisplayName, productCategory);
@@ -277,27 +309,27 @@ public class ProductSearchLibrary{
       productSetList.add(productSet);
     }
 
-    public static void deleteProduct(String productId)
-    throws IOException {
-        try (ProductSearchClient client = ProductSearchClient.create()) {
+  public static void deleteProduct(String productId)
+      throws IOException {
+      try (ProductSearchClient client = ProductSearchClient.create()) {
 
-            // Get the full path of the product.
-            String formattedName =
-                ProductSearchClient.formatProductName(projectId, computeRegion, productId);
+         // Get the full path of the product.
+        String formattedName =
+            ProductSearchClient.formatProductName(projectId, computeRegion, productId);
 
-            // Delete a product.
-            client.deleteProduct(formattedName);
-            System.out.println("Product deleted.");
-        }
-    }
+        // Delete a product.
+        client.deleteProduct(formattedName);
+        System.out.println("Product deleted.");
+      }
+  }
 
-    public static String getProductId(String productName){
+  public static String getProductId(String productName){
 
-        String[] productNameSplit = productName.split("/");
+      String[] productNameSplit = productName.split("/");
 
-        int productNameArrayLength = productNameSplit.length;
+      int productNameArrayLength = productNameSplit.length;
 
-        return productNameSplit[productNameArrayLength - 1];
+      return productNameSplit[productNameArrayLength - 1];
 
-    }
+  }
 }
