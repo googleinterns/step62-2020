@@ -398,7 +398,7 @@ function deleteRow(r) {
   var j;
   const gcsUrls = [];
   const imageUrls = [];
-  // First row ist just the headers of the columns, so we don't include that
+  // First row is just the headers of the columns, so we don't include that
   for (j = 1; j < table.rows.length; j++) {
     gcsUrls.push(table.rows[j].cells[2].innerText); // 2nd column corresponds to gcsUrl
     imageUrls.push(table.rows[j].cells[3].innerText); // 3rd column corresponds to imageUrl

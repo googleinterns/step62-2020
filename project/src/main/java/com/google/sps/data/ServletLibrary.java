@@ -688,36 +688,22 @@ public class ServletLibrary {
     if (entity == null) return null;
 
     // Extracting properties of the product entity.
-    Object _productDisplayName = entity.getProperty("productDisplayName");
-    Object _productSetId = entity.getProperty("productSetId");
-    Object _productCategory = entity.getProperty("productCategory");
-    Object _businessId = entity.getProperty("businessId");
+    String businessId = getPropertyStringNotNull(entity, "businessId");
+    String productDisplayName = getPropertyStringNotNull(entity, "productDisplayName");
+    String productSetId = getPropertyStringNotNull(entity, "productSetId");
+    String productCategory = getPropertyStringNotNull(entity, "productCategory");
+    String productDescription = getPropertyString(entity, "productDescription");
+
     Object _price = entity.getProperty("price");
-    Object _productDescription = entity.getProperty("productDescription");
     Object _cloudVisionAnnotation = entity.getProperty("cloudVisionAnnotation");
-    String businessId;
-    String productDisplayName;
-    String productSetId;
-    String productCategory;
-    float price; 
-    String productDescription;
     String cloudVisionAnnotation;
+    float price; 
 
     // Verifying the types of the properties are valid. 
-    if ((_businessId instanceof String) &&
-        (_productDisplayName instanceof String) &&
-        (_productSetId instanceof String) &&
-        (_productCategory instanceof String) &&
-        (_price instanceof Double) &&
-        (_productDescription instanceof String) &&
+    if ((_price instanceof Double) &&
         (_cloudVisionAnnotation instanceof Text)) {
-      businessId = _businessId.toString();
-      productDisplayName = _productDisplayName.toString();
-      productSetId = _productSetId.toString();
-      productCategory = _productCategory.toString();
       Double doublePrice = (Double) _price;
       price = doublePrice.floatValue();
-      productDescription = _productDescription.toString();
       Text textVisionAnnotation = (Text) _cloudVisionAnnotation;
       if (textVisionAnnotation == null) {
         cloudVisionAnnotation = null;
@@ -751,6 +737,30 @@ public class ServletLibrary {
                              cloudVisionAnnotation);
   }
 
+  private static String getPropertyString(Entity entity, String propertyName) throws IllegalArgumentException {
+    Object property = entity.getProperty(propertyName);
+    if (property == null) {
+      return null;
+    } else if (property instanceof String) {
+      return property.toString();
+    } else {
+      throw new IllegalArgumentException(propertyName + " property is of an incorrect type.");
+    }
+  }
+
+  private static String getPropertyStringNotNull(Entity entity, 
+                                                 String propertyName) 
+                                                 throws IllegalArgumentException {
+    Object property = entity.getProperty(propertyName);
+    if (property == null) {
+      throw new IllegalArgumentException(propertyName + " property is null.");
+    } else if (property instanceof String) {
+      return property.toString();
+    } else {
+      throw new IllegalArgumentException(propertyName + " property is of an incorrect type.");
+    }
+  }
+
   public static SearchInfo retrieveSearchInfo(DatastoreService datastore, String searchId) {
     if (datastore == null || searchId == null) {
       System.err.println("RetrieveSearchInfo: At least one of the inputs was null!");
@@ -764,61 +774,11 @@ public class ServletLibrary {
     // Return null if the object doesn't exist in the database.
     if (entity == null) return null;
 
-    Object _textSearch = entity.getProperty("textSearch");
-    Object _gcsUrl = entity.getProperty("gcsUrl");
-    Object _imageUrl = entity.getProperty("imageUrl");
-    Object _userId = entity.getProperty("userId");
-    Object _productCategory = entity.getProperty("productCategory");
-    String textSearch;
-    String gcsUrl;
-    String imageUrl;
-    String userId;
-    String productCategory;
-
-    if (_gcsUrl == null) {
-      gcsUrl = null;
-    } else if (_gcsUrl instanceof String) {
-      gcsUrl = _gcsUrl.toString();
-    } else {
-      System.err.println("GcsUrl property is of an incorrect type.");
-      return null;
-    }
-
-    if (_imageUrl == null) {
-      imageUrl = null;
-    } else if (_imageUrl instanceof String) {
-      imageUrl = _imageUrl.toString();
-    } else {
-      System.err.println("ImageUrl property is of an incorrect type.");
-      return null;
-    }
-
-    if (_textSearch == null) {
-      textSearch = null;
-    } else if (_textSearch instanceof String) {
-      textSearch = _textSearch.toString();
-    } else {
-      System.err.println("TextSearch property is of an incorrect type.");
-      return null;
-    }
-
-    if (_userId == null) {
-      userId = null;
-    } else if (_userId instanceof String) {
-      userId = _userId.toString();
-    } else {
-      System.err.println("UserId property is of an incorrect type.");
-      return null;
-    }
-
-    if (_productCategory == null) {
-      productCategory = null;
-    } else if (_productCategory instanceof String) {
-      productCategory = _productCategory.toString();
-    } else {
-      System.err.println("ProductCategory property is of an incorrect type.");
-      return null;
-    }
+    String textSearch = getPropertyString(entity, "textSearch");
+    String gcsUrl = getPropertyString(entity, "gcsUrl");
+    String imageUrl = getPropertyString(entity, "imageUrl");
+    String userId = getPropertyString(entity, "userId");
+    String productCategory = getPropertyString(entity, "productCategory");
     
     return new SearchInfo(searchId, textSearch, gcsUrl, imageUrl, userId, 
                           productCategory);
@@ -832,14 +792,7 @@ public class ServletLibrary {
 
     if (entity == null) return null;
 
-    Object _productLabel = entity.getProperty("label");
-    String productLabel;
-    if (_productLabel instanceof String) {
-      productLabel = _productLabel.toString();
-    } else {
-      System.err.println("ProductLabel property is of an incorrect type.");
-      return null;
-    }
+    String productLabel = getPropertyStringNotNull(entity, "label");
 
     @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
       List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
@@ -881,60 +834,12 @@ public class ServletLibrary {
     for (Entity entity : pq.asIterable()) {
       if (count > numberToDisplay) break;
       count++;
-      Object _searchId = entity.getProperty("searchId");
-      Object _textSearch = entity.getProperty("textSearch");
-      Object _gcsUrl = entity.getProperty("gcsUrl");
-      Object _imageUrl = entity.getProperty("imageUrl");
-      Object _userId = entity.getProperty("userId");
-      Object _productCategory = entity.getProperty("productCategory");
-      String searchId;
-      String textSearch;
-      String gcsUrl;
-      String imageUrl;
-      String productCategory;
 
-      if (_searchId instanceof String) {
-        searchId = _searchId.toString();
-      } else {
-        System.err.println("searchId property is of an incorrect type.");
-        return null;
-      }
-
-      if (_gcsUrl == null) {
-        gcsUrl = null;
-      } else if (_gcsUrl instanceof String) {
-        gcsUrl = _gcsUrl.toString();
-      } else {
-        System.err.println("GcsUrl property is of an incorrect type.");
-        return null;
-      }
-
-      if (_imageUrl == null) {
-        imageUrl = null;
-      } else if (_imageUrl instanceof String) {
-        imageUrl = _imageUrl.toString();
-      } else {
-        System.err.println("ImageUrl property is of an incorrect type.");
-        return null;
-      }
-
-      if (_textSearch == null) {
-        textSearch = null;
-      } else if (_textSearch instanceof String) {
-        textSearch = _textSearch.toString();
-      } else {
-        System.err.println("TextSearch property is of an incorrect type.");
-        return null;
-      }
-
-      if (_productCategory == null) {
-        productCategory = null;
-      } else if (_productCategory instanceof String) {
-        productCategory = _productCategory.toString();
-      } else {
-        System.err.println("ProductCategory property is of an incorrect type.");
-        return null;
-      }
+      String searchId = getPropertyStringNotNull(entity, "searchId");
+      String textSearch = getPropertyString(entity, "textSearch");
+      String gcsUrl = getPropertyString(entity, "gcsUrl");
+      String imageUrl = getPropertyString(entity, "imageUrl");
+      String productCategory = getPropertyString(entity, "productCategory");
       
       results.add(new SearchInfo(searchId, textSearch, gcsUrl, imageUrl, userId, 
                                  productCategory));
@@ -958,27 +863,10 @@ public class ServletLibrary {
         return null;
       }
 
-      Object _street = entity.getProperty("street");
-      Object _city = entity.getProperty("city");
-      Object _state = entity.getProperty("state");
-      Object _zipCode = entity.getProperty("zipCode");
-      String street;
-      String city;
-      String state;
-      String zipCode;
-
-      if ((_street instanceof String) &&
-          (_city instanceof String) &&
-          (_state instanceof String) &&
-          (_zipCode instanceof String)) {
-        street = _street.toString();
-        city = _city.toString();
-        state = _state.toString();
-        zipCode = _zipCode.toString();
-      } else {
-        System.err.println("convertToProductWithAddress: Entity properties are of an incorrect type.");
-        return null;
-      }
+      String street = getPropertyStringNotNull(entity, "street");
+      String city = getPropertyStringNotNull(entity, "city");
+      String state = getPropertyStringNotNull(entity, "state");
+      String zipCode = getPropertyStringNotNull(entity, "zipCode");
 
       results.add(new ProductWithAddress(product, 
                   new Address(street, city, state, zipCode)));

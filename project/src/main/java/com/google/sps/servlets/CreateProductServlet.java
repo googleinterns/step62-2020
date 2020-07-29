@@ -107,7 +107,7 @@ public class CreateProductServlet extends HttpServlet {
     try {
       optionalGcsUrls = CloudStorageLibrary.getMultipleGcsFilePath(request, blobstore);
     } catch (Exception e) {
-      // Do nothing here, since we already insantiated optionalGcsUrls
+      // Do nothing here, since we already instantiated optionalGcsUrls
     }
     gcsUrls.addAll(optionalGcsUrls);
     
