@@ -45,21 +45,10 @@ public class ServletLibrary {
     if (entity == null) return null;
 
     // Retrieving properties from entity, and checking they are valid types.
-    Object _productSetId = entity.getProperty("productSetId");
-    Object _productSetDisplayName = entity.getProperty("productSetDisplayName");
-    String productSetId;
-    String productSetDisplayName;
-    if ((_productSetId instanceof String) &&
-        (_productSetDisplayName instanceof String)) {
-      productSetId = _productSetId.toString();
-      productSetDisplayName = _productSetDisplayName.toString();
-    } else {
-      System.err.println("Entity properties are of an incorrect type.");
-      return null;
-    }
-    @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
-      List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
-    if (productIds == null) productIds = new ArrayList<String>();
+    String productSetId = getPropertyStringNotNull(entity, "productSetId");
+    String productSetDisplayName = getPropertyStringNotNull(entity, "productSetDisplayName");
+    List<String> productIds = getPropertyStringList(entity, "productIds");
+
     return new ProductSetEntity(productSetId, productSetDisplayName, productIds);
   } 
 
@@ -82,44 +71,23 @@ public class ServletLibrary {
     if (entity == null) return null;
 
     // Retrieve entity properties, and check if they are valid types.
-    Object _nickname = entity.getProperty("nickname");
-    Object _userEmail = entity.getProperty("userEmail");
+    String nickname = getPropertyStringNotNull(entity, "nickname");
+    String userEmail = getPropertyStringNotNull(entity, "userEmail");
+    String street = getPropertyStringNotNull(entity, "street");
+    String city = getPropertyStringNotNull(entity, "city");
+    String state = getPropertyStringNotNull(entity, "state");
+    String zipCode = getPropertyStringNotNull(entity, "zipCode");
     Object _isUserBusinessOwner = entity.getProperty("isUserBusinessOwner");
-    Object _street = entity.getProperty("street");
-    Object _city = entity.getProperty("city");
-    Object _state = entity.getProperty("state");
-    Object _zipCode = entity.getProperty("zipCode");
-    String nickname;
-    String userEmail;
     boolean isUserBusinessOwner;
-    String street;
-    String city;
-    String state;
-    String zipCode;
-
-    if ((_nickname instanceof String) && 
-        (_userEmail instanceof String) && 
-        (_isUserBusinessOwner instanceof Boolean) &&
-        (_street instanceof String) &&
-        (_city instanceof String) &&
-        (_state instanceof String) &&
-        (_zipCode instanceof String)) {
-      nickname = _nickname.toString();
-      userEmail = _userEmail.toString();
+    if (_isUserBusinessOwner instanceof Boolean) {
       isUserBusinessOwner = (boolean) _isUserBusinessOwner;
-      street = _street.toString();
-      city = _city.toString();
-      state = _state.toString();
-      zipCode = _zipCode.toString();
     } else {
       System.err.println("Entity properties are of an incorrect type.");
       return null;
     }
 
     String logoutUrl = userService.createLogoutURL("/index.html");
-    @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
-      List<String> searchHistory = (ArrayList<String>) entity.getProperty("searchHistory"); 
-    if (searchHistory == null) searchHistory = new ArrayList<String>();
+    List<String> searchHistory = getPropertyStringList(entity, "searchHistory");
 
     return new Account(userId,
                        logoutUrl,
@@ -144,21 +112,9 @@ public class ServletLibrary {
     List<ProductSetEntity> results = new ArrayList<>();
     for (Entity entity : pq.asIterable()) {
       // Retrieving properties from entity, and checking they are valid types.
-      Object _productSetId = entity.getProperty("productSetId");
-      Object _productSetDisplayName = entity.getProperty("productSetDisplayName");
-      String productSetId;
-      String productSetDisplayName;
-      if ((_productSetId instanceof String) &&
-          (_productSetDisplayName instanceof String)) {
-        productSetId = _productSetId.toString();
-        productSetDisplayName = _productSetDisplayName.toString();
-      } else {
-        System.err.println("Entity properties are of an incorrect type.");
-        return null;
-      }
-      @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
-        List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
-      if (productIds == null) productIds = new ArrayList<String>();
+      String productSetId = getPropertyStringNotNull(entity, "productSetId");
+      String productSetDisplayName = getPropertyStringNotNull(entity, "productSetDisplayName");
+      List<String> productIds = getPropertyStringList(entity, "productIds");
 
       results.add(new ProductSetEntity(productSetId, productSetDisplayName, productIds));
     }
@@ -183,37 +139,20 @@ public class ServletLibrary {
     if (entity == null) return null;
 
     // Formatting entity into the business class. Checking if the types are valid.
-    Object _businessDisplayName = entity.getProperty("businessDisplayName");
-    Object _street = entity.getProperty("street");
-    Object _city = entity.getProperty("city");
-    Object _state = entity.getProperty("state");
-    Object _zipCode = entity.getProperty("zipCode");
+    String businessDisplayName = getPropertyStringNotNull(entity, "businessDisplayName");
+    String street = getPropertyStringNotNull(entity, "street");
+    String city = getPropertyStringNotNull(entity, "city");
+    String state = getPropertyStringNotNull(entity, "state");
+    String zipCode = getPropertyStringNotNull(entity, "zipCode");
     Object _annotationObject = entity.getProperty("tempVisionAnnotation");
-    String businessDisplayName;
-    String street;
-    String city;
-    String state;
-    String zipCode;
     Text annotationObject;
-    if ((_businessDisplayName instanceof String) &&
-        (_street instanceof String) &&
-        (_city instanceof String) &&
-        (_state instanceof String) &&
-        (_zipCode instanceof String) &&
-        (_annotationObject instanceof Text)) {
-      businessDisplayName = _businessDisplayName.toString();
-      street = _street.toString();
-      city = _city.toString();
-      state = _state.toString();
-      zipCode = _zipCode.toString();
+    if (_annotationObject instanceof Text) {
       annotationObject = (Text) _annotationObject;
     } else {
       System.err.println("Entity properties are of an incorrect type.");
       return null;
     }
-    @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
-      List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
-    if (productIds == null) productIds = new ArrayList<String>();
+    List<String> productIds = getPropertyStringList(entity, "productIds");
 
     String tempVisionAnnotation = null;
     if (annotationObject != null) {
@@ -240,41 +179,21 @@ public class ServletLibrary {
     List<Business> results = new ArrayList<>();
     for (Entity entity : pq.asIterable()) {
       // Formatting entity into the business class. Checking if the types are valid.
-      Object _businessId = entity.getProperty("businessId");
-      Object _businessDisplayName = entity.getProperty("businessDisplayName");
-      Object _street = entity.getProperty("street");
-      Object _city = entity.getProperty("city");
-      Object _state = entity.getProperty("state");
-      Object _zipCode = entity.getProperty("zipCode");
+      String businessId = getPropertyStringNotNull(entity, "businessId");
+      String businessDisplayName = getPropertyStringNotNull(entity, "businessDisplayName");
+      String street = getPropertyStringNotNull(entity, "street");
+      String city = getPropertyStringNotNull(entity, "city");
+      String state = getPropertyStringNotNull(entity, "state");
+      String zipCode = getPropertyStringNotNull(entity, "zipCode");
       Object _annotationObject = entity.getProperty("tempVisionAnnotation");
-      String businessId;
-      String businessDisplayName;
-      String street;
-      String city;
-      String state;
-      String zipCode;
       Text annotationObject;
-      if ((_businessId instanceof String) &&
-          (_businessDisplayName instanceof String) &&
-          (_street instanceof String) &&
-          (_city instanceof String) &&
-          (_state instanceof String) &&
-          (_zipCode instanceof String) &&
-          (_annotationObject instanceof Text)) {
-        businessId = _businessId.toString();
-        businessDisplayName = _businessDisplayName.toString();
-        street = _street.toString();
-        city = _city.toString();
-        state = _state.toString();
-        zipCode = _zipCode.toString();
+      if (_annotationObject instanceof Text) {
         annotationObject = (Text) _annotationObject;
       } else {
         System.err.println("Entity properties are of an incorrect type.");
         return null;
       }
-      @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
-        List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
-      if (productIds == null) productIds = new ArrayList<String>();
+      List<String> productIds = getPropertyStringList(entity, "productIds");
 
       String tempVisionAnnotation = null;
       if (annotationObject != null) {
@@ -316,9 +235,7 @@ public class ServletLibrary {
         productLabel.setProperty("productIds", productIds);
         datastore.put(productLabel);
       } else {
-        @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
-          List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
-        if (productIds == null) productIds = new ArrayList<String>();
+        List<String> productIds = getPropertyStringList(entity, "productIds");
         productIds.add(productId);
         entity.setProperty("productIds", productIds);
         datastore.put(entity);
@@ -340,9 +257,7 @@ public class ServletLibrary {
       Entity entity = pq.asSingleEntity();
       // If the label exists, we remove the product from that label.
       if (entity != null) {
-        @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
-          List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
-        if (productIds == null) productIds = new ArrayList<String>();
+        List<String> productIds = getPropertyStringList(entity, "productIds");
         productIds.remove(productId);
         entity.setProperty("productIds", productIds);
         datastore.put(entity);
@@ -389,9 +304,7 @@ public class ServletLibrary {
     if (entity == null) {
       System.err.println("Product Set must be created first before adding a product!");
     } else {
-      @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
-        List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
-      if (productIds == null) productIds = new ArrayList<String>();
+      List<String> productIds = getPropertyStringList(entity, "productIds");
       productIds.add(productId);
       entity.setProperty("productIds", productIds);
       datastore.put(entity);
@@ -409,9 +322,7 @@ public class ServletLibrary {
     PreparedQuery pq = datastore.prepare(query);
     Entity entity = pq.asSingleEntity();
     if (entity != null) {
-      @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
-        List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
-      if (productIds == null) productIds = new ArrayList<String>();
+      List<String> productIds = getPropertyStringList(entity, "productIds");
       productIds.remove(productId);
       entity.setProperty("productIds", productIds);
       datastore.put(entity);
@@ -451,9 +362,7 @@ public class ServletLibrary {
       entity.setProperty("productIds", productIds);
       datastore.put(entity);
     } else {
-      @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
-        List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
-      if (productIds == null) productIds = new ArrayList<String>();
+      List<String> productIds = getPropertyStringList(entity, "productIds");
       productIds.add(productId);
       entity.setProperty("productIds", productIds);
       datastore.put(entity);
@@ -474,9 +383,7 @@ public class ServletLibrary {
     Entity entity = pq.asSingleEntity();
     // If the category exists, remove the product.
     if (entity != null) {
-      @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
-        List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
-      if (productIds == null) productIds = new ArrayList<String>();
+      List<String> productIds = getPropertyStringList(entity, "productIds");
       productIds.remove(productId);
       entity.setProperty("productIds", productIds);
       datastore.put(entity);
@@ -510,9 +417,7 @@ public class ServletLibrary {
     if (entity == null) {
       System.err.println("Business must be created first before adding a product!");
     } else {
-      @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
-        List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
-      if (productIds == null) productIds = new ArrayList<String>();
+      List<String> productIds = getPropertyStringList(entity, "productIds");
       productIds.add(productId);
       entity.setProperty("productIds", productIds);
       datastore.put(entity);
@@ -530,9 +435,7 @@ public class ServletLibrary {
     PreparedQuery pq = datastore.prepare(query);
     Entity entity = pq.asSingleEntity();
     if (entity != null) {
-      @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
-        List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
-      if (productIds == null) productIds = new ArrayList<String>();
+      List<String> productIds = getPropertyStringList(entity, "productIds");
       productIds.remove(productId);
       entity.setProperty("productIds", productIds);
       datastore.put(entity);
@@ -605,37 +508,22 @@ public class ServletLibrary {
     for (Entity entity : pq.asIterable()) {
 
       // Extract and verify types of the different properties of a product.
-      Object _productId = entity.getProperty("productId");
-      Object _productDisplayName = entity.getProperty("productDisplayName");
-      Object _productSetId = entity.getProperty("productSetId");
-      Object _productCategory = entity.getProperty("productCategory");
-      Object _businessId = entity.getProperty("businessId");
+      String productId = getPropertyStringNotNull(entity, "productId");
+      String productDisplayName = getPropertyStringNotNull(entity, "productDisplayName");
+      productSetId = getPropertyStringNotNull(entity, "productSetId");
+      productCategory = getPropertyStringNotNull(entity, "productCategory");
+      businessId = getPropertyStringNotNull(entity, "businessId");
+      String productDescription = getPropertyString(entity, "productDescription");
+      
       Object _price = entity.getProperty("price");
-      Object _productDescription = entity.getProperty("productDescription");
       Object _cloudVisionAnnotation = entity.getProperty("cloudVisionAnnotation");
-      String productId;
-      String productDisplayName;
       float price; 
-      String productDescription;
       String cloudVisionAnnotation;
-
       // Verifying types of the values in a product entity.
-      if ((_productId instanceof String) &&
-          (_productDisplayName instanceof String) &&
-          (_productSetId instanceof String) &&
-          (_productCategory instanceof String) &&
-          (_businessId instanceof String) &&
-          (_price instanceof Double) &&
-          (_productDescription instanceof String) &&
+      if ((_price instanceof Double) &&
           (_cloudVisionAnnotation instanceof Text)) {
-        productId = _productId.toString();
-        productDisplayName = _productDisplayName.toString();
-        productSetId = _productSetId.toString();
-        productCategory = _productCategory.toString();
-        businessId = _businessId.toString();
         Double doublePrice = (Double) _price;
         price = doublePrice.floatValue();
-        productDescription = _productDescription.toString();
         Text textVisionAnnotation = (Text) _cloudVisionAnnotation;
         if (textVisionAnnotation == null) {
           cloudVisionAnnotation = null;
@@ -646,15 +534,10 @@ public class ServletLibrary {
         System.err.println("Entity properties are of an incorrect type.");
         return null;
       }
-      @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
-        List<String> gcsUrls = (ArrayList<String>) entity.getProperty("gcsUrls"); 
-      if (gcsUrls == null) gcsUrls = new ArrayList<String>();
-      @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
-        List<String> imageUrls = (ArrayList<String>) entity.getProperty("imageUrls"); 
-      if (imageUrls == null) imageUrls = new ArrayList<String>();
-      @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
-        List<String> labels = (ArrayList<String>) entity.getProperty("labels"); 
-      if (labels == null) labels = new ArrayList<>();
+
+      List<String> gcsUrls = getPropertyStringList(entity, "gcsUrls");
+      List<String> imageUrls = getPropertyStringList(entity, "imageUrls");
+      List<String> labels = getPropertyStringList(entity, "labels");
 
       // Add the product to the products list.
       products.add(new ProductEntity(productId,
@@ -714,15 +597,9 @@ public class ServletLibrary {
       System.err.println("Entity properties are of an incorrect type.");
       return null;
     }
-    @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
-        List<String> gcsUrls = (ArrayList<String>) entity.getProperty("gcsUrls"); 
-      if (gcsUrls == null) gcsUrls = new ArrayList<String>();
-    @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
-      List<String> imageUrls = (ArrayList<String>) entity.getProperty("imageUrls"); 
-    if (imageUrls == null) imageUrls = new ArrayList<String>();
-    @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
-      List<String> labels = (ArrayList<String>) entity.getProperty("labels"); 
-    if (labels == null) labels = new ArrayList<>();
+    List<String> gcsUrls = getPropertyStringList(entity, "gcsUrls");
+    List<String> imageUrls = getPropertyStringList(entity, "imageUrls");
+    List<String> labels = getPropertyStringList(entity, "labels");
 
     return new ProductEntity(productId,
                              productDisplayName,
@@ -761,6 +638,14 @@ public class ServletLibrary {
     }
   }
 
+  private static List<String> getPropertyStringList(Entity entity, String propertyName) {
+    @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
+    List<String> result = (ArrayList<String>) entity.getProperty(propertyName); 
+
+    if (result == null) result = new ArrayList<String>();
+    return result;
+  }
+
   public static SearchInfo retrieveSearchInfo(DatastoreService datastore, String searchId) {
     if (datastore == null || searchId == null) {
       System.err.println("RetrieveSearchInfo: At least one of the inputs was null!");
@@ -793,10 +678,7 @@ public class ServletLibrary {
     if (entity == null) return null;
 
     String productLabel = getPropertyStringNotNull(entity, "label");
-
-    @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
-      List<String> productIds = (ArrayList<String>) entity.getProperty("productIds"); 
-    if (productIds == null) productIds = new ArrayList<String>();
+    List<String> productIds = getPropertyStringList(entity, "productIds");
 
     return new ProductLabel(productLabel, productIds);
 
@@ -811,9 +693,7 @@ public class ServletLibrary {
     Entity entity = pq.asSingleEntity();
 
     if (entity != null) {
-      @SuppressWarnings("unchecked") // Documentation says to suppress warning this way
-        List<String> searchHistory = (ArrayList<String>) entity.getProperty("searchHistory"); 
-      if (searchHistory == null) searchHistory = new ArrayList<String>();
+      List<String> searchHistory = getPropertyStringList(entity, "searchHistory");
       searchHistory.add(searchId);
       entity.setProperty("searchHistory", searchHistory);
       datastore.put(entity);
