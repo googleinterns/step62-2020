@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.datastore.Entity;
 
 import com.google.appengine.api.users.UserService;
@@ -40,6 +41,19 @@ public class CreateUserAccountServlet extends HttpServlet {
     // product ids. Null value indicates that account doesn't exist.
     Account account = ServletLibrary.retrieveAccountInfo(datastore, userService, userId);
     
+    // Get the latitude and longitude
+    float lat;
+    float lng;
+    try {
+      lat = Float.parseFloat(request.getParameter("lat"));
+      lng = Float.parseFloat(request.getParameter("lng"));
+    } catch (NumberFormatException e) {
+      System.err.println("Float was not able to be parsed! Error:"+e);
+      lat = 0.0f;
+      lng = 0.0f;
+    }
+    GeoPt latLng = new GeoPt(lat, lng);
+
     // Create entity object that will be stored
     Entity newAccount = new Entity("Account", userId);
     newAccount.setProperty("userId", userId);
@@ -49,6 +63,7 @@ public class CreateUserAccountServlet extends HttpServlet {
     newAccount.setProperty("city", request.getParameter("city"));
     newAccount.setProperty("state", request.getParameter("state"));
     newAccount.setProperty("zipCode", request.getParameter("zipCode"));
+    newAccount.setProperty("latLng", latLng);
     if (account == null) {
       newAccount.setProperty("searchHistory", new ArrayList<String>());
     } else {

@@ -8,6 +8,7 @@ import java.util.HashSet;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
@@ -79,8 +80,12 @@ public class ServletLibrary {
     String zipCode = getPropertyStringNotNull(entity, "zipCode");
     Object _isUserBusinessOwner = entity.getProperty("isUserBusinessOwner");
     boolean isUserBusinessOwner;
-    if (_isUserBusinessOwner instanceof Boolean) {
+    Object _latLng = entity.getProperty("latLng");
+    GeoPt latLng;
+    if ((_isUserBusinessOwner instanceof Boolean) &&
+        (_latLng instanceof GeoPt)) {
       isUserBusinessOwner = (boolean) _isUserBusinessOwner;
+      latLng = (GeoPt) _latLng;
     } else {
       System.err.println("Entity properties are of an incorrect type.");
       return null;
@@ -98,7 +103,8 @@ public class ServletLibrary {
                        street,
                        city,
                        state,
-                       zipCode);
+                       zipCode,
+                       latLng);
   }
 
   // Returns a list of product set objects, taken from datastore.
@@ -146,8 +152,11 @@ public class ServletLibrary {
     String zipCode = getPropertyStringNotNull(entity, "zipCode");
     Object _annotationObject = entity.getProperty("tempVisionAnnotation");
     Text annotationObject;
-    if (_annotationObject instanceof Text) {
+    Object _latLng = entity.getProperty("latLng");
+    GeoPt latLng;
+    if ((_annotationObject instanceof Text) && (_latLng instanceof GeoPt)) {
       annotationObject = (Text) _annotationObject;
+      latLng = (GeoPt) _latLng;
     } else {
       System.err.println("Entity properties are of an incorrect type.");
       return null;
@@ -165,6 +174,7 @@ public class ServletLibrary {
                         city,
                         state,
                         zipCode,
+                        latLng,
                         productIds,
                         tempVisionAnnotation);
   }
@@ -187,8 +197,11 @@ public class ServletLibrary {
       String zipCode = getPropertyStringNotNull(entity, "zipCode");
       Object _annotationObject = entity.getProperty("tempVisionAnnotation");
       Text annotationObject;
-      if (_annotationObject instanceof Text) {
+      Object _latLng = entity.getProperty("latLng");
+      GeoPt latLng;
+      if ((_annotationObject instanceof Text) && (_latLng instanceof GeoPt)) {
         annotationObject = (Text) _annotationObject;
+        latLng = (GeoPt) _latLng;
       } else {
         System.err.println("Entity properties are of an incorrect type.");
         return null;
@@ -206,6 +219,7 @@ public class ServletLibrary {
                                city,
                                state,
                                zipCode,
+                               latLng,
                                productIds,
                                tempVisionAnnotation));
     }
@@ -747,9 +761,17 @@ public class ServletLibrary {
       String city = getPropertyStringNotNull(entity, "city");
       String state = getPropertyStringNotNull(entity, "state");
       String zipCode = getPropertyStringNotNull(entity, "zipCode");
+      Object _latLng = entity.getProperty("latLng");
+      GeoPt latLng;
+      if (_latLng instanceof GeoPt) {
+        latLng = (GeoPt) _latLng;
+      } else {
+        System.err.println("Entity properties are of an incorrect type.");
+        return null;
+      }
 
       results.add(new ProductWithAddress(product, 
-                  new Address(street, city, state, zipCode)));
+                  new Address(street, city, state, zipCode, latLng)));
 
     }
 

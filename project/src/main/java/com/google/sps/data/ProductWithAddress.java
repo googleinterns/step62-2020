@@ -8,4 +8,12 @@ public class ProductWithAddress {
     this.product = product;
     this.address = address;
   }
+
+  public ProductEntity getProduct() {
+    return product;
+  }
+
+  public Address getAddress() {
+    return address;
+  }
 }

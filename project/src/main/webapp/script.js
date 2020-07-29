@@ -206,8 +206,7 @@ function retrieveProducts() {
       spinner.classList.remove("is-active");
       return;
     }
-    products.forEach(productWithAddress => {
-      const product = productWithAddress.product;
+    products.forEach(product => {
       const cardHtml = `<div class="product-card mdl-card mdl-shadow--2dp">
                           <div class="mdl-card__title" style="background-image: 
                             linear-gradient(to bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,1)), 
@@ -677,8 +676,7 @@ function browseProducts() {
       spinner.classList.remove("is-active");
       return;
     }
-    products.forEach(productWithAddress => {
-      const product = productWithAddress.product;
+    products.forEach(product => {
       const cardHtml = `<div class="product-card mdl-card mdl-shadow--2dp">
                           <div class="mdl-card__title" style="background-image: 
                             linear-gradient(to bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,1)), 
