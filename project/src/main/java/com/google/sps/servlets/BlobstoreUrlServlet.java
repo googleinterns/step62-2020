@@ -38,8 +38,8 @@ public class BlobstoreUrlServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // TODO: make sure to set it to the cloudberry bucket when moving to cloudberry.
     
-    String bucketName = "cloudberry-step-2020-test-bucket"; // Use twhen deploying to cloudberry.
-    // String bucketName = "neelgandhi-step-2020-test-bucket"; // Use when deploying to neelgandhi.
+    // String bucketName = "cloudberry-step-2020-test-bucket"; // Use twhen deploying to cloudberry.
+    String bucketName = "neelgandhi-step-2020-test-bucket"; // Use when deploying to neelgandhi.
 
     UploadOptions bucket = UploadOptions.Builder.withGoogleStorageBucketName(bucketName);
 

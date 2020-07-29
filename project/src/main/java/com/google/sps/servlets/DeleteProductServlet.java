@@ -56,7 +56,7 @@ public class DeleteProductServlet extends HttpServlet {
     datastore.delete(entity.getKey()); // Delete from the product table
 
     //Delete from product search Api
-    ProductSearchLibrary.deleteProduct(productId);
+    // ProductSearchLibrary.deleteProduct(productId);
     
     response.sendRedirect("viewProducts.html");
   }

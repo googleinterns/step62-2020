@@ -755,4 +755,20 @@ public class ServletLibrary {
 
     return results;
   }
+
+  // Updates the temp annotation object that is stored in the business account.
+  public static void updateTempAnnotation(DatastoreService datastore, 
+                                          String businessId, Text annotation) {
+    // Retrieving from datastore.
+    Filter filter = new FilterPredicate("businessId", FilterOperator.EQUAL, businessId);
+    Query query = new Query("Business").setFilter(filter);
+    PreparedQuery pq = datastore.prepare(query);
+    Entity entity = pq.asSingleEntity();
+    
+    // Update the tempVisionAnnotation property.
+    if (entity != null) {
+      entity.setProperty("tempVisionAnnotation", annotation);
+      datastore.put(entity);
+    }
+  }
 }
