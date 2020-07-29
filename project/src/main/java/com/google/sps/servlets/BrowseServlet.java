@@ -93,7 +93,7 @@ public class BrowseServlet extends HttpServlet {
       if (searchInfo.getGcsUrl() != null) {
         String generalProductSetId = "cloudberryAllProducts";
         List <String> productSearchIds = ProductSearchLibrary.getSimilarProductsGcs(generalProductSetId, 
-                                            searchInfo.getProductCategory(), searchInfo.getGcsUrl());
+                                            searchInfo.getProductCategory(), changeGcsFormat(searchInfo.getGcsUrl()));
         List<ProductEntity> imageSearchProducts = new ArrayList<>();
         productSearchIds.forEach(productId->imageSearchProducts.add(ServletLibrary.retrieveProductInfo(datastore, productId)));
 

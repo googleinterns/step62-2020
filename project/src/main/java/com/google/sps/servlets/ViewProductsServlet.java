@@ -94,7 +94,7 @@ public class ViewProductsServlet extends HttpServlet {
         
         String generalProductSetId = "cloudberryAllProducts";
         List <String> productSearchIds = ProductSearchLibrary.getSimilarProductsGcs(generalProductSetId, 
-                                            searchInfo.getProductCategory(), searchInfo.getGcsUrl());
+                                            searchInfo.getProductCategory(), changeGcsFormat(searchInfo.getGcsUrl()));
         List<ProductEntity> imageSearchProducts = new ArrayList<>();
         productSearchIds.forEach(productId->imageSearchProducts.add(ServletLibrary.retrieveProductInfo(datastore, productId)));
 
@@ -160,5 +160,18 @@ public class ViewProductsServlet extends HttpServlet {
     datastore.put(searchInfo);
   
     response.sendRedirect("/viewProducts.html?searchId="+searchId);
+  }
+
+  private String changeGcsFormat(String gcsUri){
+    
+    String newGcsFormat = "gs://";
+    
+    String[] gcsArray = gcsUri.split("/");
+
+    newGcsFormat += gcsArray[2] + "/" + gcsArray[3];
+    // The last and the penultimate indexes of the split gcsUri give the strings required to reformat the 
+    // gcsuri to a valid parameter for the createReferenceImage method.
+
+    return newGcsFormat;
   }
 }
