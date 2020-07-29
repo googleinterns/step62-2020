@@ -178,19 +178,19 @@ public class CreateProductServlet extends HttpServlet {
     product.setProperty("cloudVisionAnnotation", new Text(cloudVisionAnnotation));
     datastore.put(product);
 
-    // if(isNewProduct == true){
-    //     createAndAddToProductSearch(productId, productSetId, productDisplayName, productCategory, gcsUrls);
-    // } else{
-    //     if(!gcsUrls.contains(request.getParameter("mainGcsUrl"))){
-    //         String gcsUri = request.getParameter("mainGcsUrl");
+    if(isNewProduct == true){
+        createAndAddToProductSearch(productId, productSetId, productDisplayName, productCategory, gcsUrls);
+    } else{
+        if(!gcsUrls.contains(request.getParameter("mainGcsUrl"))){
+            String gcsUri = request.getParameter("mainGcsUrl");
             
-    //         String objectName = gcsUri.substring(gcsUri.lastIndexOf('/') + 1);
+            String objectName = gcsUri.substring(gcsUri.lastIndexOf('/') + 1);
         
-    //         gcsUri = changeGcsFormat(gcsUri);
+            gcsUri = changeGcsFormat(gcsUri);
     
-    //         ProductSearchLibrary.createReferenceImage(productId, objectName, gcsUri);
-    //     }
-    // }
+            ProductSearchLibrary.createReferenceImage(productId, objectName, gcsUri);
+        }
+    }
     
 
     // Redirect to the appropriate page.

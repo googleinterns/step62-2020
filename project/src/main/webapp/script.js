@@ -660,10 +660,12 @@ function browseProducts() {
   let businessId = document.getElementById("businessId").value;
   const productCategory = document.getElementById("productCategory").value;
   const sortOrder = document.getElementById("sortOrder").value;
+  const location = document.getElementById("location").checked;
   let queryString = "/browse?productSetDisplayName=" + productSetDisplayName + 
                     "&productCategory=" + productCategory + 
                     "&sortOrder=" + sortOrder + 
-                    "&businessId=" + businessId;
+                    "&businessId=" + businessId +
+                    "&location=" + location;
 
   // Check if there is a search query, and add to the query string.
   const params = getUrlParams();
