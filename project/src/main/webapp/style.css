@@ -158,3 +158,8 @@ body {
   outline:none;
 }
 
+/* Slideshow styling */
+.mySlides {
+  display:none
+}
+

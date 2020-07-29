@@ -32,6 +32,51 @@ function retrieveAccountInfo() {
     document.getElementById("state").value = account.state;
     document.getElementById("zipCode").value = account.zipCode;
     document.getElementById("userGreeting").innerText = "Hello, " + account.nickname;
+
+    retrieveSearchHistory();
+  });
+}
+
+// Add search history to a table on the account page.
+function retrieveSearchHistory() {
+  const tableBody = document.getElementById("searchTableBody");
+  fetch("/searchHistory").then(response => response.json()).then(searchHistory => {
+    searchHistory.forEach(searchInfo => {
+      const row = document.createElement("tr");
+      // Text Search
+      const textSearch = document.createElement("td");
+      textSearch.classList.add("mdl-data-table__cell--non-numeric");
+      textSearch.innerText = "-";
+      if (searchInfo.textSearch != null) {
+        textSearch.innerText = searchInfo.textSearch;
+      }
+      // Image Search
+      const imageCell = document.createElement("td");
+      imageCell.classList.add("mdl-data-table__cell--non-numeric");
+      if (searchInfo.imageUrl != null) {
+        const imageLink = document.createElement("a");
+        imageLink.href = searchInfo.imageUrl;
+        imageLink.target = "_blank"; // Open image in a new tab.
+        const image = document.createElement("img");
+        image.src = searchInfo.imageUrl;
+        image.style.maxHeight = "50px";
+        imageLink.appendChild(image);
+        imageCell.appendChild(imageLink);
+      } else {
+        imageCell.innerText = "-";
+      }
+      // View Search button
+      const buttonCell = document.createElement("td");
+      buttonCell.innerHTML = `<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
+                                href="/browse.html?searchId=${searchInfo.searchId}">
+                                Search
+                              </a>`
+
+      row.appendChild(textSearch);
+      row.appendChild(imageCell);
+      row.appendChild(buttonCell);
+      tableBody.appendChild(row);
+    });
   });
 }
 
@@ -68,7 +113,6 @@ function getBlobstoreUrl(isEditing) {
 
 // Fetch the cloud vision image annotation to auto fill the create product form
 // with labels.
-// TODO: add a loading animation when retrieving the json.
 function retrieveProductFormInfo() {
   fetch("/cloudVision").then(response => response.json()).then(productInfo => {
     // Set up input image display box.
@@ -135,7 +179,6 @@ function truncateString(str, length) {
   }
 };
 
-// TODO: add text and image search as an option here.
 // Display cards containing the products.
 function retrieveProducts() {
   const searchResults = document.getElementById("searchResults");
@@ -159,11 +202,12 @@ function retrieveProducts() {
 
   fetch(queryString).then(response => response.json()).then(products => {
     if (products == null || products.length == 0) {
-      searchResults.innerText = "No products here!";
+      searchResults.innerHTML = "<h4>No products here!</h4>";
       spinner.classList.remove("is-active");
       return;
     }
-    products.forEach(product => {
+    products.forEach(productWithAddress => {
+      const product = productWithAddress.product;
       const cardHtml = `<div class="product-card mdl-card mdl-shadow--2dp">
                           <div class="mdl-card__title" style="background-image: 
                             linear-gradient(to bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,1)), 
@@ -279,6 +323,7 @@ function retrieveProductInfo() {
     document.getElementById("productId").value = product.productId;
     document.getElementById("mainGcsUrl").value = product.gcsUrls[0];
     document.getElementById("mainImageUrl").value = product.imageUrls[0];
+    retrieveOptionalImages(product);
     document.getElementById("productDisplayName").value = product.productDisplayName;
     document.getElementById("productSetDisplayName").value = productSet.productSetDisplayName;
     document.getElementById("productCategory").value = product.productCategory;
@@ -304,12 +349,69 @@ function retrieveProductInfo() {
   });
 }
 
+// Retrieves and displays the optional images in a table.
+function retrieveOptionalImages(product) {
+  const imageUrls = product.imageUrls.slice(1);
+  const gcsUrls = product.gcsUrls.slice(1);
+  document.getElementById("optionalGcsUrls").value = JSON.stringify(gcsUrls);
+  document.getElementById("optionalImageUrls").value = JSON.stringify(imageUrls);
+  const tableBody = document.getElementById("imageTableBody");
+
+  // ImageUrls and GcsUrls are guaranteed to have the same length
+  var i;
+  for (i = 0; i < imageUrls.length; i++) {
+    const row = document.createElement("tr");
+    const imageCell = document.createElement("td");
+    const imageLink = document.createElement("a");
+    imageLink.href = imageUrls[i];
+    imageLink.target = "_blank"; // Open image in a new tab.
+    const image = document.createElement("img");
+    image.src = imageUrls[i];
+    image.style.maxHeight = "50px";
+    imageLink.appendChild(image);
+    imageCell.appendChild(imageLink);
+    const buttonCell = document.createElement("td");
+    const button = document.createElement("input");
+    button.type = "button"
+    button.setAttribute('onclick','deleteRow(this)');
+    button.value = "Delete";
+    buttonCell.appendChild(button);
+    const imageUrl = document.createElement("td");
+    imageUrl.innerText = imageUrls[i];
+    imageUrl.style.display = "none";
+    const gcsUrl = document.createElement("td");   
+    gcsUrl.innerText = gcsUrls[i];
+    gcsUrl.style.display = "none";
+    row.appendChild(imageCell);
+    row.appendChild(buttonCell);
+    row.appendChild(gcsUrl);
+    row.appendChild(imageUrl);
+    tableBody.appendChild(row);
+  }
+}
+
+function deleteRow(r) {
+  var i = r.parentNode.parentNode.rowIndex;
+  const table = document.getElementById("imageTable");
+  table.deleteRow(i);
+  // Loop through all the rows in the table and get the gcs and imageUrls.
+  var j;
+  const gcsUrls = [];
+  const imageUrls = [];
+  // First row is just the headers of the columns, so we don't include that
+  for (j = 1; j < table.rows.length; j++) {
+    gcsUrls.push(table.rows[j].cells[2].innerText); // 2nd column corresponds to gcsUrl
+    imageUrls.push(table.rows[j].cells[3].innerText); // 3rd column corresponds to imageUrl
+  }
+  document.getElementById("optionalGcsUrls").value = JSON.stringify(gcsUrls);
+  document.getElementById("optionalImageUrls").value = JSON.stringify(imageUrls);
+}
+
 function refreshProductInfoPage() {
   getBlobstoreUrl(true); // True indicates we are editing the product.
   retrieveProductSetDisplayNames();
   retrieveProductInfo();
 }
-
 
 function loadProduct() {
 
@@ -412,6 +514,29 @@ function deleteProduct() {
   document.getElementById("deleteProduct").href = "/deleteProduct?productId="+productId;
 }
 
+// Helper functions for the slideshow on the product page.
+function plusDivs(n) {
+  showDivs(slideIndex += n);
+}
+function currentDiv(n) {
+  showDivs(slideIndex = n);
+}
+function showDivs(n) {
+  var i;
+  var slides = document.getElementsByClassName("mySlides");
+  var dots = document.getElementsByClassName("demo");
+  if (n > slides.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = slides.length}
+  for (i = 0; i < slides.length; i++) {
+    slides[i].style.display = "none";  
+  }
+  for (i = 0; i < dots.length; i++) {
+    dots[i].className = dots[i].className.replace(" w3-red", "");
+  }
+  slides[slideIndex-1].style.display = "block";  
+  dots[slideIndex-1].className += " w3-red";
+}
+
 // Retrieve and display product on the view product page.
 function viewProduct() {
   const params = getUrlParams();
@@ -424,9 +549,31 @@ function viewProduct() {
     // Fill out the appropriate places on the form.
     document.getElementById("productPath").innerText = 
       business.businessDisplayName + " / " + 
-      product.productCategory + " / " + productSet.productSetDisplayName;
+      product.productCategory.split("-")[0] + " / " + 
+      productSet.productSetDisplayName;
     document.getElementById("productDisplayName").innerText = product.productDisplayName;
-    document.getElementById("mainImage").src = product.imageUrls[0];
+
+    // Add images to slideshow.
+    const slideshowImages = document.getElementById("slideshowImages");
+    const slideshowPane = document.getElementById("slideshowPane");
+    let counter = 1;
+    product.imageUrls.forEach(imageUrl => {
+      const newImage = document.createElement("img");
+      newImage.classList.add("mySlides");
+      newImage.src = imageUrl;
+      newImage.style = "margin: 0 auto; height: 100%; max-width:700px;";
+      const newButton = document.createElement("button");
+      newButton.classList.add("w3-button");
+      newButton.classList.add("demo");
+      newButton.innerText = counter;
+      const inputCounter = counter;
+      newButton.onclick = function () {currentDiv(inputCounter);};
+      counter++;
+      slideshowImages.appendChild(newImage);
+      slideshowPane.appendChild(newButton);
+    });
+    showDivs(slideIndex);
+
     document.getElementById("price").innerText = "$" + product.price.toFixed(2);
     document.getElementById("productDescription").innerText = product.productDescription;
     const labels = document.getElementById("labels");
@@ -501,7 +648,6 @@ function checkSearchForm() {
 }
 
 
-// TODO: add textSearch as an option (eventually image search as well).
 // Display cards on the browse page. These cards don't have edit or delete
 // functionality.
 function browseProducts() {
@@ -527,11 +673,12 @@ function browseProducts() {
 
   fetch(queryString).then(response => response.json()).then(products => {
     if (products == null || products.length == 0) {
-      searchResults.innerText = "No products here!";
+      searchResults.innerHTML = "<h4>No products here!</h4>";
       spinner.classList.remove("is-active");
       return;
     }
-    products.forEach(product => {
+    products.forEach(productWithAddress => {
+      const product = productWithAddress.product;
       const cardHtml = `<div class="product-card mdl-card mdl-shadow--2dp">
                           <div class="mdl-card__title" style="background-image: 
                             linear-gradient(to bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,1)), 
@@ -595,3 +742,27 @@ function refreshBrowsePage() {
   setBrowseInputs();
   browseProducts();
 }
+
+function updateCreateProductUrl() {
+  console.log("Setting up upload url.");
+  const images = document.getElementById("images");
+  const productForm = document.getElementById("productForm");
+  const spinner3 = document.getElementById("spinner3");
+  const path = new URL(productForm.action);
+  if (images.files.length > 0 && path.pathname === "/createProduct") {
+    spinner3.style.display = "block";
+    fetch("/getBlobstoreUrlSearch?urlPath=createProduct")
+      .then(response => response.text())
+      .then(url => {
+        productForm.action = url;
+        productForm.enctype = "multipart/form-data";
+        spinner3.style.display = "none";
+        images.required = true;
+      });
+  } else {
+    productForm.action = "/createProduct";
+    productForm.enctype = "application/x-www-form-urlencoded";
+    images.required = false;
+  }
+}
+

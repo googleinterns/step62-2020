@@ -39,7 +39,7 @@ public class BlobstoreUrlSearchServlet extends HttpServlet {
     // TODO: make sure to set it to the cloudberry bucket when moving to cloudberry.
     
     String bucketName = "cloudberry-step-2020-test-bucket"; // Use twhen deploying to cloudberry.
-    //String bucketName = "neelgandhi-step-2020-test-bucket"; // Use when deploying to neelgandhi.
+    // String bucketName = "neelgandhi-step-2020-test-bucket"; // Use when deploying to neelgandhi.
     UploadOptions bucket = UploadOptions.Builder.withGoogleStorageBucketName(bucketName);
 
     String urlPath = "/" + request.getParameter("urlPath") + 

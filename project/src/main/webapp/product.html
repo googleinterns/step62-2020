@@ -11,6 +11,7 @@
     <!-- Scripts and styling for tags (under MIT License): https://github.com/sabieber/token-autocomplete -->
     <script src="https://raw.githack.com/sabieber/token-autocomplete/master/built/token-autocomplete.js"></script>
     <link href="https://raw.githack.com/sabieber/token-autocomplete/master/lib/token-autocomplete.css" rel="stylesheet" type="text/css" media="all">
+    <link rel="stylesheet" href="/w3_templates/w3.css">
   </head>
   <body onload="viewProduct()">
     <!-- Always shows a header, even in smaller screens. -->
@@ -46,7 +47,13 @@
           <div id="productContent" class="hidden">
             <h1 id="productDisplayName"></h1>
             <p id="productPath"></p>
-            <img id="mainImage" width="300px"/img>
+            <div style="height: 300px;" id="slideshowImages"></div>
+            <div class="w3-center" id="slideshowPane">
+              <div class="w3-section">
+                <button class="w3-button" onclick="plusDivs(-1)">&#10094; Prev</button>
+                <button class="w3-button" onclick="plusDivs(1)">Next &#10095;</button>
+              </div>
+            </div>
             <h4 id="price"></h4>
             <h5>Description:</h5>
             <p id="productDescription"></p>
@@ -58,6 +65,9 @@
             <h5>Similar product images</h5>
             <div id="similarWebsites"></div>
           </div>
+          <script>
+            var slideIndex = 1;
+          </script>
         </div>
       </main>
     </div>
