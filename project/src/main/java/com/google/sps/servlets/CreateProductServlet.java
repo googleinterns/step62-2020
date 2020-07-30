@@ -156,15 +156,15 @@ public class CreateProductServlet extends HttpServlet {
       ServletLibrary.addProductToProductSet(datastore, productId, productSetId);
       ServletLibrary.addProductToProductCategory(datastore, productId, productCategory);
       ServletLibrary.addProductToBusiness(datastore, productId, businessId);
-      createAndAddToProductSearch(productId, productSetId, productDisplayName, productCategory, gcsUrls);
+      //createAndAddToProductSearch(productId, productSetId, productDisplayName, productCategory, gcsUrls);
     } else {
       ProductEntity oldProduct = ServletLibrary.retrieveProductInfo(datastore, productId);
       ServletLibrary.updateProductLabels(datastore, productId, oldProduct.getLabels(), labels);
       ServletLibrary.updateProductSets(datastore, productId, oldProduct.getProductSetId(), productSetId);
       ServletLibrary.updateProductCategories(datastore, productId, oldProduct.getProductCategory(), productCategory);
 
-      // change a product's reference image only when the uploaded image is changed to avoid time consumption when editing only texts
-      List<String> oldProductGcsUrls = oldProduct.getGcsUrls();
+      //change a product's reference image only when the uploaded image is changed to avoid time consumption when editing only texts
+    List<String> oldProductGcsUrls = oldProduct.getGcsUrls();
       for(String gcsUri : oldProductGcsUrls){
         String objectName = gcsUri.substring(gcsUri.lastIndexOf('/') + 1);
         

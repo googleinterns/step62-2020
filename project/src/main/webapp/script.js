@@ -31,8 +31,11 @@ function retrieveAccountInfo() {
     document.getElementById("city").value = account.city;
     document.getElementById("state").value = account.state;
     document.getElementById("zipCode").value = account.zipCode;
+    document.getElementById("lat").value = account.latLng.latitude;
+    document.getElementById("lng").value = account.latLng.longitude;
     document.getElementById("userGreeting").innerText = "Hello, " + account.nickname;
 
+    setAccountMap();
     retrieveSearchHistory();
   });
 }
@@ -586,6 +589,7 @@ function viewProduct() {
       "Sold by: " + business.businessDisplayName;
     document.getElementById("businessAddress").innerText = 
       `Business Address: ${business.street}, ${business.city} ${business.state}, ${business.zipCode}`;
+    productsMap(business.latLng);
     const similarWebsites = document.getElementById("similarWebsites");
     (JSON.parse(product.cloudVisionAnnotation)).webUrls.forEach(url => {
       const link = document.createElement("a");

@@ -119,7 +119,7 @@ public class BrowseServlet extends HttpServlet {
         ServletLibrary.convertToProductWithAddress(datastore, products);
       Account account = ServletLibrary.retrieveAccountInfo(datastore, 
         userService, userService.getCurrentUser().getUserId());
-      // call sort by location method here
+      products = MapsLibrary.sortByLocation(productsWithAddress, account);
     }
 
     // Send the response.
