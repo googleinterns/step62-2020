@@ -165,19 +165,7 @@ public class CreateProductServlet extends HttpServlet {
 
       // change a product's reference image only when the uploaded image is changed to avoid time consumption when editing only texts
       List<String> oldProductGcsUrls = oldProduct.getGcsUrls();
-      for(String gcsUri : oldProductGcsUrls){
-        String objectName = gcsUri.substring(gcsUri.lastIndexOf('/') + 1);
-        
-        gcsUri = changeGcsFormat(gcsUri);
-        String newGcsUri = request.getParameter("mainGcsUrl");
-        String newObjectName = newGcsUri.substring(newGcsUri.lastIndexOf('/') + 1);
-        newGcsUri = changeGcsFormat(newGcsUri);
-
-        if(!gcsUri.equals(newGcsUri)){
-            ProductSearchLibrary.deleteReferenceImage(productId, objectName);
-            ProductSearchLibrary.createReferenceImage(productId, newObjectName, newGcsUri);
-        }
-      }
+      updateGcsUrlsInProductSearch(productId, oldProductGcsUrls, gcsUrls);
     } 
 
     // Create a product set entity and store in datastore.
@@ -235,5 +223,39 @@ public class CreateProductServlet extends HttpServlet {
     // gcsuri to a valid parameter for the createReferenceImage method.
 
     return newGcsFormat;
+  }
+
+  private void updateGcsUrlsInProductSearch(String productId, List<String> oldGcsUrls, List<String> newGcsUrls) throws IOException{
+
+      ArrayList<String> toBeDeleted = new ArrayList<>();
+      ArrayList<String> toBeCreated = new ArrayList<>();
+
+      //Check which gcsUrls in previous gcsUrl list are not in the current gcsUrl list and set them up for deletion.
+      for(String gcsUrl : oldGcsUrls){
+          if(!newGcsUrls.contains(gcsUrl)){
+              toBeDeleted.add(gcsUrl);
+          }
+      }
+
+      //Check which gcsUrls in the current gcsUrl list are not in the previous gcsUrl list and set them up for creation
+      for(String gcsUrl : newGcsUrls){
+          if(!oldGcsUrls.contains(gcsUrl)){
+              toBeCreated.add(gcsUrl);
+          }
+      }
+
+      for(String gcsUrl : toBeDeleted){
+          String objectName = gcsUrl.substring(gcsUrl.lastIndexOf('/') + 1);
+          gcsUrl = changeGcsFormat(gcsUrl);
+
+          ProductSearchLibrary.deleteReferenceImage(productId, objectName);
+      }
+
+      for(String gcsUrl : toBeCreated){
+          String objectName = gcsUrl.substring(gcsUrl.lastIndexOf('/') + 1);
+          gcsUrl = changeGcsFormat(gcsUrl);
+
+          ProductSearchLibrary.createReferenceImage(productId, objectName, gcsUrl);
+      }
   }
 }
