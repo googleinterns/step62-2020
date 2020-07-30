@@ -99,6 +99,15 @@
                 <option value="name_descending">name (z -> a)</option>
               </select>
               </div>
+              <div class="browseFilter">
+              <label for="location">Show Nearby:</label>
+              <div style="display: inline-block">
+              <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="location">
+                <input type="checkbox" id="location" name="location" class="mdl-switch__input"
+                       onchange="browseProducts()">
+              </label>
+              </div>
+              </div>
               <div id="uploadedImageBox" style="display: none">
                 <p>Image you uploaded:<p>
                 <img id="uploadedImage" width="300px">

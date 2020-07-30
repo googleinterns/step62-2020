@@ -31,8 +31,11 @@ function retrieveAccountInfo() {
     document.getElementById("city").value = account.city;
     document.getElementById("state").value = account.state;
     document.getElementById("zipCode").value = account.zipCode;
+    document.getElementById("lat").value = account.latLng.latitude;
+    document.getElementById("lng").value = account.latLng.longitude;
     document.getElementById("userGreeting").innerText = "Hello, " + account.nickname;
 
+    setAccountMap();
     retrieveSearchHistory();
   });
 }
@@ -206,8 +209,7 @@ function retrieveProducts() {
       spinner.classList.remove("is-active");
       return;
     }
-    products.forEach(productWithAddress => {
-      const product = productWithAddress.product;
+    products.forEach(product => {
       const cardHtml = `<div class="product-card mdl-card mdl-shadow--2dp">
                           <div class="mdl-card__title" style="background-image: 
                             linear-gradient(to bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,1)), 
@@ -587,6 +589,7 @@ function viewProduct() {
       "Sold by: " + business.businessDisplayName;
     document.getElementById("businessAddress").innerText = 
       `Business Address: ${business.street}, ${business.city} ${business.state}, ${business.zipCode}`;
+    productsMap(business.latLng);
     const similarWebsites = document.getElementById("similarWebsites");
     (JSON.parse(product.cloudVisionAnnotation)).webUrls.forEach(url => {
       const link = document.createElement("a");
@@ -661,10 +664,12 @@ function browseProducts() {
   let businessId = document.getElementById("businessId").value;
   const productCategory = document.getElementById("productCategory").value;
   const sortOrder = document.getElementById("sortOrder").value;
+  const location = document.getElementById("location").checked;
   let queryString = "/browse?productSetDisplayName=" + productSetDisplayName + 
                     "&productCategory=" + productCategory + 
                     "&sortOrder=" + sortOrder + 
-                    "&businessId=" + businessId;
+                    "&businessId=" + businessId +
+                    "&location=" + location;
 
   // Check if there is a search query, and add to the query string.
   const params = getUrlParams();
@@ -677,8 +682,7 @@ function browseProducts() {
       spinner.classList.remove("is-active");
       return;
     }
-    products.forEach(productWithAddress => {
-      const product = productWithAddress.product;
+    products.forEach(product => {
       const cardHtml = `<div class="product-card mdl-card mdl-shadow--2dp">
                           <div class="mdl-card__title" style="background-image: 
                             linear-gradient(to bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,1)), 
