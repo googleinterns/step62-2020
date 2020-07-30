@@ -62,6 +62,8 @@
             <input type="hidden" id="mainGcsUrl" name="mainGcsUrl">
             <input type="hidden" id="mainImageUrl" name="mainImageUrl">
             <input type="hidden" id="productId" name="productId">
+            <input type="hidden" id="optionalGcsUrls" name="optionalGcsUrls">
+            <input type="hidden" id="optionalImageUrls" name="optionalImageUrls">
             <h4>Product Name</h4>
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
               <input class="mdl-textfield__input" type="text" id="productDisplayName" name="productDisplayName">
@@ -79,7 +81,24 @@
             <input list="productSetList" name="productSetDisplayName" id="productSetDisplayName">
             <datalist id="productSetList"></datalist>
             <h4>Upload more images (optional)</h4>
-            <input type="file" name="images" id="images" accept="image/*" multiple>
+            <div style="display:none" class="mdl-spinner mdl-js-spinner is-active" 
+                 id="spinner3"></div>
+            <input type="file" name="images" id="images" accept="image/*" 
+                   onchange="updateCreateProductUrl()" multiple>
+            <br/><br/>
+            <p>Current additional images:</p>
+            <table id="imageTable" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Option</th>
+                  <th style="display: none;">imageUrls</th>
+                  <th style="display: none;">gcsUrls</th>
+                </tr>
+              </thead>
+              <tbody id="imageTableBody">
+              </tbody>
+            </table>
             <br/><br/>
             <h4>Labels/Tags</h4>
             <div id="labelsBox"></div>

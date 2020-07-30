@@ -111,6 +111,7 @@ body {
 .hiddenButton {
   text-decoration: none;
   margin-left: 20px;
+  margin-right: 20px;
   margin-bottom: 15px;
   display: none;
 }
@@ -161,4 +162,9 @@ body {
     border: thin solid black;
     height: 500px;
     width: 500px;
+}
+
+/* Slideshow styling */
+.mySlides {
+  display:none
 }

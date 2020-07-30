@@ -1,6 +1,7 @@
 package com.google.sps.data;
 import java.util.ArrayList;
 import java.util.List;
+import com.google.appengine.api.datastore.GeoPt;
 
 public class Business {
   private String businessId;
@@ -9,6 +10,7 @@ public class Business {
   private String city;
   private String state;
   private String zipCode;
+  private GeoPt latLng;
   private List<String> productIds;
   private String tempVisionAnnotation;
 
@@ -18,6 +20,7 @@ public class Business {
                   String city,
                   String state,
                   String zipCode,
+                  GeoPt latLng,
                   List<String> productIds,
                   String tempVisionAnnotation) {
     this.businessId = businessId;
@@ -26,6 +29,7 @@ public class Business {
     this.city = city;
     this.state = state;
     this.zipCode = zipCode;
+    this.latLng = latLng;
     this.productIds = productIds;
     this.tempVisionAnnotation = tempVisionAnnotation;
   }
@@ -60,5 +64,9 @@ public class Business {
 
   public String getTempVisionAnnotation() {
     return tempVisionAnnotation;
+  }
+
+  public GeoPt getLatLng() {
+    return latLng;
   }
 }

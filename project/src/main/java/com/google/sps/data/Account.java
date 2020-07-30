@@ -1,6 +1,7 @@
 package com.google.sps.data;
 import java.util.ArrayList;
 import java.util.List;
+import com.google.appengine.api.datastore.GeoPt;
 
 public class Account {
   private String userId;
@@ -13,6 +14,7 @@ public class Account {
   private String city;
   private String state;
   private String zipCode;
+  private GeoPt latLng;
 
   public Account(String userId,
                  String logoutUrl,
@@ -23,7 +25,8 @@ public class Account {
                  String street,
                  String city,
                  String state,
-                 String zipCode) {
+                 String zipCode,
+                 GeoPt latLng) {
     this.userId = userId;
     this.logoutUrl = logoutUrl;
     this.nickname = nickname;
@@ -34,6 +37,7 @@ public class Account {
     this.city = city;
     this.state = state;
     this.zipCode = zipCode;
+    this.latLng = latLng;
   }
 
   public List<String> getSearchHistory() {
@@ -42,5 +46,9 @@ public class Account {
 
   public boolean getIsUserBusinessOwner() {
     return isUserBusinessOwner;
+  }
+
+  public GeoPt getLatLng() {
+    return latLng;
   }
 }

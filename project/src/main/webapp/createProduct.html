@@ -81,7 +81,10 @@
             <input list="productSetList" name="productSetDisplayName" id="productSetDisplayName" required>
             <datalist id="productSetList"></datalist>
             <h4>Upload more images (optional)</h4>
-            <input type="file" name="images" id="images" accept="image/*" multiple>
+            <div style="display:none" class="mdl-spinner mdl-js-spinner is-active" 
+                 id="spinner3"></div>
+            <input type="file" name="images" id="images" accept="image/*" 
+                   onchange="updateCreateProductUrl()" multiple>
             <br/><br/>
             <h4>Labels/Tags</h4>
             <div id="labelsBox"></div>

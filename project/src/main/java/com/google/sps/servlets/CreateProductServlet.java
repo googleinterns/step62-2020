@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.sps.data.ProductSearchLibrary;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -21,12 +22,20 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 
+import com.google.appengine.api.blobstore.BlobInfo;
+import com.google.appengine.api.blobstore.BlobInfoFactory;
+import com.google.appengine.api.blobstore.BlobKey;
+import com.google.appengine.api.blobstore.BlobstoreService;
+import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+import com.google.appengine.api.blobstore.FileInfo;
+
 import com.google.sps.data.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;  
 
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -37,12 +46,14 @@ public class CreateProductServlet extends HttpServlet {
   protected DatastoreService datastore;
   protected Gson gson;
   protected UserService userService;
+  protected BlobstoreService blobstore;
 
   public CreateProductServlet() {
     super();
     datastore = DatastoreServiceFactory.getDatastoreService();
     userService = UserServiceFactory.getUserService();
     gson = new Gson();
+    blobstore = BlobstoreServiceFactory.getBlobstoreService();
   }
 
   @Override
@@ -75,8 +86,6 @@ public class CreateProductServlet extends HttpServlet {
     String productCategory = request.getParameter("productCategory");
     String businessId = userService.getCurrentUser().getUserId();
 
-    // TODO: add businessDisplayName as a searchable tag.
-
     float price;
     try {
       price = Float.parseFloat(request.getParameter("price"));
@@ -85,13 +94,38 @@ public class CreateProductServlet extends HttpServlet {
       price = 0.0f;
     }
 
-    // TODO: support for adding multiple images. For now, we are only adding
-    // the initial image that was uploaded.
+    // Add gcs urls of reference images.
     List<String> gcsUrls = new ArrayList<>();
     gcsUrls.add(request.getParameter("mainGcsUrl"));
+    String jsonGcsUrls = request.getParameter("optionalGcsUrls");
+    if (jsonGcsUrls != null) {
+      List<String> keptGcsUrls = gson.fromJson(jsonGcsUrls, 
+        new TypeToken<ArrayList<String>>(){}.getType());
+      gcsUrls.addAll(keptGcsUrls);
+    }
+    List<String> optionalGcsUrls = new ArrayList<>();
+    try {
+      optionalGcsUrls = CloudStorageLibrary.getMultipleGcsFilePath(request, blobstore);
+    } catch (Exception e) {
+      // Do nothing here, since we already instantiated optionalGcsUrls
+    }
+    gcsUrls.addAll(optionalGcsUrls);
     
+    // Add image urls of reference images.
     List<String> imageUrls = new ArrayList<>();
     imageUrls.add(request.getParameter("mainImageUrl"));
+    String jsonImageUrls = request.getParameter("optionalImageUrls");
+    if (jsonImageUrls != null) {
+      List<String> keptImageUrls = gson.fromJson(jsonImageUrls, 
+        new TypeToken<ArrayList<String>>(){}.getType());
+      imageUrls.addAll(keptImageUrls);
+    }
+    List<String> optionalImageUrls = 
+      optionalGcsUrls.stream()
+                     .map(gcsUrl -> "/serveBlobstoreImage?blobKey=" + 
+                                    blobstore.createGsBlobKey(gcsUrl).getKeyString())
+                     .collect(Collectors.toList());
+    imageUrls.addAll(optionalImageUrls);
 
     // Get annotation and labels.
     String cloudVisionAnnotation = request.getParameter("cloudVisionAnnotation");
@@ -122,12 +156,29 @@ public class CreateProductServlet extends HttpServlet {
       ServletLibrary.addProductToProductSet(datastore, productId, productSetId);
       ServletLibrary.addProductToProductCategory(datastore, productId, productCategory);
       ServletLibrary.addProductToBusiness(datastore, productId, businessId);
+      createAndAddToProductSearch(productId, productSetId, productDisplayName, productCategory, gcsUrls);
     } else {
       ProductEntity oldProduct = ServletLibrary.retrieveProductInfo(datastore, productId);
       ServletLibrary.updateProductLabels(datastore, productId, oldProduct.getLabels(), labels);
       ServletLibrary.updateProductSets(datastore, productId, oldProduct.getProductSetId(), productSetId);
       ServletLibrary.updateProductCategories(datastore, productId, oldProduct.getProductCategory(), productCategory);
-    }
+
+      // change a product's reference image only when the uploaded image is changed to avoid time consumption when editing only texts
+      List<String> oldProductGcsUrls = oldProduct.getGcsUrls();
+      for(String gcsUri : oldProductGcsUrls){
+        String objectName = gcsUri.substring(gcsUri.lastIndexOf('/') + 1);
+        
+        gcsUri = changeGcsFormat(gcsUri);
+        String newGcsUri = request.getParameter("mainGcsUrl");
+        String newObjectName = newGcsUri.substring(newGcsUri.lastIndexOf('/') + 1);
+        newGcsUri = changeGcsFormat(newGcsUri);
+
+        if(!gcsUri.equals(newGcsUri)){
+            ProductSearchLibrary.deleteReferenceImage(productId, objectName);
+            ProductSearchLibrary.createReferenceImage(productId, newObjectName, newGcsUri);
+        }
+      }
+    } 
 
     // Create a product set entity and store in datastore.
     Entity product = new Entity("Product", productId);
@@ -143,10 +194,9 @@ public class CreateProductServlet extends HttpServlet {
     product.setProperty("productDescription", productDescription);
     product.setProperty("cloudVisionAnnotation", new Text(cloudVisionAnnotation));
     datastore.put(product);
+    
 
-    createAndAddToProductSearch(productId, productSetId, productDisplayName, productCategory, request);
-
-    // Add product to relevant tables in datastore, only if it is a new product.
+    // Redirect to the appropriate page.
     if (isNewProduct) {
       response.sendRedirect("/businessAccount.html");
     } else {
@@ -155,21 +205,23 @@ public class CreateProductServlet extends HttpServlet {
     
   }
 
-  private void createAndAddToProductSearch(String productId, String productSetId, String productDisplayName, String productCategory, HttpServletRequest request) throws IOException{ 
+  private void createAndAddToProductSearch(String productId, String productSetId, String productDisplayName, String productCategory, List<String> gcsList) throws IOException{ 
     // Functions to create product and add to a product set in the product search database
     ProductSearchLibrary.createProduct(productId, productDisplayName, productCategory);
 
     ProductSearchLibrary.addProductToProductSet(productId, productSetId);
 
+    ProductSearchLibrary.addProductToProductSet(productId, "cloudberryAllProducts");
+
     //Create reference image for a product to facilitate the searching for a product by image
     //image gcsuri used for reference image id
-    String gcsUri = request.getParameter("mainGcsUrl");
-    String objectName = gcsUri.substring(gcsUri.lastIndexOf('/') + 1);
-
-    gcsUri = changeGcsFormat(gcsUri);
+    for(String gcsUri : gcsList){
+        String objectName = gcsUri.substring(gcsUri.lastIndexOf('/') + 1);
+        
+        gcsUri = changeGcsFormat(gcsUri);
     
-    ProductSearchLibrary.createReferenceImage(productId, objectName, gcsUri);
-    
+        ProductSearchLibrary.createReferenceImage(productId, objectName, gcsUri);
+    } 
   }
 
   private String changeGcsFormat(String gcsUri){

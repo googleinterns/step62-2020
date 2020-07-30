@@ -53,13 +53,14 @@ public class ViewProductsServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // TODO: text based search and product search.
+    // TODO: product search.
 
     // Retrieve parameters from the request
     String productSetDisplayName = request.getParameter("productSetDisplayName");
     String productCategory = request.getParameter("productCategory");
     String businessId = request.getParameter("businessId");
     String sortOrder = request.getParameter("sortOrder");
+    String searchId = request.getParameter("searchId");
 
     // Set parameters to apprpriate defaults, if necessary.
     if (businessId.equals("getFromDatabase")) {
@@ -84,11 +85,37 @@ public class ViewProductsServlet extends HttpServlet {
                                   businessId,
                                   productSetId, 
                                   productCategory, 
-                                  sortOrder, 
-                                  null); // textQuery
-    String json = gson.toJson(products);
+                                  sortOrder);
+
+    if (searchId != null) {
+      SearchInfo searchInfo = ServletLibrary.retrieveSearchInfo(datastore, searchId);
+
+      if (searchInfo.getGcsUrl() != null) {
+        
+        String generalProductSetId = "cloudberryAllProducts";
+        List <String> productSearchIds = ProductSearchLibrary.getSimilarProductsGcs(generalProductSetId, 
+                                            searchInfo.getProductCategory(), changeGcsFormat(searchInfo.getGcsUrl()));
+        List<ProductEntity> imageSearchProducts = new ArrayList<>();
+        productSearchIds.forEach(productId->imageSearchProducts.add(ServletLibrary.retrieveProductInfo(datastore, productId)));
+
+        Set<ProductEntity> uniqueProducts = new HashSet<>(products);
+        List<ProductEntity> productsDisplayed = new ArrayList<>();
+        for (ProductEntity product : imageSearchProducts) {
+          if (uniqueProducts.contains(product)) productsDisplayed.add(product);
+        }
+        products = productsDisplayed;
+      }
+
+      // Text query if it is specified, will take in this list and output a new
+      // list that satisfies the query.
+      if (searchInfo.getTextSearch() != null) {
+        products = TextSearchLibrary.textSearch(datastore, products, 
+                                                searchInfo.getTextSearch());
+      }
+    }
 
     // Send the response.
+    String json = gson.toJson(products);
     response.setContentType("application/json;");
     response.getWriter().println(json);
   }
@@ -114,14 +141,15 @@ public class ViewProductsServlet extends HttpServlet {
     searchInfo.setProperty("gcsUrl", null);
     searchInfo.setProperty("imageUrl", null);
     searchInfo.setProperty("textSearch", null);
+    searchInfo.setProperty("productCategory", null);    
     if (userUploadedImage) {
-      //Map<String, List<FileInfo>> files = blobstore.getFileInfos(request);
-      // String gcsUrl = CloudStorageLibrary.getGcsFilePath(files);
       String gcsUrl = CloudStorageLibrary.getGcsFilePath(request, blobstore);
       BlobKey blobKey = blobstore.createGsBlobKey(gcsUrl);
       String imageUrl = "/serveBlobstoreImage?blobKey=" + blobKey.getKeyString();
       searchInfo.setProperty("gcsUrl", gcsUrl);
       searchInfo.setProperty("imageUrl", imageUrl);
+      searchInfo.setProperty("productCategory", 
+        request.getParameter("productCategorySearch"));
     } 
     if (!textSearch.isEmpty()) {
       searchInfo.setProperty("textSearch", textSearch);
@@ -129,5 +157,18 @@ public class ViewProductsServlet extends HttpServlet {
     datastore.put(searchInfo);
   
     response.sendRedirect("/viewProducts.html?searchId="+searchId);
+  }
+
+  private String changeGcsFormat(String gcsUri){
+    
+    String newGcsFormat = "gs://";
+    
+    String[] gcsArray = gcsUri.split("/");
+
+    newGcsFormat += gcsArray[2] + "/" + gcsArray[3];
+    // The last and the penultimate indexes of the split gcsUri give the strings required to reformat the 
+    // gcsuri to a valid parameter for the createReferenceImage method.
+
+    return newGcsFormat;
   }
 }
