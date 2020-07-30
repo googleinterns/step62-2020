@@ -52,7 +52,7 @@ public class CreateProductSetServlet extends HttpServlet {
       datastore.put(productSet);
 
       // This function create a product set and add it to the Product Search database
-      //ProductSearchLibrary.createProductSet(productSetId, productSetDisplayName);
+      ProductSearchLibrary.createProductSet(productSetId, productSetDisplayName);
     }
     response.sendRedirect("/businessAccount.html");
   }

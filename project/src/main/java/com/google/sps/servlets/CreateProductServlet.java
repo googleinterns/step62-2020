@@ -163,21 +163,21 @@ public class CreateProductServlet extends HttpServlet {
       ServletLibrary.updateProductSets(datastore, productId, oldProduct.getProductSetId(), productSetId);
       ServletLibrary.updateProductCategories(datastore, productId, oldProduct.getProductCategory(), productCategory);
 
-      // change a product's reference image only when the uploaded image is changed to avoid time consumption when editing only texts
-    // List<String> oldProductGcsUrls = oldProduct.getGcsUrls();
-    //   for(String gcsUri : oldProductGcsUrls){
-    //     String objectName = gcsUri.substring(gcsUri.lastIndexOf('/') + 1);
+      //change a product's reference image only when the uploaded image is changed to avoid time consumption when editing only texts
+    List<String> oldProductGcsUrls = oldProduct.getGcsUrls();
+      for(String gcsUri : oldProductGcsUrls){
+        String objectName = gcsUri.substring(gcsUri.lastIndexOf('/') + 1);
         
-    //     gcsUri = changeGcsFormat(gcsUri);
-    //     String newGcsUri = request.getParameter("mainGcsUrl");
-    //     String newObjectName = newGcsUri.substring(newGcsUri.lastIndexOf('/') + 1);
-    //     newGcsUri = changeGcsFormat(newGcsUri);
+        gcsUri = changeGcsFormat(gcsUri);
+        String newGcsUri = request.getParameter("mainGcsUrl");
+        String newObjectName = newGcsUri.substring(newGcsUri.lastIndexOf('/') + 1);
+        newGcsUri = changeGcsFormat(newGcsUri);
 
-    //     if(!gcsUri.equals(newGcsUri)){
-    //         ProductSearchLibrary.deleteReferenceImage(productId, objectName);
-    //         ProductSearchLibrary.createReferenceImage(productId, newObjectName, newGcsUri);
-    //     }
-    //   }
+        if(!gcsUri.equals(newGcsUri)){
+            ProductSearchLibrary.deleteReferenceImage(productId, objectName);
+            ProductSearchLibrary.createReferenceImage(productId, newObjectName, newGcsUri);
+        }
+      }
     } 
 
     // Create a product set entity and store in datastore.
