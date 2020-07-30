@@ -367,7 +367,6 @@ function createReferenceImageElement(referenceImage) {
 
   return referenceImageElement;
 }
-=======
 
 function deleteProduct() {
   const params = getUrlParams();

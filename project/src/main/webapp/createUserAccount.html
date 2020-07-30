@@ -6,10 +6,12 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.teal-orange.min.css" />
     <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC8PrUIlWAeCEONhP97HFLCFqB8R2dV8FU"></script>
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
+    <script src="mapScript.js"></script>
   </head>
-  <body>
+  <body onload="createMap()">
     <!-- Always shows a header, even in smaller screens. -->
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
       <header class="mdl-layout__header">
@@ -67,6 +69,12 @@
               <input class="mdl-textfield__input" type="text" id="zipCode" name="zipCode" required>
               <label class="mdl-textfield__label" for="zipCode">Zip Code</label>
             </div>
+            <br/>
+            <input type="button" onclick="setLatLng()" value="Set Location" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">
+            <input type="text" id="lat" name="lat" style="display:none">
+            <input type="text" id="lng" name="lng" style="display:none">
+            <br/><br/>
+            <div id="map" style="display:none"></div>
             <br/><br/>
             <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
               Create Account
