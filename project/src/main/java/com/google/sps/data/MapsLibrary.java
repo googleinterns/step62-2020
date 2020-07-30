@@ -14,7 +14,7 @@ public class MapsLibrary {
     private static Double dLng;
 
     public static Double distance(GeoPt origin, GeoPt destination) {
-        //Convert to radians
+        //Convert coordinates to radians instead of degrees
         oLat = Math.toRadians(Double.parseDouble(new Float(origin.getLatitude()).toString()));
         oLng = Math.toRadians(Double.parseDouble(new Float(origin.getLongitude()).toString()));
         dLat = Math.toRadians(Double.parseDouble(new Float(destination.getLatitude()).toString()));
