@@ -53,7 +53,6 @@ public class BrowseServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // TODO: product search.
 
     // Retrieve parameters from the request
     String productSetDisplayName = request.getParameter("productSetDisplayName");
@@ -113,11 +112,18 @@ public class BrowseServlet extends HttpServlet {
       }
     }
     
-    List<ProductWithAddress> productsWithAddress = 
-      ServletLibrary.convertToProductWithAddress(datastore, products);
-    String json = gson.toJson(productsWithAddress);
+    // TODO: call sorting mechanism here for location.
+    boolean sortLocation = Boolean.parseBoolean(request.getParameter("location"));
+    if (sortLocation && userService.isUserLoggedIn()) {
+      List<ProductWithAddress> productsWithAddress = 
+        ServletLibrary.convertToProductWithAddress(datastore, products);
+      Account account = ServletLibrary.retrieveAccountInfo(datastore, 
+        userService, userService.getCurrentUser().getUserId());
+      // call sort by location method here
+    }
 
     // Send the response.
+    String json = gson.toJson(products);
     response.setContentType("application/json;");
     response.getWriter().println(json);
   }

@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.datastore.Text;
 
 import com.google.appengine.api.users.UserService;
@@ -65,6 +66,19 @@ public class CreateBusinessAccountServlet extends HttpServlet {
     Account account = ServletLibrary.retrieveAccountInfo(datastore, userService, userId);
     Business business = ServletLibrary.retrieveBusinessInfo(datastore, userId);
 
+    // Get the latitude and longitude
+    float lat;
+    float lng;
+    try {
+      lat = Float.parseFloat(request.getParameter("lat"));
+      lng = Float.parseFloat(request.getParameter("lng"));
+    } catch (NumberFormatException e) {
+      System.err.println("Float was not able to be parsed! Error:"+e);
+      lat = 0.0f;
+      lng = 0.0f;
+    }
+    GeoPt latLng = new GeoPt(lat, lng);
+
     // Create account entity object that will be stored.
     Entity newAccount = new Entity("Account", userId);
     newAccount.setProperty("userId", userId);
@@ -74,6 +88,7 @@ public class CreateBusinessAccountServlet extends HttpServlet {
     newAccount.setProperty("city", request.getParameter("city"));
     newAccount.setProperty("state", request.getParameter("state"));
     newAccount.setProperty("zipCode", request.getParameter("zipCode"));
+    newAccount.setProperty("latLng", latLng);
     if (account == null) {
       newAccount.setProperty("searchHistory", new ArrayList<String>());
     } else {
@@ -89,6 +104,7 @@ public class CreateBusinessAccountServlet extends HttpServlet {
     newBusiness.setProperty("city", request.getParameter("city"));
     newBusiness.setProperty("state", request.getParameter("state"));
     newBusiness.setProperty("zipCode", request.getParameter("zipCode"));
+    newBusiness.setProperty("latLng", latLng);
     if (business == null) {
       newBusiness.setProperty("productIds", new ArrayList<String>());
     } else {

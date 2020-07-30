@@ -122,23 +122,10 @@ public class CloudVisionServlet extends HttpServlet {
     AnnotateImageResponse imageResponse = VisionLibrary.handleCloudVisionRequest(blobBytes, allFeatures);
     String tempVisionAnnotation = VisionLibrary.formatImageResponse(gson, imageResponse, gcsUrl, imageUrl);
 
-    // Store the response in the business account, and using already existing
-    // information to prevent datastore overwriting the old data.
-    // TODO: this may not be the best way to change one property of an entity. 
-    //       I could just retrieve the entity only, set the property, and push 
-    //       back in datastore.
-    String userId = userService.getCurrentUser().getUserId();
-    Business business = ServletLibrary.retrieveBusinessInfo(datastore, userId);
-    Entity updatedBusiness = new Entity("Business", userId);
-    updatedBusiness.setProperty("businessId", business.getBusinessId());
-    updatedBusiness.setProperty("businessDisplayName", business.getBusinessDisplayName());
-    updatedBusiness.setProperty("street", business.getStreet());
-    updatedBusiness.setProperty("city", business.getCity());
-    updatedBusiness.setProperty("state", business.getState());
-    updatedBusiness.setProperty("zipCode", business.getZipCode());
-    updatedBusiness.setProperty("productIds", business.getProductIds());
-    updatedBusiness.setProperty("tempVisionAnnotation", new Text(tempVisionAnnotation));
-    datastore.put(updatedBusiness);
+    // Store the response in the business account.
+    ServletLibrary.updateTempAnnotation(datastore, 
+                                        userService.getCurrentUser().getUserId(),
+                                        new Text(tempVisionAnnotation));
 
     // Redirect to the create product form or the edit product form.
     boolean isEditing = Boolean.parseBoolean(request.getParameter("edit"));

@@ -113,12 +113,9 @@ public class ViewProductsServlet extends HttpServlet {
                                                 searchInfo.getTextSearch());
       }
     }
-    
-    List<ProductWithAddress> productsWithAddress = 
-      ServletLibrary.convertToProductWithAddress(datastore, products);
-    String json = gson.toJson(productsWithAddress);
 
     // Send the response.
+    String json = gson.toJson(products);
     response.setContentType("application/json;");
     response.getWriter().println(json);
   }
