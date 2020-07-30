@@ -13,12 +13,15 @@ public class MapsLibrary {
     private static Double dLat;
     private static Double dLng;
 
+    //Radius of Earth in miles
+    private static int EARTH_RADIUS = 3956
+
     public static Double distance(GeoPt origin, GeoPt destination) {
         //Convert coordinates to radians instead of degrees
-        oLat = Math.toRadians(Double.parseDouble(new Float(origin.getLatitude()).toString()));
-        oLng = Math.toRadians(Double.parseDouble(new Float(origin.getLongitude()).toString()));
-        dLat = Math.toRadians(Double.parseDouble(new Float(destination.getLatitude()).toString()));
-        dLng = Math.toRadians(Double.parseDouble(new Float(destination.getLongitude()).toString()));
+        oLat = new Float(origin.getLatitude()).doubleValue();
+        oLng = new Float(origin.getLongitude()).doubleValue();
+        dLat = new Float(destination.getLatitude()).doubleValue();
+        dLng = new Float(destination.getLongitude()).doubleValue();
 
         // Haversine formula
         Double latDiff = dLat - oLat;
@@ -29,12 +32,7 @@ public class MapsLibrary {
         
         ans = 2 * Math.asin(Math.sqrt(ans));
 
-        //Radius of Earth in miles
-        int radius = 3956;
-
-        ans = ans * radius;
-
-        return ans;
+        return ans * EARTH_RADIUS;
     }
     
     public static List<ProductEntity> sortByLocation(List<ProductWithAddress> productList,
