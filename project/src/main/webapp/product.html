@@ -6,8 +6,10 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.teal-orange.min.css" />
     <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC8PrUIlWAeCEONhP97HFLCFqB8R2dV8FU"></script>
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
+    <script src="mapScript.js"></script>
     <!-- Scripts and styling for tags (under MIT License): https://github.com/sabieber/token-autocomplete -->
     <script src="https://raw.githack.com/sabieber/token-autocomplete/master/built/token-autocomplete.js"></script>
     <link href="https://raw.githack.com/sabieber/token-autocomplete/master/lib/token-autocomplete.css" rel="stylesheet" type="text/css" media="all">
@@ -62,6 +64,7 @@
             <h5>Business Information</h5>
             <p id="businessDisplayName"></p>
             <p id="businessAddress"></p>
+            <div id="map" style="display:none"></div>
             <h5>Similar product images</h5>
             <div id="similarWebsites"></div>
           </div>

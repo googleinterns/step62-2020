@@ -39,6 +39,34 @@ function createMap() {
         {center: {lat: 37.422, lng: -122.084}, zoom: 16});
 }
 
+function setAccountMap() {
+    geocoder = new google.maps.Geocoder();
+
+    var _lat = document.getElementById("lat").value;
+    var _lng = document.getElementById("lng").value;
+
+    map = new google.maps.Map(
+        document.getElementById('map'),
+        {center: {lat: _lat, lng: _lng}, zoom: 16});
+
+    createMarker({lat: _lat, lng: _lng});
+    document.getElementById("map").style.display = "block";
+}
+
+function productsMap(latLng) {
+    geocoder = new google.maps.Geocoder();
+
+    var _lat = latLng.latitude;
+    var _lng = latLng.longitude;
+
+    map = new google.maps.Map(
+        document.getElementById('map'),
+        {center: {lat: _lat, lng: _lng}, zoom: 16});
+
+    createMarker({lat: _lat, lng: _lng});
+    document.getElementById("map").style.display = "block";
+}
+
 function createMarker(coordinate) {
     var marker = new google.maps.Marker({position: coordinate, map: map});
 }
@@ -60,3 +88,5 @@ function setLatLng() {
     }
     geocoder.geocode( { 'address': address}, getLatLng);
 }
+
+
