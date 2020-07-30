@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletResponse;
 
 //Product Search Library
 import com.google.sps.data.ProductSearchLibrary;
+import com.google.api.gax.longrunning.OperationFuture;
+import com.google.cloud.vision.v1.*;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -203,12 +205,13 @@ public class CreateProductServlet extends HttpServlet {
 
     //Create reference image for a product to facilitate the searching for a product by image
     //image gcsuri used for reference image id
+    ProductSearchClient client = ProductSearchClient.create();
     for(String gcsUri : gcsList){
         String objectName = gcsUri.substring(gcsUri.lastIndexOf('/') + 1);
         
         gcsUri = changeGcsFormat(gcsUri);
     
-        ProductSearchLibrary.createReferenceImage(productId, objectName, gcsUri);
+        ProductSearchLibrary.createReferenceImage(productId, objectName, gcsUri, client);
     } 
   }
 
@@ -229,6 +232,7 @@ public class CreateProductServlet extends HttpServlet {
 
       ArrayList<String> toBeDeleted = new ArrayList<>();
       ArrayList<String> toBeCreated = new ArrayList<>();
+      ProductSearchClient client = ProductSearchClient.create();
 
       //Check which gcsUrls in previous gcsUrl list are not in the current gcsUrl list and set them up for deletion.
       for(String gcsUrl : oldGcsUrls){
@@ -248,14 +252,14 @@ public class CreateProductServlet extends HttpServlet {
           String objectName = gcsUrl.substring(gcsUrl.lastIndexOf('/') + 1);
           gcsUrl = changeGcsFormat(gcsUrl);
 
-          ProductSearchLibrary.deleteReferenceImage(productId, objectName);
+          ProductSearchLibrary.deleteReferenceImage(productId, objectName, client);
       }
 
       for(String gcsUrl : toBeCreated){
           String objectName = gcsUrl.substring(gcsUrl.lastIndexOf('/') + 1);
           gcsUrl = changeGcsFormat(gcsUrl);
 
-          ProductSearchLibrary.createReferenceImage(productId, objectName, gcsUrl);
+          ProductSearchLibrary.createReferenceImage(productId, objectName, gcsUrl, client);
       }
   }
 }
