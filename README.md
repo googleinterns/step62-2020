@@ -1,5 +1,7 @@
 # Project CloudBerry
 
+![Cloudberry Logo](/project/src/main/webapp/images/logo_search.png)
+
 Local businesses are a major factor that drives today’s national economy. In the United states, these businesses create more than two-thirds of the total new jobs and according to a report published by the Office of Advocacy for the U.S. small business administration, they account for 44% of the nation’s economic activity. However unlike large companies and corporations, these local businesses are more prone to the effects of events such as COVID where the customer base can decrease significantly. A solution that aims to bring customers to shop at these businesses can stimulate the local economies and reinvigorate the job market that has been affected.
 
 We aim to create a web application to support local businesses, especially during these times with COVID-19. Business owners will be able to catalog their items on our application by simply taking a picture and having cloud vision automatically generate labels for the items. On the customer side, users can simply take a picture of the item they are looking for, and the web application will automatically find products from businesses nearby that are similar to it. This way, customers can go and support local businesses when buying items.
