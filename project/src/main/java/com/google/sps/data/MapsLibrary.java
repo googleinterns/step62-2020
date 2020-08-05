@@ -14,7 +14,7 @@ public class MapsLibrary {
     private static Double dLng;
 
     //Radius of Earth in miles
-    private static int EARTH_RADIUS = 3956
+    private static int EARTH_RADIUS = 3956;
 
     public static Double distance(GeoPt origin, GeoPt destination) {
         //Convert coordinates to radians instead of degrees
