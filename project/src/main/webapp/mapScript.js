@@ -42,8 +42,8 @@ function createMap() {
 function setAccountMap() {
     geocoder = new google.maps.Geocoder();
 
-    var _lat = document.getElementById("lat").value;
-    var _lng = document.getElementById("lng").value;
+    var _lat = Number(document.getElementById("lat").value);
+    var _lng = Number(document.getElementById("lng").value);
 
     map = new google.maps.Map(
         document.getElementById('map'),

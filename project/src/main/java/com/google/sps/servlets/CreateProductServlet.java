@@ -81,6 +81,8 @@ public class CreateProductServlet extends HttpServlet {
       productSet.setProperty("productSetDisplayName", productSetDisplayName);
       productSet.setProperty("productIds", new ArrayList<String>());
       datastore.put(productSet);
+
+      ProductSearchLibrary.createProductSet(productSetId, productSetDisplayName);
     } else {
       productSetId = result.getProductSetId();
     }
