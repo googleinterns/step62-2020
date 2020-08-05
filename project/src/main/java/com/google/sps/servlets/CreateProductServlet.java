@@ -160,7 +160,7 @@ public class CreateProductServlet extends HttpServlet {
       ServletLibrary.addProductToProductSet(datastore, productId, productSetId);
       ServletLibrary.addProductToProductCategory(datastore, productId, productCategory);
       ServletLibrary.addProductToBusiness(datastore, productId, businessId);
-      //createAndAddToProductSearch(productId, productSetId, productDisplayName, productCategory, gcsUrls);
+      createAndAddToProductSearch(productId, productSetId, productDisplayName, productCategory, gcsUrls);
     } else {
       ProductEntity oldProduct = ServletLibrary.retrieveProductInfo(datastore, productId);
       ServletLibrary.updateProductLabels(datastore, productId, oldProduct.getLabels(), labels);
