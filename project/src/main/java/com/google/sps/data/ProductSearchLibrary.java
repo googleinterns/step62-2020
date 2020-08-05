@@ -65,9 +65,9 @@ public class ProductSearchLibrary{
   public static void createReferenceImage(
     String productId,
     String referenceImageId,
-    String gcsUri) throws IOException {
+    String gcsUri,
+    ProductSearchClient client) throws IOException {
     
-        ProductSearchClient client = ProductSearchClient.create();
         // Get the full path of the product.
         String formattedParent =
             ProductSearchClient.formatProductName(projectId, computeRegion, productId);
@@ -260,9 +260,9 @@ public class ProductSearchLibrary{
 
   public static void deleteReferenceImage(
     String productId, 
-    String referenceImageId)
+    String referenceImageId,
+    ProductSearchClient client)
     throws IOException {
-        ProductSearchClient client = ProductSearchClient.create();
 
         // Get the full path of the reference image.
         String formattedName =

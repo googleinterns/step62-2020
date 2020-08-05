@@ -502,7 +502,7 @@ function createProductSetElement(productSet) {
   productSetElement.className = "ProductSet";
 
   const titleElement = document.createElement("span");
-  titleElement.innerText = productSet.setName;
+  titleElement.innerText = productSet.setName + " : " + productSet.setId;
 
   productSetElement.appendChild(titleElement);
   productSetElement.appendChild(linebreak);
