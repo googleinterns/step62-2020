@@ -7,7 +7,7 @@ Local businesses are a major factor that drives today’s national economy. In t
 We aim to create a web application to support local businesses, especially during these times with COVID-19. Business owners will be able to catalog their items on our application by simply taking a picture and having cloud vision automatically generate labels for the items. On the customer side, users can simply take a picture of the item they are looking for, and the web application will automatically find products from businesses nearby that are similar to it. This way, customers can go and support local businesses when buying items.
 
 # How to run the web app
-This app can be deployed to Google cloud appengine. First, clone the repo to your directory. Then navigate to the project folder inside. Simply call "mvn package appengine:run" to run in a development server or "mvn package appengine:deploy" to deploy to your website.
+This app can be deployed to Google cloud appengine. First, clone the repo to your directory. Then navigate to the project folder inside. Simply call "mvn package appengine:run" to run in a development server or "mvn package appengine:deploy" to deploy to your website. On your cloud console you'll have to enable a couple of APIs such as cloud vision to get this to work.
 
 # Contributers
  - Neel Gandhi (https://github.com/SirLegolot)
